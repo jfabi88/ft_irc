@@ -10,6 +10,8 @@
 #include <stdlib.h>
 
 #include "message.hpp"
+#include "Server.hpp"
+#include "Client.hpp"
 
 struct addrinfo ft_set_hints(void)
 {
@@ -46,6 +48,7 @@ int ft_loop(int fd)
     struct sockaddr_in new_addr;
     socklen_t       addr_len;
     void            *buffer;
+    Server          server();
 
     buffer = malloc(512);
     memset(buffer, 0, 512);

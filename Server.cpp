@@ -4,6 +4,7 @@
 
 Server::Server()
 {
+    this->date = this->ft_set_date();
     std::cout << "Server created" << std::endl;
 }
 
@@ -25,9 +26,23 @@ int     Server::getSocket() const
     return (this->fd);
 }
 
+std::string Server::getServername() const
+{
+    return (this->servername);
+}
+
+std::string Server::getVersion() const
+{
+    return (this->version);
+}
+
 Client  Server::getClient(int indx) const
 {
     return (this->clients[indx]);
+}
+std::string Server::getDate() const
+{
+    return (this->date);
 }
 
 Client  *Server::getClient(std::string name) const
@@ -54,8 +69,32 @@ void    Server::setSocket(int newfd)
     this->fd = newfd;
 }
 
+void    Server::setServername(std::string newservername)
+{
+    this->servername = newservername;
+}
+
+void    Server::setVersion(std::string newversion)
+{
+    this->version = newversion;
+}
+
 void    Server::setClient(Client newclient)
 {
     this->clients.push_back(newclient);
 }
 
+/**PRIVATE-FUNCTIONS**/
+
+std::string Server::ft_set_date()
+{
+    time_t          now;
+    std::string     ret;
+
+    now = time(0);
+    tm *gt = gmtime(&now);
+    char *dt = asctime(gt);
+    ret.append(dt);
+    ret.append(" UTC");
+    return (ret);
+}

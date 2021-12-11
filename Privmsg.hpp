@@ -2,8 +2,6 @@
 #define PRIVMSG_HPP
 
 #include "ICommand.hpp"
-#include "Server.hpp"
-#include "Client.hpp"
 
 class Privmsg : public ICommand
 {
@@ -13,9 +11,7 @@ class Privmsg : public ICommand
 
         void    exec() const;
     private:
-        Message message;
-        Server  server;
-        Client  client;
+        std::string setAnswer(std::string text, Client client) const;
 };
 
 #endif

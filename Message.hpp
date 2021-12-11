@@ -27,11 +27,13 @@ class Message
         std::string getPrefix() const;
         std::string getCommand() const;
         std::string getParametersIndex(int indx) const;
+        std::string getText() const;
         void setMessage(std::string text);
     private:
         std::string prefix;
         std::string command;
         std::string parameters[15];
+        std::string text;
         int         ft_set_element(std::string text, int start, std::string *element);
 };
 

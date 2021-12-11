@@ -16,6 +16,8 @@
 #include <iostream>
 #include <vector>
 #include "Client.hpp"
+#include <time.h>
+#include <string>
 
 class Server
 {
@@ -25,15 +27,27 @@ class Server
 
         int     getPort() const;
         int     getSocket() const;
+        std::string getServername() const;
+        std::string getVersion() const;
+        std::string getDate() const;
         Client  getClient(int indx) const;
         Client  *getClient(std::string name) const;
+
 
         void    setPort(int newport);
         void    setSocket(int newfd);
         void    setClient(Client newclient);
+        void    setServername(std::string servername);
+        void    setVersion(std::string version);
+
+        int     startCommunication(Client newclient);
     private:
-        int port;
-        int fd;
+        int                 port;
+        int                 fd;
+        std::string         servername;
+        std::string         version;
+        std::string         date;
+        std::string         ft_set_date();
         std::vector<Client> clients;
 };
 

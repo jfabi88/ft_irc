@@ -1,10 +1,7 @@
 #include "Privmsg.hpp"
 
-Privmsg::Privmsg(Message newmessage, Server newserver, Client newclient)
+Privmsg::Privmsg(Message newmessage, Server newserver, Client newclient) : ICommand(newmessage, newserver, newclient)
 {
-    this->message = newmessage;
-    this->server = newserver;
-    this->client = newclient;
     std::cout << "Privmsg created" << std::endl;
 }
 
@@ -16,17 +13,30 @@ Privmsg::~Privmsg()
 void Privmsg::exec() const
 {
     std::string target;
-    std::string text;
     Client      *clientTarget;
+    std::string text;
 
     target = this->message.getParametersIndex(0);
-    text = this->message.getParametersIndex(1);
     clientTarget = this->server.getClient(target);
     if (clientTarget == NULL)
         return ;
-    //else if (clientTarget->getAway())
+    text = this->setAnswer(this->message.getText(), this->client);
+    //if (clientTarget->getAway())
         //sent reply;
-    else
+    //else
         send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
     delete clientTarget;
+}
+
+/**PRIVATE-MESSAGES**/
+
+std::string Privmsg::setAnswer(std::string text, Client client) const
+{
+    std::string ret = "";
+
+    ret.append(":");
+    ret.append(client.getNickname());
+    ret.append(" ");
+    ret.append(text);
+    return (ret);
 }

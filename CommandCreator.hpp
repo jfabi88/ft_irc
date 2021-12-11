@@ -19,12 +19,8 @@ class CommandCreator
         ICommand    *makePrivmsg(Message message, Server serve, Client client);
 
         typedef ICommand *(CommandCreator::*fct_point)(Message, Server, Client);
-        fct_point   array[size] = {
-            &CommandCreator::makePrivmsg
-        };
-        std::string commands[size] = {
-            "PRIVMSG"
-        };
+        static fct_point   array[];
+        static std::string commands[];
 };
 
 #endif

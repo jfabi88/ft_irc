@@ -18,6 +18,7 @@ Message::Message()
 {
     this->prefix = "";
     this->command = "";
+    this->text = "";
     for (int i = 0; i < 15; i++)
         this->parameters[i] = "";
     std::cout << "Message created" << std::endl;
@@ -27,6 +28,7 @@ Message::Message(const Message &copy)
 {
     this->prefix = copy.getPrefix();
     this->command = copy.getCommand();
+    this->text = copy.getText();
     for (int i = 0; i < 15; i++)
         this->parameters[i] = copy.getParametersIndex(i);
     std::cout << "Message created" << std::endl;
@@ -35,6 +37,7 @@ Message::Message(const Message &copy)
 Message::Message(std::string text)
 {
     this->setMessage(text);
+    this->text = text;
     std::cout << "Message created" << std::endl;
 }
 
@@ -58,6 +61,11 @@ std::string Message::getCommand() const
 std::string Message::getParametersIndex(int i) const
 {
     return (this->parameters[i]);
+}
+
+std::string Message::getText() const
+{
+    return (this->text);
 }
 
 void Message::setMessage(std::string text)
@@ -106,7 +114,11 @@ int Message::ft_set_element(std::string text, int start, std::string *element)
 
     next_pos = text.find(" ", start);
     if (next_pos != -1)
+    {
         *element = text.substr(start, next_pos);
+        while (text[next_pos] == ' ')
+            next_pos++;
+    }
     else
     {
         next_pos = text.find("\\r\\n", start);

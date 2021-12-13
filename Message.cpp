@@ -63,6 +63,29 @@ std::string Message::getParametersIndex(int i) const
     return (this->parameters[i]);
 }
 
+std::string Message::getLastParameter() const
+{
+    int i;
+
+    i = 0;
+    while (this->parameters[i] != "")
+        i++;
+    if (i != 0)
+        return (this->parameters[i - 1]);
+    return ("");
+}
+
+std::vector<std::string> Message::getLastParameterMetrix() const
+{
+    std::vector<std::string>    ret;
+    std::string                 lastParameter;
+    int                         i;
+
+    i = 0;
+    lastParameter = this->getLastParameter();
+    while (lastParameter[i] )
+}
+
 std::string Message::getText() const
 {
     return (this->text);

@@ -14,6 +14,7 @@
 #define MESSAGE_HPP
 
 #include <iostream>
+#include <vector>
 
 class Message
 {
@@ -27,6 +28,8 @@ class Message
         std::string getPrefix() const;
         std::string getCommand() const;
         std::string getParametersIndex(int indx) const;
+        std::string getLastParameter() const;
+        std::vector<std::string> getLastParameterMetrix() const;
         std::string getText() const;
         void setMessage(std::string text);
     private:

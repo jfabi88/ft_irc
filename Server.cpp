@@ -59,6 +59,11 @@ Client  *Server::getClient(std::string name) const
     return (NULL);
 }
 
+std::vector<std::string> Server::getCapabilities() const
+{
+    return (this->capabilities);
+}
+
 void    Server::setPort(int newport)
 {
     this->port = newport;
@@ -82,6 +87,25 @@ void    Server::setVersion(std::string newversion)
 void    Server::setClient(Client newclient)
 {
     this->clients.push_back(newclient);
+}
+
+/**PUBLIC-FUNCTIONS**/
+
+int Server::isCapability(std::string name) const
+{
+    std::vector<std::string>::const_iterator  it;
+
+    it = this->capabilities.begin();
+    while (!(*it).compare(name) && it != this->capabilities.end())
+        it++;
+    if ((*it) != "")
+        return (1);
+    return (0);
+}
+
+int     Server::startCommunication(int fdNewClient)
+{
+    return (0);
 }
 
 /**PRIVATE-FUNCTIONS**/

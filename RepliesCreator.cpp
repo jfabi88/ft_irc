@@ -12,19 +12,6 @@
 
 #include "RepliesCreator.hpp"
 
-typedef std::string (RepliesCreator::*fct_point)(Server, Client);
-fct_point RepliesCreator::array[] = {
-    &RepliesCreator::makeWelcome,
-    &RepliesCreator::makeYourHost,
-    &RepliesCreator::makeCreated
-};
-
-int RepliesCreator::Repliess[] = {
-    1,
-    2,
-    3
-};
-
 RepliesCreator::RepliesCreator()
 {
     std::cout << "RepliesCreator created" << std::endl;
@@ -35,33 +22,14 @@ RepliesCreator::~RepliesCreator()
     std::cout << "RepliesCreator deleted" << std::endl;
 }
 
-int RepliesCreator::sendReplies(int num, Server server, Client client)
-{
-    std::string text;
-    int ret;
-    int i;
+/**PUBBLIC-FUNCTIONS**/
 
-    ret = -1;
-    i = 0;
-    while (i < this->size && this->Repliess[i] != num)
-        i++;
-    if (i < this->size)
-    {
-        text = (this->*array[i])(server, client);
-        ret = send(client.getSocketFd(), text.c_str(), text.size(), 0);
-    }
-    return (ret);
-}
-
-/**PRIVATE-FUNCTIONS**/
-
-std::string RepliesCreator::makeWelcome(Server server, Client client)
+std::string RepliesCreator::makeWelcome(Client client)
 {
     std::string text;
  
-    text = ":default 001 " + client.getNickname() + \
-            " :Welcome to the networkname Network, " + client.getNickname() + \
-            "\r\n";
+    text =  client.getNickname() + " :Welcome to the networkname Network, " \
+            + client.getNickname() + "\r\n";
     return (text);
 }
 
@@ -69,8 +37,7 @@ std::string RepliesCreator::makeYourHost(Server server, Client client)
 {
     std::string text;
 
-    text = ":default 002" + client.getNickname() + \
-            " :Your host is " + server.getServername() + \
+    text =  client.getNickname() + " :Your host is " + server.getServername() + \
             ", running version " + server.getVersion();
     return (text);
 }
@@ -79,7 +46,30 @@ std::string RepliesCreator::makeCreated(Server server, Client client)
 {
     std::string text;
 
-    text = ":default 003" + client.getNickname() + \
-            " :This server was created " + server.getDate();
+    text = client.getNickname() + " :This server was created " + server.getDate();
+    return (text);
+}
+
+std::string RepliesCreator::makeErrorNeedMoreParams(Client client, std::string command)
+{
+    std::string text;
+
+    text = client.getNickname() + " " + command + " :Not enough parameters";
+    return (text);
+}
+
+std::string RepliesCreator::makeErrorAlreadyRegistered(Client client)
+{
+    std::string text;
+
+    text = client.getNickname() + " :You may not reregister";
+    return (text);
+}
+
+std::string RepliesCreator::makePasswdMisMatch(Client client)
+{
+    std::string text;
+
+    text = client.getNickname() + " :Password incorrect";
     return (text);
 }

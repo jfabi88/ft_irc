@@ -32,7 +32,7 @@ class Server
         std::string getDate() const;
         Client  getClient(int indx) const;
         Client  *getClient(std::string name) const;
-
+        std::vector<std::string> getCapabilities() const;
 
         void    setPort(int newport);
         void    setSocket(int newfd);
@@ -40,7 +40,8 @@ class Server
         void    setServername(std::string servername);
         void    setVersion(std::string version);
 
-        int     startCommunication(Client newclient);
+        int     startCommunication(int fdNewClient);
+        int     isCapability(std::string name) const;
     private:
         int                 port;
         int                 fd;
@@ -49,6 +50,7 @@ class Server
         std::string         date;
         std::string         ft_set_date();
         std::vector<Client> clients;
+        std::vector<std::string> capabilities;
 };
 
 #endif

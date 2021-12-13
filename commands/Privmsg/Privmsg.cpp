@@ -28,15 +28,12 @@ void Privmsg::exec() const
     delete clientTarget;
 }
 
-/**PRIVATE-MESSAGES**/
+/**PRIVATE-FUNCTIONS**/
 
 std::string Privmsg::setAnswer(std::string text, Client client) const
 {
-    std::string ret = "";
+    std::string ret;
 
-    ret.append(":");
-    ret.append(client.getNickname());
-    ret.append(" ");
-    ret.append(text);
+    ret = ":" + client.getNickname() + " " + text;
     return (ret);
 }

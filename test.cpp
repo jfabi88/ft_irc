@@ -12,7 +12,7 @@
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
-#include "CommandCreator.hpp"
+#include "commands/CommandCreator.hpp"
 #include "ICommand.hpp"
 #include "Privmsg.hpp"
 #include "RepliesCreator.hpp"

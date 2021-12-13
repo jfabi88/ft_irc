@@ -38,6 +38,7 @@ class Client
         std::string password;
         int         socket;
         bool        away;
+        std::vector<std::string> capabilities;
 };
 
 std::ostream& operator<<(std::ostream& os, const Client &copy);

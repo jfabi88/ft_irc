@@ -26,15 +26,13 @@ class RepliesCreator
         RepliesCreator();
         ~RepliesCreator();
 
-        int sendReplies(int num, Server serve, Client client);
-    private:
-        const static int   size = 3;
-        std::string makeWelcome(Server server, Client client);
+        std::string makeWelcome(Client client);
         std::string makeYourHost(Server server, Client client);
         std::string makeCreated(Server server, Client client);
-        typedef std::string (RepliesCreator::*fct_point)(Server, Client);
-        static fct_point   array[];
-        static int Repliess[];
+        std::string makeErrorNeedMoreParams(Client client, std::string command);
+        std::string makeErrorAlreadyRegistered(Client client);
+        std::string makePasswdMisMatch(Client client);
+    private:
 };
 
 #endif

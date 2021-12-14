@@ -75,15 +75,35 @@ std::string Message::getLastParameter() const
     return ("");
 }
 
-std::vector<std::string> Message::getLastParameterMetrix() const
+std::vector<std::string> ft_split(std::string text, char delimiter)
 {
     std::vector<std::string>    ret;
-    std::string                 lastParameter;
-    int                         i;
+    int i;
+    int lastPosition;
 
     i = 0;
-    lastParameter = this->getLastParameter();
-    while (lastParameter[i] )
+    lastPosition = -1;
+    while (i < text.size() && text[i] == delimiter)
+        i++;
+    if (i < text.size())
+        lastPosition = text.find(delimiter, i);
+    while (lastPosition != -1)
+    {
+        ret.push_back(text.substr(i, lastPosition - i));
+        i = lastPosition;
+        while (i < text.size() && text[i] == delimiter)
+            i++;
+        if (i < text.size())
+            lastPosition = text.find(delimiter, i);
+    }
+    if (lastPosition == -1)
+        ret.push_back(text.substr(i, text.size() - i));
+    return (ret);
+}
+
+std::vector<std::string> Message::getLastParameterMatrix() const
+{
+    return (ft_split(this->getLastParameter(), ' '));
 }
 
 std::string Message::getText() const

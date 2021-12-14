@@ -91,16 +91,32 @@ void    Server::setClient(Client newclient)
 
 /**PUBLIC-FUNCTIONS**/
 
-int Server::isCapability(std::string name) const
+int Server::hasCapability(std::string name) const
 {
     std::vector<std::string>::const_iterator  it;
+    std::string tmp;
 
     it = this->capabilities.begin();
-    while (!(*it).compare(name) && it != this->capabilities.end())
+    tmp = name;
+    if (name != "" && name[0] == '-')
+        tmp = name.substr(1, name.size());
+    while (!(*it).compare(tmp) && it != this->capabilities.end())
         it++;
     if ((*it) != "")
         return (1);
     return (0);
+}
+
+int     Server::hasCapabilities(std::vector<std::string> prefix) const
+{
+    std::vector<std::string>::iterator it;
+
+    for (it = prefix.begin(); it != prefix.end(); it++)
+    {
+        if (!this->hasCapability(*it))
+            return (0);
+    }
+    return (1);
 }
 
 int     Server::startCommunication(int fdNewClient)

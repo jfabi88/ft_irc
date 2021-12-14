@@ -59,11 +59,16 @@ void Cap::execList()
 
 void Cap::execReq()
 {
-    std::string lastPrefix;
-    std::vector<std::string>    tmp;
-    int                         i;
+    std::vector<std::string>    lastPrefix;
 
-    i = 0;
-    lastPrefix = this->message.getLastParameter();
-    if (this->server.isCapability())
+    lastPrefix = this->message.getLastParameterMatrix();
+    if (!this->server.hasCapabilities(lastPrefix))
+        this->execNak();
+    else
+        this->execAck();
+}
+
+void Cap::execNak()
+{
+
 }

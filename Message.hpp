@@ -29,7 +29,7 @@ class Message
         std::string getCommand() const;
         std::string getParametersIndex(int indx) const;
         std::string getLastParameter() const;
-        std::vector<std::string> getLastParameterMetrix() const;
+        std::vector<std::string> getLastParameterMatrix() const;
         std::string getText() const;
         void setMessage(std::string text);
     private:

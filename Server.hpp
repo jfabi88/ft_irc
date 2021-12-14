@@ -41,7 +41,8 @@ class Server
         void    setVersion(std::string version);
 
         int     startCommunication(int fdNewClient);
-        int     isCapability(std::string name) const;
+        int     hasCapability(std::string name) const;
+        int     hasCapabilities(std::vector<std::string> prefix) const;
     private:
         int                 port;
         int                 fd;

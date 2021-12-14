@@ -60,6 +60,16 @@ std::string Client::getPassword() const
     return (this->password);
 }
 
+std::string Client::getUsername() const
+{
+    return (this->username);
+}
+
+std::string Client::getRealname() const
+{
+    return (this->realname);
+}
+
 int Client::getSocketFd() const
 {
     return (this->socket);
@@ -94,20 +104,41 @@ void Client::setAway(bool flag)
     this->away = flag;
 }
 
+void Client::setUsername(std::string newusername)
+{
+    this->username = newusername;
+}
+
+void Client::setRealname(std::string newrealname)
+{
+    this->realname = newrealname;
+}
+
+void Client::setCapabilities(std::vector<std::string> newVector)
+{
+    this->capabilities.clear();
+    this->capabilities = newVector;
+}
+
 int Client::hasCapability(std::string name) const
 {
     std::vector<std::string>::const_iterator  it;
     std::string tmp;
+    int         i;
 
+    i = 0;
     it = this->capabilities.begin();
     tmp = name;
     if (name != "" && name[0] == '-')
         tmp = name.substr(1, name.size());
     while (!(*it).compare(tmp) && it != this->capabilities.end())
+    {
         it++;
+        i++;
+    }
     if ((*it) != "")
-        return (1);
-    return (0);
+        return (i);
+    return (-1);
 }
 
 int     Client::hasCapabilities(std::vector<std::string> prefix) const

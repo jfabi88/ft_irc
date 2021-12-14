@@ -92,11 +92,11 @@ void Cap::execAck()
         if ((*it)[0] != '-' && client.hasCapability(*it) == -1)
             tmp.push_back(*it);
         else if (((*it)[0] == '-' && client.hasCapability(*it) != -1))
-            tmp.erase();
+            tmp.erase(tmp.begin() + client.hasCapability(*it));
     }
     text = "CAP * ACK :";
     text.append(this->message.getLastParameter());
     text.append("\r\n");
     send(this->client.getSocketFd(), text.c_str(), text.size(), 0);
-
+    this->client.setCapabilities(tmp);
 }

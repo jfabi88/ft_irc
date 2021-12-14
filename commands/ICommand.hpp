@@ -4,6 +4,8 @@
 #include "Message.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
+#include "../RepliesCreator.hpp"
+#include "../utils.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -14,7 +16,7 @@ class ICommand
     public:
         virtual ~ICommand() {};
 
-        virtual void exec() const = 0;
+        virtual void exec() = 0;
     protected:
         ICommand(Message newmessage, Server newserver, Client newclient) {
             this->message = newmessage;

@@ -119,6 +119,22 @@ int     Server::hasCapabilities(std::vector<std::string> prefix) const
     return (1);
 }
 
+int     Server::findClient(std::string nickname) const
+{
+    std::vector<Client>::const_iterator it;
+    int i;
+
+    i = 0;
+    it = this->clients.begin();
+    for (it; it != this->clients.end(); it++)
+    {
+        if ((*it).getNickname().compare(nickname))
+            return (i);
+        i++;
+    }
+    return (-1);
+}
+
 int     Server::startCommunication(int fdNewClient)
 {
     return (0);

@@ -43,6 +43,7 @@ class Server
         int     startCommunication(int fdNewClient);
         int     hasCapability(std::string name) const;
         int     hasCapabilities(std::vector<std::string> prefix) const;
+        int     findClient(std::string nickname) const;
     private:
         int                 port;
         int                 fd;

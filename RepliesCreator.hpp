@@ -29,8 +29,12 @@ class RepliesCreator
         std::string makeWelcome(Client client);
         std::string makeYourHost(Server server, Client client);
         std::string makeCreated(Server server, Client client);
+
         std::string makeErrorNeedMoreParams(Client client, std::string command);
         std::string makeErrorAlreadyRegistered(Client client);
+        std::string makeErrorNoNickNameGiven(Client client);
+        std::string makeErrorErroneusNickName(Client client, std::string nick);
+        std::string makeErrorNickNameInUse(Client client, std::string nick);
         std::string makePasswdMisMatch(Client client);
     private:
 };

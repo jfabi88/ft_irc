@@ -73,3 +73,27 @@ std::string RepliesCreator::makePasswdMisMatch(Client client)
     text = client.getNickname() + " :Password incorrect";
     return (text);
 }
+
+std::string RepliesCreator::makeErrorNoNickNameGiven(Client client)
+{
+    std::string text;
+
+    text = client.getNickname() + " :No nickname given";
+    return (text);
+}
+
+std::string RepliesCreator::makeErrorErroneusNickName(Client client, std::string nick)
+{
+    std::string text;
+
+    text = client.getNickname() + " " + nick + " :Erroneus";
+    return (text);
+}
+
+std::string RepliesCreator::makeErrorNickNameInUse(Client client, std::string nick)
+{
+    std::string text;
+
+    text = client.getNickname() + " " + nick + " :Nickname is already in use";
+    return (text);
+}

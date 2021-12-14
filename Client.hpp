@@ -14,6 +14,7 @@
 #define CLIENT_HPP
 
 #include <iostream>
+#include <vector>
 
 class Client
 {
@@ -28,11 +29,15 @@ class Client
         std::string getPassword() const;
         int         getSocketFd() const;
         bool        getAway() const;
+        std::vector<std::string> getCapabilities() const;
 
         void        setNickname(std::string newname);
         void        setPassword(std::string newpassword);
         void        setSocketFd(int fd);
         void        setAway(bool flag);
+
+        int hasCapability(std::string name) const;
+        int hasCapabilities(std::vector<std::string> prefix) const;
     private:
         std::string nickname;
         std::string password;

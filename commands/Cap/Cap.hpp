@@ -14,8 +14,10 @@ class Cap : public ICommand
         std::string setAnswer(std::string text, Client client) const;
         std::string array[];
 
-        void        execList();
-        void        execReq();
+        void    execList();
+        void    execReq();
+        void    execAck();
+        void    execNak();
 };
 
 #endif

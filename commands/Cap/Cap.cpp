@@ -70,5 +70,33 @@ void Cap::execReq()
 
 void Cap::execNak()
 {
+    std::string text;
+
+    text = "CAP * NAK :";
+    text.append(this->message.getLastParameter());
+    text.append("\r\n");
+    send(this->client.getSocketFd(), text.c_str(), text.size(), 0);
+}
+
+void Cap::execAck()
+{
+    std::vector<std::string>    lastPrefix;
+    std::vector<std::string>    clientCap;
+    std::vector<std::string>    tmp;
+    std::string text;
+
+    clientCap = this->client.getCapabilities();
+    lastPrefix = this->message.getLastParameterMatrix();
+    for(std::vector<std::string>::iterator it = lastPrefix.begin(); it != lastPrefix.end(); it++)
+    {
+        if ((*it)[0] != '-' && client.hasCapability(*it) == -1)
+            tmp.push_back(*it);
+        else if (((*it)[0] == '-' && client.hasCapability(*it) != -1))
+            tmp.erase();
+    }
+    text = "CAP * ACK :";
+    text.append(this->message.getLastParameter());
+    text.append("\r\n");
+    send(this->client.getSocketFd(), text.c_str(), text.size(), 0);
 
 }

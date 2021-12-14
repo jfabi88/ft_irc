@@ -69,6 +69,10 @@ bool Client::getAway() const
 {
     return (this->away);
 }
+std::vector<std::string> Client::getCapabilities() const
+{
+    return (this->capabilities);
+}
 
 void Client::setNickname(std::string newname)
 {
@@ -88,6 +92,34 @@ void Client::setSocketFd(int fd)
 void Client::setAway(bool flag)
 {
     this->away = flag;
+}
+
+int Client::hasCapability(std::string name) const
+{
+    std::vector<std::string>::const_iterator  it;
+    std::string tmp;
+
+    it = this->capabilities.begin();
+    tmp = name;
+    if (name != "" && name[0] == '-')
+        tmp = name.substr(1, name.size());
+    while (!(*it).compare(tmp) && it != this->capabilities.end())
+        it++;
+    if ((*it) != "")
+        return (1);
+    return (0);
+}
+
+int     Client::hasCapabilities(std::vector<std::string> prefix) const
+{
+    std::vector<std::string>::iterator it;
+
+    for (it = prefix.begin(); it != prefix.end(); it++)
+    {
+        if (!this->hasCapability(*it))
+            return (0);
+    }
+    return (1);
 }
 
 /**EXTERNAL-FUNCTIONS**/

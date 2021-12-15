@@ -18,8 +18,11 @@ Client::Client()
 {
     this->nickname = "";
     this->password = "";
+    this->username = "";
+    this->realname = "";
     this->socket = -1;
     this->away = false;
+    this->registered = false;
     std::cout << "Client created" << std::endl;
 }
 
@@ -79,6 +82,12 @@ bool Client::getAway() const
 {
     return (this->away);
 }
+
+bool Client::getRegistered() const
+{
+    return (this->registered);
+}
+
 std::vector<std::string> Client::getCapabilities() const
 {
     return (this->capabilities);
@@ -118,6 +127,11 @@ void Client::setCapabilities(std::vector<std::string> newVector)
 {
     this->capabilities.clear();
     this->capabilities = newVector;
+}
+
+void Client::setRegistered(bool flag)
+{
+    this->registered = flag;
 }
 
 int Client::hasCapability(std::string name) const

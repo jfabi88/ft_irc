@@ -31,6 +31,7 @@ class Client
         std::string getRealname() const;
         int         getSocketFd() const;
         bool        getAway() const;
+        bool        getRegistered() const;
         std::vector<std::string> getCapabilities() const;
 
         void        setNickname(std::string newname);
@@ -40,7 +41,7 @@ class Client
         void        setSocketFd(int fd);
         void        setAway(bool flag);
         void        setCapabilities(std::vector<std::string> newVector);
-
+        void        setRegistered(bool flag);
         int hasCapability(std::string name) const;
         int hasCapabilities(std::vector<std::string> prefix) const;
     private:
@@ -50,6 +51,7 @@ class Client
         std::string realname;
         int         socket;
         bool        away;
+        bool        registered;
         std::vector<std::string> capabilities;
 };
 

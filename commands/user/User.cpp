@@ -24,10 +24,17 @@ User::~User()
 
 void User::exec()
 {
-    RepliesCreator reply;
+    RepliesCreator  reply;
+    std::string     username;
 
-    if (this->message.getParametersIndex(3) == "")
+    if (this->message.getParametersIndex(0) == "")
         reply.makeErrorNeedMoreParams(this->client, "USER");
     else if (this->client.getUsername() != "")
         reply.makeErrorAlreadyRegistered(this->client);
+    username = this->message.getParametersIndex(0);
+    if (username.size() > USERLEN)
+        this->client.setUsername(username.substr(0, USERLEN));
+    else
+        this->client.setUsername(username);
+    this->client.setRealname(message.getParametersIndex(3));   
 }

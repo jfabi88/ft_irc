@@ -1,26 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   User.hpp                                           :+:      :+:    :+:   */
+/*   Pass.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jfabi <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/14 19:30:10 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/14 19:30:11 by jfabi            ###   ########.fr       */
+/*   Created: 2021/12/15 14:47:16 by jfabi             #+#    #+#             */
+/*   Updated: 2021/12/15 14:47:18 by jfabi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef USER_HPP
-#define USER_HPP
+#ifndef PASS_HPP
+#define PASS_HPP
 
 #include "../ICommand.hpp"
-#define USERLEN 16
 
-class User : public ICommand
+class Pass : public ICommand
 {
     public:
-        User(Message message, Server server, Client client);
-        ~User();
+        Pass(Message message, Server server, Client client);
+        ~Pass();
 
         void    exec();
     private:

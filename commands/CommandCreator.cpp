@@ -6,7 +6,11 @@ fct_point CommandCreator::array[] = {
 };
 
 std::string CommandCreator::commands[] = {
-    "PRIVMSG"
+    "PRIVMSG",
+    "CAP",
+    "NICK",
+    "PASS",
+    "USER"
 };
 
 CommandCreator::CommandCreator()
@@ -35,6 +39,34 @@ ICommand *CommandCreator::makeCommand(Message message, Server server, Client cli
 ICommand *CommandCreator::makePrivmsg(Message message, Server server, Client client)
 {
     ICommand *ret = new Privmsg(message, server, client);
+
+    return (ret);
+}
+
+ICommand *CommandCreator::makeCap(Message message, Server server, Client client)
+{
+    ICommand *ret = new Cap(message, server, client);
+
+    return (ret);
+}
+
+ICommand *CommandCreator::makeNick(Message message, Server server, Client client)
+{
+    ICommand *ret = new Nick(message, server, client);
+
+    return (ret);
+}
+
+ICommand *CommandCreator::makePass(Message message, Server server, Client client)
+{
+    ICommand *ret = new Pass(message, server, client);
+
+    return (ret);
+}
+
+ICommand *CommandCreator::makeUser(Message message, Server server, Client client)
+{
+    ICommand *ret = new User(message, server, client);
 
     return (ret);
 }

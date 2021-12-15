@@ -164,7 +164,7 @@ int Message::ft_set_element(std::string text, int start, std::string *element)
     }
     else
     {
-        next_pos = text.find("\\r\\n", start);
+        next_pos = text.find("\r\n", start);
         *element = text.substr(start, next_pos);
     }
     return (next_pos);

@@ -10,7 +10,7 @@ Cap::~Cap()
     std::cout << "Cap deleted" << std::endl;
 }
 
-void Cap::exec() const
+void Cap::exec()
 {
     std::string target;
     Client      *clientTarget;

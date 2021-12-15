@@ -10,7 +10,7 @@ Privmsg::~Privmsg()
     std::cout << "Privmsg deleted" << std::endl;
 }
 
-void Privmsg::exec() const
+void Privmsg::exec()
 {
     std::string target;
     Client      *clientTarget;

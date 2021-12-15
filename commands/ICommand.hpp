@@ -16,16 +16,21 @@ class ICommand
     public:
         virtual ~ICommand() {};
 
+        virtual std::string getCommand() {
+            return (this->command);
+        };
         virtual void exec() = 0;
     protected:
         ICommand(Message newmessage, Server newserver, Client newclient) {
             this->message = newmessage;
             this->server = newserver;
             this->client = newclient;
+            this->command = newmessage.getCommand();
         };
         Message     message;
         Server      server;
         Client      client;
+        std::string command;
 };
 
 #endif

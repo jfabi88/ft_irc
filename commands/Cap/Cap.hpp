@@ -9,7 +9,7 @@ class Cap : public ICommand
         Cap(Message message, Server server, Client client);
         ~Cap();
 
-        void    exec() const;
+        void    exec();
     private:
         std::string setAnswer(std::string text, Client client) const;
         std::string array[];

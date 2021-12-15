@@ -15,9 +15,17 @@
 
 #include <iostream>
 #include <vector>
-#include "Client.hpp"
 #include <time.h>
 #include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "Client.hpp"
+#include "Message.hpp"
+#include "RepliesCreator.hpp"
+#include "commands/CommandCreator.hpp"
+#include "commands/ICommand.hpp"
 
 class Server
 {
@@ -50,9 +58,12 @@ class Server
         std::string         servername;
         std::string         version;
         std::string         date;
-        std::string         ft_set_date();
         std::vector<Client> clients;
         std::vector<std::string> capabilities;
+
+        std::string         ft_set_date();
+        void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);
+        std::vector<std::string> ft_take_messages(int fdNewClient);
 };
 
 #endif

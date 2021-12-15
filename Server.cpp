@@ -137,7 +137,31 @@ int     Server::findClient(std::string nickname) const
 
 int     Server::startCommunication(int fdNewClient)
 {
-    return (0);
+    int flag;
+    Client  client;
+    Message message;
+    RepliesCreator  reply;
+    CommandCreator  cCreator;
+    std::vector<std::string> array;
+
+    flag = 1;
+    while (flag)
+    {
+        array = this->ft_take_messages(fdNewClient);
+        for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
+        {
+            message.setMessage(*it);
+            ICommand *command = cCreator.makeCommand(message, *this, client);
+            if (command)
+            {
+                if (command->getCommand().compare("PASS") && flag == 2)
+                    reply.makeErrorAlreadyRegistered(client);
+                else if (command->getCommand().compare("NICK"))
+                    flag = 2;
+                else if (command->getCommand().compare(""))
+            }
+        }
+    }
 }
 
 /**PRIVATE-FUNCTIONS**/
@@ -153,4 +177,45 @@ std::string Server::ft_set_date()
     ret.append(dt);
     ret.append(" UTC");
     return (ret);
+}
+
+std::vector<std::string> Server::ft_take_messages(int fdNewClient)
+{
+    char *buffer = new char[512]();
+    std::string b;
+    std::vector<std::string> array;
+
+    b = "";
+    recv(fdNewClient, buffer, 512, 0);
+    this->ft_parse_data(&array, &b, buffer);
+    while (b != "")
+    {
+        recv(fdNewClient, buffer, 512, 0);
+        this->ft_parse_data(&array, &b, buffer);        
+    }
+    delete [] buffer;
+    return (array);
+}
+
+void Server::ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer)
+{
+    int num;
+    int lastIndx;
+    std::string tmp;
+
+    num = 0;
+    lastIndx = 0;
+    tmp.append(*b);
+    tmp.append(buffer);
+    num = tmp.find("\r\n");
+    while (num != -1)
+    {
+        array->push_back(tmp.substr(lastIndx, num - lastIndx + 2));
+        lastIndx = num + 2;
+        num = tmp.find("\r\n");
+    }
+    if (lastIndx != 0)
+        *b = "";
+    if (lastIndx != tmp.size())
+        b->append(tmp.substr(lastIndx, tmp.size() - lastIndx));
 }

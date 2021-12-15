@@ -9,7 +9,7 @@ class Privmsg : public ICommand
         Privmsg(Message message, Server server, Client client);
         ~Privmsg();
 
-        void    exec() const;
+        void    exec();
     private:
         std::string setAnswer(std::string text, Client client) const;
 };

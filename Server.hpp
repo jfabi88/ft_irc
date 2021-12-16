@@ -64,6 +64,7 @@ class Server
         std::string         ft_set_date();
         void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);
         std::vector<std::string> ft_take_messages(int fdNewClient);
+        int ft_exec_communication_commands(int flag, std::string text, Client client);
 };
 
 #endif

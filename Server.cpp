@@ -139,9 +139,6 @@ int     Server::startCommunication(int fdNewClient)
 {
     int flag;
     Client  client;
-    Message message;
-    RepliesCreator  reply;
-    CommandCreator  cCreator;
     std::vector<std::string> array;
 
     flag = 1;
@@ -149,18 +146,7 @@ int     Server::startCommunication(int fdNewClient)
     {
         array = this->ft_take_messages(fdNewClient);
         for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
-        {
-            message.setMessage(*it);
-            ICommand *command = cCreator.makeCommand(message, *this, client);
-            if (command)
-            {
-                if (command->getCommand().compare("PASS") && flag == 2)
-                    reply.makeErrorAlreadyRegistered(client);
-                else if (command->getCommand().compare("NICK"))
-                    flag = 2;
-                else if (command->getCommand().compare(""))
-            }
-        }
+            flag = this->ft_exec_communication_commands(flag, *it, client);
     }
 }
 
@@ -218,4 +204,42 @@ void Server::ft_parse_data(std::vector<std::string> *array, std::string *b, char
         *b = "";
     if (lastIndx != tmp.size())
         b->append(tmp.substr(lastIndx, tmp.size() - lastIndx));
+}
+
+int Server::ft_exec_communication_commands(int flag, std::string text, Client client)
+{
+    RepliesCreator  reply;
+    Message message;
+    CommandCreator    cCreator;
+    std::string commands[4] = {
+        "CAP",
+        "NICK",
+        "PASS",
+        "USER"
+    };
+    int i;
+
+    i = 0;
+    message.setMessage(text);
+    ICommand *command = cCreator.makeCommand(message, *this, client);
+    if (!command)
+        return (1);
+    while (i < 4 || command->getCommand().compare(commands[i]))
+        i++;
+    switch (i)
+    {
+        case (1):                                   //NICK
+            command->exec();
+            return (2);
+        case(2):                                    //PASS
+            if (flag != 2)
+                command->exec();
+            else
+                reply.makeErrorAlreadyRegistered(client);
+            return (flag);
+        case(3):                                    //USER
+            command->exec();
+            return (2);
+    }
+    return (flag);
 }

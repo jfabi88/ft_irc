@@ -18,10 +18,10 @@
 class Pass : public ICommand
 {
     public:
-        Pass(Message message, Server server, Client client);
+        Pass();
         ~Pass();
 
-        void    exec();
+        void    exec(Message message, Client client, Server server);
     private:
 };
 

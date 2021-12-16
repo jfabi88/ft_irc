@@ -18,10 +18,10 @@
 class Nick : public ICommand
 {
     public:
-        Nick(Message message, Server server, Client client);
+        Nick();
         ~Nick();
 
-        void    exec();
+        void    exec(Message message, Client client, Server server);
     private:
 };
 

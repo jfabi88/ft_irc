@@ -12,8 +12,9 @@
 
 #include "Pass.hpp"
 
-Pass::Pass(Message newmessage, Server newserver, Client newclient) : ICommand(newmessage, newserver, newclient)
+Pass::Pass()
 {
+    this->command = "PASS";
     std::cout << "Pass created" << std::endl;
 }
 
@@ -22,14 +23,16 @@ Pass::~Pass()
     std::cout << "Pass deleted" << std::endl;
 }
 
-void Pass::exec()
+void Pass::exec(Message message, Client client, Server server)
 {
     RepliesCreator  reply;
+    std::string     cNick;
 
-    if (this->client.getRegistered())
-        reply.makeErrorAlreadyRegistered(this->client);
-    else if (this->message.getParametersIndex(0) == "")
-        reply.makeErrorNeedMoreParams(this->client, "PASS");
+    cNick = client.getNickname();
+    if (client.getRegistered())
+        reply.makeErrorAlreadyRegistered(cNick);
+    else if (message.getParametersIndex(0) == "")
+        reply.makeErrorNeedMoreParams(cNick, "PASS");
     else
-        this->client.setPassword(this->message.getParametersIndex(0));
+        client.setPassword(message.getParametersIndex(0));
 }

@@ -24,76 +24,76 @@ RepliesCreator::~RepliesCreator()
 
 /**PUBBLIC-FUNCTIONS**/
 
-std::string RepliesCreator::makeWelcome(Client client)
+std::string RepliesCreator::makeWelcome(std::string CNickname)
 {
     std::string text;
  
-    text =  client.getNickname() + " :Welcome to the networkname Network, " \
-            + client.getNickname() + "\r\n";
+    text =  CNickname + " :Welcome to the networkname Network, " \
+            + CNickname + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makeYourHost(Server server, Client client)
+std::string RepliesCreator::makeYourHost(std::string Servname, std::string SVersion, std::string CNickname)
 {
     std::string text;
 
-    text =  client.getNickname() + " :Your host is " + server.getServername() + \
-            ", running version " + server.getVersion();
+    text =  CNickname + " :Your host is " + Servname + \
+            ", running version " + CNickname + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makeCreated(Server server, Client client)
+std::string RepliesCreator::makeCreated(std::string SDate, std::string CNick)
 {
     std::string text;
 
-    text = client.getNickname() + " :This server was created " + server.getDate();
+    text = CNick + " :This server was created " + SDate + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNeedMoreParams(Client client, std::string command)
+std::string RepliesCreator::makeErrorNeedMoreParams(std::string CNick, std::string command)
 {
     std::string text;
 
-    text = client.getNickname() + " " + command + " :Not enough parameters";
+    text = CNick + " " + command + " :Not enough parameters" + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makeErrorAlreadyRegistered(Client client)
+std::string RepliesCreator::makeErrorAlreadyRegistered(std::string CNick)
 {
     std::string text;
 
-    text = client.getNickname() + " :You may not reregister";
+    text = CNick + " :You may not reregister" + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makePasswdMisMatch(Client client)
+std::string RepliesCreator::makePasswdMisMatch(std::string CNick)
 {
     std::string text;
 
-    text = client.getNickname() + " :Password incorrect";
+    text = CNick + " :Password incorrect" + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNoNickNameGiven(Client client)
+std::string RepliesCreator::makeErrorNoNickNameGiven(std::string CNick)
 {
     std::string text;
 
-    text = client.getNickname() + " :No nickname given";
+    text = CNick + " :No nickname given" + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makeErrorErroneusNickName(Client client, std::string nick)
+std::string RepliesCreator::makeErrorErroneusNickName(std::string CNick, std::string nick)
 {
     std::string text;
 
-    text = client.getNickname() + " " + nick + " :Erroneus";
+    text = CNick + " " + nick + " :Erroneus" + "\\r\n";
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNickNameInUse(Client client, std::string nick)
+std::string RepliesCreator::makeErrorNickNameInUse(std::string CNick, std::string nick)
 {
     std::string text;
 
-    text = client.getNickname() + " " + nick + " :Nickname is already in use";
+    text = CNick + " " + nick + " :Nickname is already in use" + "\\r\n";
     return (text);
 }

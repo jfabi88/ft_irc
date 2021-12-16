@@ -12,10 +12,15 @@
 
 NAME		=	ft_irc
 
-SRCS		=	Client.cpp \
-				CommandCreator.cpp \
+SRCS		=	commands/cap/Cap.cpp \
+				commands/nick/Nick.cpp \
+				commands/pass/Pass.cpp \
+				commands/privmsg/Privmsg.cpp \
+				commands/user/User.cpp \
+				commands/CommandCreator.cpp \
+				Client.cpp \
+				ft_irc.cpp \
 				Message.cpp \
-				Privmsg.cpp \
 				RepliesCreator.cpp \
 				Server.cpp \
 				test.cpp

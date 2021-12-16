@@ -12,8 +12,9 @@
 
 #include "Nick.hpp"
 
-Nick::Nick(Message newmessage, Server newserver, Client newclient) : ICommand(newmessage, newserver, newclient)
+Nick::Nick()
 {
+    this->command = "NICK";
     std::cout << "Nick created" << std::endl;
 }
 
@@ -22,23 +23,29 @@ Nick::~Nick()
     std::cout << "Nick deleted" << std::endl;
 }
 
-void Nick::exec()
+void Nick::exec(Message message, Client client, Server server)
 {
     RepliesCreator  reply;
     std::string     nick;
+    std::string     cNick;
+    std::string     str;
     std::string     banCharacters = "?";
     int             i;
 
-    nick = this->message.getLastParameter();
+    str = "";
+    nick = message.getLastParameter();
+    cNick = client.getNickname();
     if (nick == "")
-        reply.makeErrorNoNickNameGiven(this->client);
-    else if (this->server.findClient(nick) != -1)
-        reply.makeErrorNickNameInUse(this->client, nick);
+        str = reply.makeErrorNoNickNameGiven(cNick);
+    else if (server.findClient(nick) != -1)
+        str = reply.makeErrorNickNameInUse(cNick, nick);
     for (i = 0; i < nick.size(); i++)
     {
-        if (banCharacters.find(nick[i]))
-            reply.makeErrorErroneusNickName(this->client, nick);
+        if (banCharacters.find(nick[i]) != -1)
+            str = reply.makeErrorErroneusNickName(cNick, nick);
     }
-    if (i == nick.size())
-        this->client.setNickname(nick);
+    if (str == "")
+        client.setNickname(nick);
+    else
+        send(client.getSocketFd(), str.c_str(), str.size() + 1, 0);
 }

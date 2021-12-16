@@ -1,7 +1,8 @@
 #include "Privmsg.hpp"
 
-Privmsg::Privmsg(Message newmessage, Server newserver, Client newclient) : ICommand(newmessage, newserver, newclient)
+Privmsg::Privmsg()
 {
+    this->command = "PRIVMSG";
     std::cout << "Privmsg created" << std::endl;
 }
 
@@ -10,17 +11,17 @@ Privmsg::~Privmsg()
     std::cout << "Privmsg deleted" << std::endl;
 }
 
-void Privmsg::exec()
+void Privmsg::exec(Message message, Client client, Server server)
 {
     std::string target;
     Client      *clientTarget;
     std::string text;
 
-    target = this->message.getParametersIndex(0);
-    clientTarget = this->server.getClient(target);
+    target = message.getParametersIndex(0);
+    clientTarget = server.getClient(target);
     if (clientTarget == NULL)
         return ;
-    text = this->setAnswer(this->message.getText(), this->client);
+    text = this->setAnswer(message.getText(), client);
     //if (clientTarget->getAway())
         //sent reply;
     //else

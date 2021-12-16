@@ -126,28 +126,13 @@ int     Server::findClient(std::string nickname) const
 
     i = 0;
     it = this->clients.begin();
-    for (it; it != this->clients.end(); it++)
+    for (it = this->clients.begin(); it != this->clients.end(); it++)
     {
         if ((*it).getNickname().compare(nickname))
             return (i);
         i++;
     }
     return (-1);
-}
-
-int     Server::startCommunication(int fdNewClient)
-{
-    int flag;
-    Client  client;
-    std::vector<std::string> array;
-
-    flag = 1;
-    while (flag)
-    {
-        array = this->ft_take_messages(fdNewClient);
-        for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
-            flag = this->ft_exec_communication_commands(flag, *it, client);
-    }
 }
 
 /**PRIVATE-FUNCTIONS**/
@@ -163,83 +148,4 @@ std::string Server::ft_set_date()
     ret.append(dt);
     ret.append(" UTC");
     return (ret);
-}
-
-std::vector<std::string> Server::ft_take_messages(int fdNewClient)
-{
-    char *buffer = new char[512]();
-    std::string b;
-    std::vector<std::string> array;
-
-    b = "";
-    recv(fdNewClient, buffer, 512, 0);
-    this->ft_parse_data(&array, &b, buffer);
-    while (b != "")
-    {
-        recv(fdNewClient, buffer, 512, 0);
-        this->ft_parse_data(&array, &b, buffer);        
-    }
-    delete [] buffer;
-    return (array);
-}
-
-void Server::ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer)
-{
-    int num;
-    int lastIndx;
-    std::string tmp;
-
-    num = 0;
-    lastIndx = 0;
-    tmp.append(*b);
-    tmp.append(buffer);
-    num = tmp.find("\r\n");
-    while (num != -1)
-    {
-        array->push_back(tmp.substr(lastIndx, num - lastIndx + 2));
-        lastIndx = num + 2;
-        num = tmp.find("\r\n");
-    }
-    if (lastIndx != 0)
-        *b = "";
-    if (lastIndx != tmp.size())
-        b->append(tmp.substr(lastIndx, tmp.size() - lastIndx));
-}
-
-int Server::ft_exec_communication_commands(int flag, std::string text, Client client)
-{
-    RepliesCreator  reply;
-    Message message;
-    CommandCreator    cCreator;
-    std::string commands[4] = {
-        "CAP",
-        "NICK",
-        "PASS",
-        "USER"
-    };
-    int i;
-
-    i = 0;
-    message.setMessage(text);
-    ICommand *command = cCreator.makeCommand(message, *this, client);
-    if (!command)
-        return (1);
-    while (i < 4 || command->getCommand().compare(commands[i]))
-        i++;
-    switch (i)
-    {
-        case (1):                                   //NICK
-            command->exec();
-            return (2);
-        case(2):                                    //PASS
-            if (flag != 2)
-                command->exec();
-            else
-                reply.makeErrorAlreadyRegistered(client);
-            return (flag);
-        case(3):                                    //USER
-            command->exec();
-            return (2);
-    }
-    return (flag);
 }

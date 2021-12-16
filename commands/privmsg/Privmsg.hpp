@@ -6,10 +6,10 @@
 class Privmsg : public ICommand
 {
     public:
-        Privmsg(Message message, Server server, Client client);
+        Privmsg();
         ~Privmsg();
 
-        void    exec();
+        void    exec(Message message, Client client, Server server);
     private:
         std::string setAnswer(std::string text, Client client) const;
 };

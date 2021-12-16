@@ -9,13 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "Message.hpp"
-#include "Server.hpp"
-#include "Client.hpp"
-#include "commands/CommandCreator.hpp"
-#include "ICommand.hpp"
-#include "Privmsg.hpp"
-#include "RepliesCreator.hpp"
+#include "ft_irc.hpp"
 
 struct addrinfo ft_set_hints(void)
 {
@@ -52,8 +46,7 @@ int ft_loop(int fd)
     struct sockaddr_in new_addr;
     socklen_t       addr_len;
     void            *buffer;
-    Server          server;
-    RepliesCreator  replies;
+    Irc             irc;
 
     buffer = malloc(512);
     memset(buffer, 0, 512);
@@ -61,19 +54,7 @@ int ft_loop(int fd)
     {
         addr_len = sizeof(new_addr);
         new_fd = accept(fd, (struct sockaddr *) &new_addr, &addr_len);
-        Client primo;
-        primo.setNickname("pollo");
-        primo.setSocketFd(new_fd);
-        printf("Ciao\n");
-        replies.sendReplies(1, server, primo);
-        printf("Pollo\n");
-        server.setClient(primo);
-        recv(new_fd, buffer, 512, 0);
-        for (int i = 0; i < 512; i++)
-            printf("%c", ((char*)(buffer))[i]);
-        Message mex((char*)(buffer));
-
-        std::cout << mex << std::endl;
+        irc.startCommunication(new_fd);
         close(new_fd);
     }
     return (0);

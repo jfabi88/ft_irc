@@ -2,15 +2,12 @@
 #define COMMAND_CREATOR
 
 #include "ICommand.hpp"
-#include "Server.hpp"
-#include "Client.hpp"
-#include "Message.hpp"
 
-#include "commands/cap/Cap.hpp"
-#include "commands/nick/Nick.hpp"
-#include "commands/pass/Pass.hpp"
-#include "commands/privmsg/Privmsg.hpp"
-#include "commands/user/User.hpp"
+#include "cap/Cap.hpp"
+#include "nick/Nick.hpp"
+#include "pass/Pass.hpp"
+#include "privmsg/Privmsg.hpp"
+#include "user/User.hpp"
 
 class CommandCreator
 {
@@ -18,18 +15,18 @@ class CommandCreator
         CommandCreator();
         ~CommandCreator();
 
-        ICommand    *makeCommand(Message message, Server serve, Client client);
+        ICommand    *makeCommand(Message &message);
     private:
         const static int size = 5;
-        typedef ICommand *(CommandCreator::*fct_point)(Message, Server, Client);
+        typedef ICommand *(CommandCreator::*fct_point)();
         static fct_point   array[];
         static std::string commands[];
 
-        ICommand    *makePrivmsg(Message message, Server serve, Client client);
-        ICommand    *makeCap(Message message, Server serve, Client client);
-        ICommand    *makeNick(Message message, Server serve, Client client);
-        ICommand    *makePass(Message message, Server serve, Client client);
-        ICommand    *makeUser(Message message, Server serve, Client client);
+        ICommand    *makePrivmsg();
+        ICommand    *makeCap();
+        ICommand    *makeNick();
+        ICommand    *makePass();
+        ICommand    *makeUser();
 };
 
 #endif

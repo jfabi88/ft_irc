@@ -14,15 +14,16 @@
 #define USER_HPP
 
 #include "../ICommand.hpp"
+
 #define USERLEN 16
 
 class User : public ICommand
 {
     public:
-        User(Message message, Server server, Client client);
+        User();
         ~User();
 
-        void    exec();
+        void    exec(Message message, Client client, Server server);
     private:
 };
 

@@ -1,7 +1,8 @@
 #include "Cap.hpp"
 
-Cap::Cap(Message newmessage, Server newserver, Client newclient) : ICommand(newmessage, newserver, newclient)
+Cap::Cap()
 {
+    this->command = "CAP";
     std::cout << "Cap created" << std::endl;
 }
 
@@ -10,17 +11,17 @@ Cap::~Cap()
     std::cout << "Cap deleted" << std::endl;
 }
 
-void Cap::exec()
+void Cap::exec(Message message, Client client, Server server)
 {
     std::string target;
     Client      *clientTarget;
     std::string text;
 
-    target = this->message.getParametersIndex(0);
-    clientTarget = this->server.getClient(target);
+    target = message.getParametersIndex(0);
+    clientTarget = server.getClient(target);
     if (clientTarget == NULL)
         return ;
-    text = this->setAnswer(this->message.getText(), this->client);
+    text = setAnswer(message.getText(), client);
     //if (clientTarget->getAway())
         //sent reply;
     //else
@@ -38,13 +39,13 @@ std::string Cap::setAnswer(std::string text, Client client) const
     return (ret);
 }
 
-void Cap::execList()
+void Cap::execList(Client client, Server server)
 {
     std::string text;
     std::vector<std::string>    capabilities;
     std::vector<std::string>::iterator it;
 
-    capabilities = this->server.getCapabilities();
+    capabilities = server.getCapabilities();
     text = "CAP * LIST :";
     for (it = capabilities.begin(); it != capabilities.end(); it++)
     {
@@ -54,39 +55,39 @@ void Cap::execList()
         else
             text.append(" ");
     }
-    send(this->client.getSocketFd(), text.c_str(), text.size(), 0);
+    send(client.getSocketFd(), text.c_str(), text.size(), 0);
 }
 
-void Cap::execReq()
+void Cap::execReq(Message message, Client client, Server server)
 {
     std::vector<std::string>    lastPrefix;
 
-    lastPrefix = this->message.getLastParameterMatrix();
-    if (!this->server.hasCapabilities(lastPrefix))
-        this->execNak();
+    lastPrefix = message.getLastParameterMatrix();
+    if (!server.hasCapabilities(lastPrefix))
+        this->execNak(message, client);
     else
-        this->execAck();
+        this->execAck(message, client);
 }
 
-void Cap::execNak()
+void Cap::execNak(Message message, Client client)
 {
     std::string text;
 
     text = "CAP * NAK :";
-    text.append(this->message.getLastParameter());
+    text.append(message.getLastParameter());
     text.append("\r\n");
-    send(this->client.getSocketFd(), text.c_str(), text.size(), 0);
+    send(client.getSocketFd(), text.c_str(), text.size(), 0);
 }
 
-void Cap::execAck()
+void Cap::execAck(Message message, Client client)
 {
     std::vector<std::string>    lastPrefix;
     std::vector<std::string>    clientCap;
     std::vector<std::string>    tmp;
     std::string text;
 
-    clientCap = this->client.getCapabilities();
-    lastPrefix = this->message.getLastParameterMatrix();
+    clientCap = client.getCapabilities();
+    lastPrefix = message.getLastParameterMatrix();
     for(std::vector<std::string>::iterator it = lastPrefix.begin(); it != lastPrefix.end(); it++)
     {
         if ((*it)[0] != '-' && client.hasCapability(*it) == -1)
@@ -95,8 +96,8 @@ void Cap::execAck()
             tmp.erase(tmp.begin() + client.hasCapability(*it));
     }
     text = "CAP * ACK :";
-    text.append(this->message.getLastParameter());
+    text.append(message.getLastParameter());
     text.append("\r\n");
-    send(this->client.getSocketFd(), text.c_str(), text.size(), 0);
-    this->client.setCapabilities(tmp);
+    send(client.getSocketFd(), text.c_str(), text.size(), 0);
+    client.setCapabilities(tmp);
 }

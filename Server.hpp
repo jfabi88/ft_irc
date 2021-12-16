@@ -24,8 +24,6 @@
 #include "Client.hpp"
 #include "Message.hpp"
 #include "RepliesCreator.hpp"
-#include "commands/CommandCreator.hpp"
-#include "commands/ICommand.hpp"
 
 class Server
 {
@@ -62,9 +60,6 @@ class Server
         std::vector<std::string> capabilities;
 
         std::string         ft_set_date();
-        void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);
-        std::vector<std::string> ft_take_messages(int fdNewClient);
-        int ft_exec_communication_commands(int flag, std::string text, Client client);
 };
 
 #endif

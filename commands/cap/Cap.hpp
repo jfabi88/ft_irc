@@ -6,18 +6,17 @@
 class Cap : public ICommand
 {
     public:
-        Cap(Message message, Server server, Client client);
+        Cap();
         ~Cap();
 
-        void    exec();
+        void    exec(Message message, Client client, Server server);
     private:
         std::string setAnswer(std::string text, Client client) const;
-        std::string array[];
 
-        void    execList();
-        void    execReq();
-        void    execAck();
-        void    execNak();
+        void    execList(Client client, Server server);
+        void    execReq(Message message, Client client, Server server);
+        void    execAck(Message message, Client client);
+        void    execNak(Message message, Client client);
 };
 
 #endif

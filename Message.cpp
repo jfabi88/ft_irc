@@ -36,6 +36,7 @@ Message::Message(const Message &copy)
 
 Message::Message(std::string text)
 {
+    std::cout << "Il messaggio dentro message: " << text << std::endl;
     this->setMessage(text);
     this->text = text;
     std::cout << "Message created" << std::endl;
@@ -130,7 +131,7 @@ void Message::setMessage(std::string text)
         i++;
         end = text.find(" ", last_pos);
     }
-    end = text.find("\\r\\n", last_pos);
+    end = text.find(DEL, last_pos);
     if (end >= 0)
     {
         this->parameters[i] = text.substr(last_pos, end - last_pos);
@@ -164,7 +165,9 @@ int Message::ft_set_element(std::string text, int start, std::string *element)
     }
     else
     {
-        next_pos = text.find("\r\n", start);
+        std::cout << text << std::endl;
+        next_pos = text.find(DEL, start);
+        std::cout << "La sub: " << text.substr(start, next_pos) << std::endl;
         *element = text.substr(start, next_pos);
     }
     return (next_pos);

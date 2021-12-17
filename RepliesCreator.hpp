@@ -15,13 +15,16 @@
 
 #include <iostream>
 
+#define DEL "\n"
+#define DELSIZE 1
+
 class RepliesCreator
 {
     public:
         RepliesCreator();
         ~RepliesCreator();
 
-        std::string makeWelcome(std::string CNickname);
+        std::string makeWelcome(std::string CNickname, std::string CUsername, std::string SName);
         std::string makeYourHost(std::string Servname, std::string SVersion, std::string CNickname);
         std::string makeCreated(std::string SDate, std::string CNick);
 

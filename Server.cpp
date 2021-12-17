@@ -4,6 +4,7 @@
 
 Server::Server()
 {
+    this->servername = "IRC1ONE";
     this->date = this->ft_set_date();
     std::cout << "Server created" << std::endl;
 }
@@ -12,6 +13,7 @@ Server::Server(int port, int fd)
 {
     this->port = port;
     this->fd = fd;
+    this->servername = "IRC1ONE";
 }
 
 /**GET-SET**/
@@ -36,7 +38,12 @@ std::string Server::getVersion() const
     return (this->version);
 }
 
-Client  Server::getClient(int indx) const
+std::vector<Client *> Server::getClients() const
+{
+    return (this->clients);
+}
+
+Client  *Server::getClient(int indx) const
 {
     return (this->clients[indx]);
 }
@@ -47,13 +54,13 @@ std::string Server::getDate() const
 
 Client  *Server::getClient(std::string name) const
 {
-    std::vector<Client>::const_iterator it;
+    std::vector<Client *>::const_iterator it;
 
     for (it = this->clients.begin(); it != this->clients.end(); it++)
     {
-        if ((*it).getNickname() == name)
+        if ((*it)->getNickname() == name)
         {
-            return (new Client(*it));
+            return (*it);
         }
     }
     return (NULL);
@@ -84,7 +91,7 @@ void    Server::setVersion(std::string newversion)
     this->version = newversion;
 }
 
-void    Server::setClient(Client newclient)
+void    Server::setClient(Client *newclient)
 {
     this->clients.push_back(newclient);
 }
@@ -97,6 +104,9 @@ int Server::hasCapability(std::string name) const
     std::string tmp;
 
     it = this->capabilities.begin();
+    if (it == this->capabilities.end())
+        return (0);
+    std::cout << "COME VA" << std::endl;
     tmp = name;
     if (name != "" && name[0] == '-')
         tmp = name.substr(1, name.size());
@@ -114,21 +124,24 @@ int     Server::hasCapabilities(std::vector<std::string> prefix) const
     for (it = prefix.begin(); it != prefix.end(); it++)
     {
         if (!this->hasCapability(*it))
+        {
+            std::cout << "AIO" << std::endl;
             return (0);
+        }
     }
     return (1);
 }
 
 int     Server::findClient(std::string nickname) const
 {
-    std::vector<Client>::const_iterator it;
+    std::vector<Client *>::const_iterator it;
     int i;
 
     i = 0;
     it = this->clients.begin();
     for (it = this->clients.begin(); it != this->clients.end(); it++)
     {
-        if ((*it).getNickname().compare(nickname))
+        if ((*it)->getNickname().compare(nickname) == 0)
             return (i);
         i++;
     }
@@ -146,6 +159,7 @@ std::string Server::ft_set_date()
     tm *gt = gmtime(&now);
     char *dt = asctime(gt);
     ret.append(dt);
+    ret = ret.substr(0, ret.size() - 1);
     ret.append(" UTC");
     return (ret);
 }

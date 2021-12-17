@@ -27,18 +27,28 @@ Irc::~Irc()
 int Irc::startCommunication(int fdNewClient)
 {
     int flag;
-    Client  client;
+    Client  *client = new Client();
     std::vector<std::string> array;
 
-    flag = 1;
-    client.setSocketFd(fdNewClient);
-    while (flag)
+    flag = 0;
+    client->setSocketFd(fdNewClient);
+    while (flag != 3 && flag != 7)
     {
         array = this->ft_take_messages(fdNewClient);
         for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
             flag = this->ft_exec_communication_commands(flag, *it, client);
     }
+    this->server.setClient(client);
+    ft_welcome(client);
     return (0);
+}
+
+void    Irc::printClients()
+{
+    std::vector<Client *>::iterator it;
+
+    for (it = this->server.getClients().begin(); it != this->server.getClients().end(); it++)
+        std::cout << "Nick: " << (*it)->getNickname() << std::endl;
 }
 
 /**PRIVATE_FUNCTIONS**/
@@ -59,7 +69,6 @@ std::vector<std::string> Irc::ft_take_messages(int fdNewClient)
         this->ft_parse_data(&array, &b, buffer);
         ft_memset(buffer, 512);  
     }
-    std::cout << "Finito" << std::endl;
     delete [] buffer;
     return (array);
 }
@@ -78,52 +87,78 @@ void Irc::ft_parse_data(std::vector<std::string> *array, std::string *b, char *b
     num = tmp.find(DEL);
     while (num != -1)
     {
-        array->push_back(tmp.substr(lastIndx, num - lastIndx + 3));
-        lastIndx = num + 2;
+        array->push_back(tmp.substr(lastIndx, num - lastIndx + DELSIZE + 1));
+        lastIndx = num + DELSIZE;
         num = tmp.find(DEL, lastIndx);
     }
     if (lastIndx + 1 != tmp.size())
         b->append(tmp.substr(lastIndx, tmp.size() - lastIndx));
 }
 
-int Irc::ft_exec_communication_commands(int flag, std::string text, Client client)
+int Irc::ft_exec_communication_commands(int flag, std::string text, Client *client)
 {
     RepliesCreator  reply;
     Message message;
     CommandCreator    cCreator;
-    std::string commands[4] = {
+    std::string commands[5] = {
         "CAP",
         "NICK",
         "PASS",
+        "PING",
         "USER"
     };
     int i;
+    int num;
 
     i = 0;
     message.setMessage(text);
     ICommand *command = cCreator.makeCommand(message);
     if (!command)
         return (1);
-    std::cout << "Il testo dentro exec: " << command->getCommand() << std::endl;
-    while (i < 4 && command->getCommand().compare(commands[i]))
+    while (i < 5 && command->getCommand().compare(commands[i]))
         i++;
-    std::cout << i << std::endl;
     switch (i)
     {
+        case (0):                                   //CAP
+            //return (flag);
+            if ((flag & 4) == 0 || (flag & 4) == 4)
+            {
+                num = command->exec(message, client, this->server);
+                if (num == 0)
+                    return (flag | 4);
+                else if (num == 2 && (flag & 3) == 3)
+                    return (7);
+            }
         case (1):                                   //NICK
             command->exec(message, client, this->server);
-            return (2);
-        case(2):                                    //PASS
-            if (flag != 2)
+            return (flag | 2);
+        case (2):                                    //PASS
+            if (!(flag & 3))
                 command->exec(message, client, this->server);
             else
-                reply.makeErrorAlreadyRegistered(client.getNickname());
+                reply.makeErrorAlreadyRegistered(client->getNickname());
             return (flag);
-        case(3):                                    //USER
+        case (3):
             command->exec(message, client, this->server);
-            return (2);
+            return (flag);
+        case (4):                                    //USER
+            num = command->exec(message, client, this->server);
+            if (num == 1)
+                return (flag | 1);
     }
     return (flag);
+}
+
+int Irc::ft_welcome(Client *client)
+{
+    RepliesCreator  reply;
+    std::string text;
+
+    text = reply.makeWelcome(client->getNickname(), client->getUsername(), this->server.getServername());
+    text.append(reply.makeYourHost(this->server.getServername(), this->server.getVersion(), client->getNickname()));
+    text.append(reply.makeCreated(this->server.getDate(), client->getNickname()));
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return(0);
 }
 
 void Irc::ft_memset(char *buffer, int size)

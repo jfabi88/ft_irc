@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Nick.hpp                                           :+:      :+:    :+:   */
+/*   SPing.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jfabi <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/14 18:04:35 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/14 18:04:37 by jfabi            ###   ########.fr       */
+/*   Created: 2021/12/17 18:48:47 by jfabi             #+#    #+#             */
+/*   Updated: 2021/12/17 18:48:49 by jfabi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef NICK_HPP
-#define NICK_HPP
+#include "SPing.hpp"
 
-#include "../ICommand.hpp"
-
-class Nick : public ICommand
+SPing::SPing()
 {
-    public:
-        Nick();
-        ~Nick();
+    std::cout << "SPing created" << std::endl;
+}
 
-        int    exec(Message message, Client *client, Server server);
-    private:
-};
+SPing::~SPing()
+{
+    std::cout << "SPing deleted" << std::endl;
+}
 
-#endif
+int SPing::exec(Message message, Client *client, Server server)
+{
+    std::string text;
+
+    text = "PING SiamoTuttiSimpatici";
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}

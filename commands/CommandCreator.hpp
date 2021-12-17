@@ -6,6 +6,8 @@
 #include "cap/Cap.hpp"
 #include "nick/Nick.hpp"
 #include "pass/Pass.hpp"
+#include "ping/RPing.hpp"
+#include "ping/SPing.hpp"
 #include "privmsg/Privmsg.hpp"
 #include "user/User.hpp"
 
@@ -27,6 +29,7 @@ class CommandCreator
         ICommand    *makeNick();
         ICommand    *makePass();
         ICommand    *makeUser();
+        ICommand    *makePing();
 };
 
 #endif

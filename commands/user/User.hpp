@@ -23,7 +23,7 @@ class User : public ICommand
         User();
         ~User();
 
-        void    exec(Message message, Client client, Server server);
+        int    exec(Message message, Client *client, Server server);
     private:
 };
 

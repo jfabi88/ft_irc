@@ -23,16 +23,17 @@ Pass::~Pass()
     std::cout << "Pass deleted" << std::endl;
 }
 
-void Pass::exec(Message message, Client client, Server server)
+int Pass::exec(Message message, Client *client, Server server)
 {
     RepliesCreator  reply;
     std::string     cNick;
 
-    cNick = client.getNickname();
-    if (client.getRegistered())
+    cNick = client->getNickname();
+    if (client->getRegistered())
         reply.makeErrorAlreadyRegistered(cNick);
     else if (message.getParametersIndex(0) == "")
         reply.makeErrorNeedMoreParams(cNick, "PASS");
     else
-        client.setPassword(message.getParametersIndex(0));
+        client->setPassword(message.getParametersIndex(0));
+    return (0);
 }

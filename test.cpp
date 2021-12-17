@@ -55,6 +55,7 @@ int ft_loop(int fd)
         addr_len = sizeof(new_addr);
         new_fd = accept(fd, (struct sockaddr *) &new_addr, &addr_len);
         irc.startCommunication(new_fd);
+        irc.printClients();
         close(new_fd);
     }
     return (0);

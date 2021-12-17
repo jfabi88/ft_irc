@@ -35,7 +35,8 @@
 #include "RepliesCreator.hpp"
 #include "Server.hpp"
 
-#define DEL "\\r\n"
+#define DEL "\n"
+#define DELSIZE 1
 
 class Irc
 {
@@ -43,13 +44,16 @@ class Irc
         Irc();
         ~Irc();
 
-        int startCommunication(int fdNewClient);
+        int     startCommunication(int fdNewClient);
+        void    printClients();
     private:
         Server server;
+
         void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);
         std::vector<std::string> ft_take_messages(int fdNewClient);
-        int ft_exec_communication_commands(int flag, std::string text, Client client);
+        int ft_exec_communication_commands(int flag, std::string text, Client *client);
         void ft_memset(char *buffer, int size);
+        int  ft_welcome(Client *client);
 };
 
 #endif

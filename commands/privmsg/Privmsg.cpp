@@ -11,7 +11,7 @@ Privmsg::~Privmsg()
     std::cout << "Privmsg deleted" << std::endl;
 }
 
-void Privmsg::exec(Message message, Client client, Server server)
+int Privmsg::exec(Message message, Client *client, Server server)
 {
     std::string target;
     Client      *clientTarget;
@@ -20,13 +20,14 @@ void Privmsg::exec(Message message, Client client, Server server)
     target = message.getParametersIndex(0);
     clientTarget = server.getClient(target);
     if (clientTarget == NULL)
-        return ;
-    text = this->setAnswer(message.getText(), client);
+        return (0);
+    text = this->setAnswer(message.getText(), *client);
     //if (clientTarget->getAway())
         //sent reply;
     //else
         send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
     delete clientTarget;
+    return (0);
 }
 
 /**PRIVATE-FUNCTIONS**/

@@ -6,6 +6,7 @@ fct_point CommandCreator::array[] = {
     &CommandCreator::makeCap,
     &CommandCreator::makeNick,
     &CommandCreator::makePass,
+    &CommandCreator::makePing,
     &CommandCreator::makeUser
 };
 
@@ -14,6 +15,7 @@ std::string CommandCreator::commands[] = {
     "CAP",
     "NICK",
     "PASS",
+    "PING",
     "USER"
 };
 
@@ -32,7 +34,6 @@ ICommand *CommandCreator::makeCommand(Message &message)
     int i = 0;
     ICommand    *newCommand;
 
-    std::cout << message.getCommand() << std::endl;
     newCommand = NULL;
     while (this->commands[i].compare(message.getCommand()) && i < this->size)
         i++;
@@ -65,6 +66,13 @@ ICommand *CommandCreator::makeNick()
 ICommand *CommandCreator::makePass()
 {
     ICommand *ret = new Pass();
+
+    return (ret);
+}
+
+ICommand *CommandCreator::makePing()
+{
+    ICommand *ret = new RPing();
 
     return (ret);
 }

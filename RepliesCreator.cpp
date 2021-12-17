@@ -24,12 +24,12 @@ RepliesCreator::~RepliesCreator()
 
 /**PUBBLIC-FUNCTIONS**/
 
-std::string RepliesCreator::makeWelcome(std::string CNickname)
+std::string RepliesCreator::makeWelcome(std::string CNickname, std::string CUsername, std::string SName)
 {
     std::string text;
  
-    text =  CNickname + " :Welcome to the networkname Network, " \
-            + CNickname + "\\r\n";
+    text =  CNickname + " :Welcome to the" + SName +  \
+            "Network, " + CUsername + DEL;
     return (text);
 }
 
@@ -38,7 +38,7 @@ std::string RepliesCreator::makeYourHost(std::string Servname, std::string SVers
     std::string text;
 
     text =  CNickname + " :Your host is " + Servname + \
-            ", running version " + CNickname + "\\r\n";
+            ", running version " + SVersion + DEL;
     return (text);
 }
 
@@ -46,7 +46,7 @@ std::string RepliesCreator::makeCreated(std::string SDate, std::string CNick)
 {
     std::string text;
 
-    text = CNick + " :This server was created " + SDate + "\\r\n";
+    text = CNick + " :This server was created " + SDate + DEL;
     return (text);
 }
 
@@ -54,7 +54,7 @@ std::string RepliesCreator::makeErrorNeedMoreParams(std::string CNick, std::stri
 {
     std::string text;
 
-    text = CNick + " " + command + " :Not enough parameters" + "\\r\n";
+    text = CNick + " " + command + " :Not enough parameters" + DEL;
     return (text);
 }
 
@@ -62,7 +62,7 @@ std::string RepliesCreator::makeErrorAlreadyRegistered(std::string CNick)
 {
     std::string text;
 
-    text = CNick + " :You may not reregister" + "\\r\n";
+    text = CNick + " :You may not reregister" + DEL;
     return (text);
 }
 
@@ -70,7 +70,7 @@ std::string RepliesCreator::makePasswdMisMatch(std::string CNick)
 {
     std::string text;
 
-    text = CNick + " :Password incorrect" + "\\r\n";
+    text = CNick + " :Password incorrect" + DEL;
     return (text);
 }
 
@@ -78,7 +78,7 @@ std::string RepliesCreator::makeErrorNoNickNameGiven(std::string CNick)
 {
     std::string text;
 
-    text = CNick + " :No nickname given" + "\\r\n";
+    text = CNick + " :No nickname given" + DEL;
     return (text);
 }
 
@@ -86,7 +86,7 @@ std::string RepliesCreator::makeErrorErroneusNickName(std::string CNick, std::st
 {
     std::string text;
 
-    text = CNick + " " + nick + " :Erroneus" + "\\r\n";
+    text = CNick + " " + nick + " :Erroneus" + DEL;
     return (text);
 }
 
@@ -94,6 +94,6 @@ std::string RepliesCreator::makeErrorNickNameInUse(std::string CNick, std::strin
 {
     std::string text;
 
-    text = CNick + " " + nick + " :Nickname is already in use" + "\\r\n";
+    text = CNick + " " + nick + " :Nickname is already in use" + DEL;
     return (text);
 }

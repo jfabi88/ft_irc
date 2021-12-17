@@ -15,7 +15,7 @@ class ICommand
         virtual std::string getCommand() {
             return (this->command);
         };
-        virtual void exec(Message newmessage, Client newclient, Server server) = 0;
+        virtual int exec(Message newmessage, Client *newclient, Server server) = 0;
     protected:
         std::string command;
 };

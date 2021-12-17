@@ -23,21 +23,28 @@ User::~User()
     std::cout << "User deleted" << std::endl;
 }
 
-void User::exec(Message message, Client client, Server server)
+int User::exec(Message message, Client *client, Server server)
 {
     RepliesCreator  reply;
     std::string     username;
     std::string     cNick;
+    std::string     error;
 
-    cNick = client.getNickname();
-    if (message.getParametersIndex(0) == "")
-        reply.makeErrorNeedMoreParams(cNick, "USER");
-    else if (client.getUsername() != "")
-        reply.makeErrorAlreadyRegistered(cNick);
-    username = message.getParametersIndex(0);
-    if (username.size() > USERLEN)
-        client.setUsername(username.substr(0, USERLEN));
+    cNick = client->getNickname();
+    if (message.getParametersIndex(0) == "" || message.getParametersIndex(3) == "")
+        error = reply.makeErrorNeedMoreParams(cNick, "USER");
+    else if (client->getUsername() != "")
+        error = reply.makeErrorAlreadyRegistered(cNick);
     else
-        client.setUsername(username);
-    client.setRealname(message.getParametersIndex(3));   
+    {
+        username = message.getParametersIndex(0);
+        if (username.size() > USERLEN)
+            client->setUsername(username.substr(0, USERLEN));
+        else
+            client->setUsername(username);
+        client->setRealname(message.getParametersIndex(3));
+        return (1);
+    }
+    send(client->getSocketFd(), error.c_str(), error.size(), 0);
+    return (0);
 }

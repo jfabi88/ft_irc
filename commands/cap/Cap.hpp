@@ -3,20 +3,23 @@
 
 #include "../ICommand.hpp"
 
+#define DEL "\n"
+#define DELSIZE 1
+
 class Cap : public ICommand
 {
     public:
         Cap();
         ~Cap();
 
-        void    exec(Message message, Client client, Server server);
+        int    exec(Message message, Client *client, Server server);
     private:
         std::string setAnswer(std::string text, Client client) const;
 
-        void    execList(Client client, Server server);
-        void    execReq(Message message, Client client, Server server);
-        void    execAck(Message message, Client client);
-        void    execNak(Message message, Client client);
+        int    execList(Client *client, Server server);
+        int    execReq(Message message, Client *client, Server server);
+        int    execAck(Message message, Client *client);
+        int    execNak(Message message, Client *client);
 };
 
 #endif

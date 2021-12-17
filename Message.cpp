@@ -159,7 +159,7 @@ int Message::ft_set_element(std::string text, int start, std::string *element)
     next_pos = text.find(" ", start);
     if (next_pos != -1)
     {
-        *element = text.substr(start, next_pos);
+        *element = text.substr(start, next_pos - start);
         while (text[next_pos] == ' ')
             next_pos++;
     }
@@ -179,9 +179,8 @@ std::ostream& operator<<(std::ostream& os, const Message &copy)
 {
     os << "Prefix: " << copy.getPrefix() << "\n";
     os << "Command: " << copy.getCommand() << "\n";
-    os << "Parameters: ";
+    os << "Parameters:\n";
     for (int i = 0; i < 15; i++)
-        os << copy.getParametersIndex(i) << " ";
-    os << "\n";
+        os << i << ": " << copy.getParametersIndex(i) << "\n";
     return (os);
 }

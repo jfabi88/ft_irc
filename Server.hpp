@@ -36,13 +36,14 @@ class Server
         std::string getServername() const;
         std::string getVersion() const;
         std::string getDate() const;
-        Client  getClient(int indx) const;
+        std::vector<Client*> getClients() const;
+        Client  *getClient(int indx) const;
         Client  *getClient(std::string name) const;
         std::vector<std::string> getCapabilities() const;
 
         void    setPort(int newport);
         void    setSocket(int newfd);
-        void    setClient(Client newclient);
+        void    setClient(Client *newclient);
         void    setServername(std::string servername);
         void    setVersion(std::string version);
 
@@ -56,7 +57,7 @@ class Server
         std::string         servername;
         std::string         version;
         std::string         date;
-        std::vector<Client> clients;
+        std::vector<Client *> clients;
         std::vector<std::string> capabilities;
 
         std::string         ft_set_date();

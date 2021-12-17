@@ -21,7 +21,7 @@ class Pass : public ICommand
         Pass();
         ~Pass();
 
-        void    exec(Message message, Client client, Server server);
+        int    exec(Message message, Client *client, Server server);
     private:
 };
 

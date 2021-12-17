@@ -23,29 +23,31 @@ Nick::~Nick()
     std::cout << "Nick deleted" << std::endl;
 }
 
-void Nick::exec(Message message, Client client, Server server)
+int Nick::exec(Message message, Client *client, Server server)
 {
     RepliesCreator  reply;
     std::string     nick;
     std::string     cNick;
-    std::string     str;
+    std::string     error;
     std::string     banCharacters = "?";
     int             i;
 
-    str = "";
+    error = "";
     nick = message.getLastParameter();
-    cNick = client.getNickname();
+    cNick = client->getNickname();
     if (nick == "")
-        str = reply.makeErrorNoNickNameGiven(cNick);
+        error = reply.makeErrorNoNickNameGiven(cNick);
     else if (server.findClient(nick) != -1)
-        str = reply.makeErrorNickNameInUse(cNick, nick);
+        error = reply.makeErrorNickNameInUse(cNick, nick);
     for (i = 0; i < nick.size(); i++)
     {
         if (banCharacters.find(nick[i]) != -1)
-            str = reply.makeErrorErroneusNickName(cNick, nick);
+            error = reply.makeErrorErroneusNickName(cNick, nick);
     }
-    if (str == "")
-        client.setNickname(nick);
+    if (error == "")
+        client->setNickname(nick);
     else
-        send(client.getSocketFd(), str.c_str(), str.size() + 1, 0);
+        send(client->getSocketFd(), error.c_str(), error.size() + 1, 0);
+    return (0);
 }
+    

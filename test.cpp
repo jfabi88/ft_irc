@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "ft_irc.hpp"
+#include "Server.hpp"
 
 struct addrinfo ft_set_hints(void)
 {
@@ -46,7 +46,7 @@ int ft_loop(int fd)
     struct sockaddr_in new_addr;
     socklen_t       addr_len;
     void            *buffer;
-    Irc             irc;
+    Server          irc;
 
     buffer = malloc(512);
     memset(buffer, 0, 512);

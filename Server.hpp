@@ -24,6 +24,7 @@
 #include "Client.hpp"
 #include "Message.hpp"
 #include "RepliesCreator.hpp"
+#include "Command.hpp"
 
 class Server
 {
@@ -48,9 +49,12 @@ class Server
         void    setVersion(std::string version);
 
         int     startCommunication(int fdNewClient);
+
         int     hasCapability(std::string name) const;
         int     hasCapabilities(std::vector<std::string> prefix) const;
         int     findClient(std::string nickname) const;
+
+        void    printClients();
     private:
         int                 port;
         int                 fd;
@@ -61,6 +65,14 @@ class Server
         std::vector<std::string> capabilities;
 
         std::string         ft_set_date();
+
+        //**START COMMUNICATION**/
+        void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);
+        std::vector<std::string> ft_take_messages(int fdNewClient);
+        int ft_exec_communication_commands(int flag, std::string text, Client *client);
+
+        void ft_memset(char *buffer, int size);
+        int  ft_welcome(Client *client);
 };
 
 #endif

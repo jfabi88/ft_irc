@@ -273,7 +273,7 @@ int execUser(Message message, Client *client)
     return (0);
 }
 
-std::string listCommands[2] = {
+std::string listCommands[3] = {
     "AWAY",
     "NOTICE",
     "PRIVMSG"

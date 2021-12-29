@@ -42,21 +42,84 @@ int ft_bind(int fd, struct addrinfo *addr)
 
 int ft_loop(int fd)
 {
+    int             fdmax;
     int             new_fd;
+    int             nBytes;
+    fd_set          master;
+    fd_set          read_fds;
     struct sockaddr_in new_addr;
     socklen_t       addr_len;
     void            *buffer;
+    int             i;
+    int             j;
     Server          irc;
 
     buffer = malloc(512);
-    memset(buffer, 0, 512);
+    if (listen(fd, 10) == -1) {
+        perror("listen");
+        exit(3);
+    }
+    FD_ZERO(&master);
+    FD_ZERO(&read_fds);
+    FD_SET(fd, &master);
+    fdmax = fd;
     while (1)
     {
-        addr_len = sizeof(new_addr);
-        new_fd = accept(fd, (struct sockaddr *) &new_addr, &addr_len);
-        irc.startCommunication(new_fd);
+        read_fds = master;
+        std::cout << "Prima del select" << std::endl;
+        if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1)
+        {
+            perror("select");
+            exit(4);
+        }
+        std::cout << "Dopo il select" << std::endl;
+        for (i = 0; i <= fdmax; i++)
+        {
+            std::cout << "ciclo" << std::endl;
+            if (FD_ISSET(i, &read_fds))
+            {
+                std::cout << "Dopo if" << std::endl;
+                if (i == fd)
+                {
+                    addr_len = sizeof(new_addr);
+                    std::cout << "Nuova connesione" << std::endl;
+                    new_fd = accept(fd, (struct sockaddr *) &new_addr, &addr_len);
+                    irc.startCommunication(new_fd);
+                    if (new_fd!= -1)
+                    {
+                        FD_SET(new_fd, &master);
+                        if (new_fd > fdmax)
+                            fdmax = new_fd;
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "Dentro else" << std::endl;
+                if ((nBytes = recv(i, buffer, sizeof(buffer), 0)) <= 0)
+                {
+                    std::cout << "Dentro if: " << i << std::endl;
+                    close (i);
+                    std::cout << "Siamo dopo l'FD" << std::endl;
+                    FD_CLR(i, &master);
+                    std::cout << "Siamo dopo l'FD" << std::endl;
+                }
+                else
+                {
+                    for (j = 0; i <= fdmax; j++)
+                    {
+                        if (FD_ISSET(j, &master))
+                        {
+                            if (j!= fd && j!= i)
+                            {
+                                send(j, buffer, nBytes, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         irc.printClients();
-        close(new_fd);
     }
     return (0);
 }

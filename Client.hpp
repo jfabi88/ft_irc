@@ -32,6 +32,7 @@ class Client
         int         getSocketFd() const;
         bool        getAway() const;
         bool        getRegistered() const;
+        std::string getAwayMessage() const;
         std::vector<std::string> getCapabilities() const;
 
         void        setNickname(std::string newname);
@@ -39,7 +40,7 @@ class Client
         void        setUsername(std::string newusername);
         void        setRealname(std::string newrealname);
         void        setSocketFd(int fd);
-        void        setAway(bool flag);
+        void        setAway(bool flag, std::string message);
         void        setCapabilities(std::vector<std::string> newVector);
         void        setRegistered(bool flag);
         int hasCapability(std::string name) const;
@@ -49,6 +50,7 @@ class Client
         std::string password;
         std::string username;
         std::string realname;
+        std::string awayMessage;
         int         socket;
         bool        away;
         bool        registered;

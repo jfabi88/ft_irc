@@ -14,6 +14,27 @@
 
 #define USERLEN 16
 
+int execAway(Client *client, std::string message)
+{
+    std::string text;
+
+    if (client->getAway() && message == "")
+    {
+        client->setAway(false, message);
+        RepliesCreator reply;
+        text = reply.makeUnAway(client->getUsername());
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    else if (!client->getAway() && message != "")
+    {
+        client->setAway(true, message);
+        RepliesCreator reply;
+        text = reply.makeNowAway(client->getUsername());
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    return (0);
+}
+
 /***************CAP**********************/
 static int execList(Client *client, Server *server)
 {
@@ -132,6 +153,29 @@ int execNick(Message message, Client *client, Server *server)
     return (0);
 }
 
+int execNotice(Message message, Client *client, Server *server)
+{
+    std::string target;
+    Client      *clientTarget;
+    RepliesCreator reply;
+    std::string text;
+
+    if (message.getParametersIndex(0) == "" || message.getParametersIndex(1) == "")
+        return (0);
+    target = message.getParametersIndex(0);
+    clientTarget = server->getClient(target);
+    if (clientTarget == NULL)
+        return (0);
+    else if (clientTarget->getAway())
+        return (0);
+    else
+    {
+        text = ":" + client->getNickname() + " " + message.getLastParameter() + DEL;
+        send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    return (0);   
+}
+
 int execPass(Message message, Client *client)
 {
     RepliesCreator  reply;
@@ -177,18 +221,29 @@ int execPrivmsg(Message message, Client *client, Server *server)
 {
     std::string target;
     Client      *clientTarget;
+    RepliesCreator reply;
     std::string text;
 
+    if (message.getParametersIndex(0) == "" || message.getParametersIndex(1) == "")
+        return (0);
     target = message.getParametersIndex(0);
     clientTarget = server->getClient(target);
     if (clientTarget == NULL)
-        return (0);
-    text = ":" + client->getNickname() + " " + text;
-    //if (clientTarget->getAway())
-        //sent reply;
-    //else
+    {
+        text = reply.makeNoSuchNick(target, 0);
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    else if (clientTarget->getAway())
+    {
+        text = reply.makeAway(clientTarget->getUsername(), clientTarget->getNickname(), clientTarget->getAwayMessage());
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    else
+    {
+        text = ":" + client->getNickname() + " " + message.getLastParameter() + DEL;
         send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
-    delete clientTarget;
+    }
+    std::cout << "Prezzemolino" << std::endl;
     return (0);
 }
 
@@ -216,4 +271,30 @@ int execUser(Message message, Client *client)
     }
     send(client->getSocketFd(), error.c_str(), error.size(), 0);
     return (0);
+}
+
+std::string listCommands[2] = {
+    "AWAY",
+    "NOTICE",
+    "PRIVMSG"
+};
+
+int execCommand(Message message, Client *client, Server *server)
+{
+    int i = 0;
+    std::string command = message.getCommand();
+
+    while (i < listCommands->size() && listCommands[i].compare(command))
+        i++;
+    switch (i)
+    {
+        case 0:
+            return (execAway(client, message.getParametersIndex(0)));
+        case 1:
+            return (execNotice(message, client, server));
+        case 2:
+            return (execPrivmsg(message, client, server));
+        default:
+            return (0);
+    }
 }

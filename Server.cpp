@@ -43,9 +43,18 @@ std::vector<Client *> Server::getClients() const
     return (this->clients);
 }
 
-Client  *Server::getClient(int indx) const
+Client  *Server::getClient(int fd) const
 {
-    return (this->clients[indx]);
+    std::vector<Client *>::const_iterator it;
+
+    for (it = this->clients.begin(); it != this->clients.end(); it++)
+    {
+        if ((*it)->getSocketFd() == fd)
+        {
+            return (*it);
+        }
+    }
+    return (NULL);
 }
 std::string Server::getDate() const
 {
@@ -164,6 +173,32 @@ int Server::startCommunication(int fdNewClient)
     }
     this->setClient(client);
     ft_welcome(client);
+    return (0);
+}
+
+int     Server::receiveCommand(int fdClient, char *buffer)
+{
+    std::vector<std::string> array;
+    Message message;
+    Client  *client;
+    std::string b;
+
+    b = "";
+    client = this->getClient(fdClient);
+    this->ft_parse_data(&array, &b, buffer);
+    ft_memset(buffer, 512);
+    while (b != "")
+    {
+       recv(fdClient, buffer, 512, 0);
+        this->ft_parse_data(&array, &b, buffer);
+        ft_memset(buffer, 512);  
+    }
+    for (std::vector<std::string>::iterator it = array.begin(); it != array.end(); it ++)
+    {
+        message.setMessage(*it);
+        execCommand(message, client, this);
+    }
+    std::cout << "Messaggio eseguito" << std::endl;
     return (0);
 }
 

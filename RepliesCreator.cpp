@@ -97,3 +97,38 @@ std::string RepliesCreator::makeErrorNickNameInUse(std::string CNick, std::strin
     text = CNick + " " + nick + " :Nickname is already in use" + DEL;
     return (text);
 }
+
+std::string RepliesCreator::makeAway(std::string Client, std::string CNick, std::string message)
+{
+    std::string text;
+
+    text = Client + " " + CNick + " :" + message + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeUnAway(std::string Client)
+{
+    std::string text;
+
+    text = Client + " :You are no longer maarked as being away" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeNowAway(std::string Client)
+{
+    std::string text;
+
+    text = Client + " :You have been marked ad being away" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeNoSuchNick(std::string CNick, int flag)
+{
+    std::string text;
+
+    if (flag)
+        text = CNick + " :No such channel" + DEL;
+    else
+        text = CNick + " :No such nick" + DEL;
+    return (text);
+}

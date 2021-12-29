@@ -119,13 +119,17 @@ void Message::setMessage(std::string text)
     int i = 0;
 
     this->prefix = "";
+    this->text = text;
     for (int j = 0; j < 15; j++)
         this->parameters[j] = "";
+    if (text == "")
+        return ;
     if (text[0] == ':')
         last_pos = this->ft_set_element(text, 0, &(this->prefix));
     last_pos = this->ft_set_element(text, last_pos, &(this->command));
+    std::cout << "Last command: " << last_pos << " " << text[last_pos] << std::endl;
     end = text.find(" ", last_pos);
-    while (end >= 0 && text[end + 1] != ':')
+    while (end >= 0 && text[last_pos] != ':')
     {
         last_pos = this->ft_set_element(text, last_pos, &(this->parameters[i]));
         i++;
@@ -134,7 +138,8 @@ void Message::setMessage(std::string text)
     end = text.find(DEL, last_pos);
     if (end >= 0)
     {
-        this->parameters[i] = text.substr(last_pos, end - last_pos);
+        int add = (text[last_pos] == ':');
+        this->parameters[i] = text.substr(last_pos + add, end - (last_pos + add));
     }
 }
 

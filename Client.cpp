@@ -88,6 +88,11 @@ bool Client::getRegistered() const
     return (this->registered);
 }
 
+std::string Client::getAwayMessage() const
+{
+    return (this->awayMessage);
+}
+
 std::vector<std::string> Client::getCapabilities() const
 {
     return (this->capabilities);
@@ -108,9 +113,10 @@ void Client::setSocketFd(int fd)
     this->socket = fd;
 }
 
-void Client::setAway(bool flag)
+void Client::setAway(bool flag, std::string message)
 {
     this->away = flag;
+    this->awayMessage = message;
 }
 
 void Client::setUsername(std::string newusername)

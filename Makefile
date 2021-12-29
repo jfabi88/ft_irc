@@ -17,7 +17,7 @@ SRCS		=	Client.cpp \
 				Message.cpp \
 				RepliesCreator.cpp \
 				Server.cpp \
-				test.cpp
+				test2.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 

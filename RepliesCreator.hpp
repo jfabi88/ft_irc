@@ -34,6 +34,11 @@ class RepliesCreator
         std::string makeErrorErroneusNickName(std::string CNick, std::string nick);
         std::string makeErrorNickNameInUse(std::string CNick, std::string nick);
         std::string makePasswdMisMatch(std::string CNick);
+
+        std::string makeAway(std::string Client, std::string CNick, std::string message);
+        std::string makeUnAway(std::string Client);
+        std::string makeNowAway(std::string Client);
+        std::string makeNoSuchNick(std::string CNick, int flag);
     private:
 };
 

@@ -6,13 +6,16 @@ Server::Server()
 {
     this->servername = "IRC1ONE";
     this->date = this->ft_set_date();
+    this->password = "";
     std::cout << "Server created" << std::endl;
 }
 
-Server::Server(int port, int fd)
+Server::Server(int port, int fd, std::string password)
 {
     this->port = port;
     this->fd = fd;
+    std::cout << password << std::endl;
+    this->password = password;
     this->servername = "IRC1ONE";
 }
 
@@ -105,6 +108,15 @@ void    Server::setClient(Client *newclient)
     this->clients.push_back(newclient);
 }
 
+int    Server::verifyPassword(std::string userPassword)
+{
+    if (this->password == "")
+        return (1);
+    else if (!userPassword.compare(this->password))
+        return (1);
+    return (0);
+}
+
 /**PUBLIC-FUNCTIONS**/
 
 int Server::hasCapability(std::string name) const
@@ -157,7 +169,7 @@ int     Server::findClient(std::string nickname) const
     return (-1);
 }
 
-int Server::startCommunication(int fdNewClient)
+int Server::startCommunication(int fdNewClient, char *buffer)
 {
     int flag;
     Client  *client = new Client();
@@ -167,9 +179,17 @@ int Server::startCommunication(int fdNewClient)
     client->setSocketFd(fdNewClient);
     while (flag != 3 && flag != 7)
     {
-        array = this->ft_take_messages(fdNewClient);
+        array = ft_take_messages(fdNewClient, buffer);
         for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
             flag = this->ft_exec_communication_commands(flag, *it, client);
+    }
+    if (this->password != "" && !client->getAccess())
+    {
+        RepliesCreator reply;
+        std::string text = reply.makePasswdMisMatch(client->getNickname());
+        send(fdNewClient, text.c_str(), text.size(), 0);
+        delete client;
+        return (0);
     }
     this->setClient(client);
     ft_welcome(client);
@@ -181,18 +201,9 @@ int     Server::receiveCommand(int fdClient, char *buffer)
     std::vector<std::string> array;
     Message message;
     Client  *client;
-    std::string b;
 
-    b = "";
     client = this->getClient(fdClient);
-    this->ft_parse_data(&array, &b, buffer);
-    ft_memset(buffer, 512);
-    while (b != "")
-    {
-       recv(fdClient, buffer, 512, 0);
-        this->ft_parse_data(&array, &b, buffer);
-        ft_memset(buffer, 512);  
-    }
+    array = ft_take_messages(fdClient, buffer);
     for (std::vector<std::string>::iterator it = array.begin(); it != array.end(); it ++)
     {
         message.setMessage(*it);
@@ -232,23 +243,23 @@ void Server::ft_memset(char *buffer, int size)
         buffer[i] = 0;
 }
 
-std::vector<std::string> Server::ft_take_messages(int fdNewClient)
+std::vector<std::string> Server::ft_take_messages(int fdClient, char *buffer)
 {
-    char *buffer = new char[512]();
-    std::string b;
     std::vector<std::string> array;
+    std::string b;
 
     b = "";
-    recv(fdNewClient, buffer, 512, 0);
+    if (buffer[0] == 0)
+        recv(fdClient, buffer, 512, 0);
     this->ft_parse_data(&array, &b, buffer);
     ft_memset(buffer, 512);
     while (b != "")
     {
-        recv(fdNewClient, buffer, 512, 0);
+        std::cout << "Prima di recv" << std::endl;
+        recv(fdClient, buffer, 512, 0);
         this->ft_parse_data(&array, &b, buffer);
         ft_memset(buffer, 512);  
     }
-    delete [] buffer;
     return (array);
 }
 
@@ -270,7 +281,7 @@ void Server::ft_parse_data(std::vector<std::string> *array, std::string *b, char
         lastIndx = num + DELSIZE;
         num = tmp.find(DEL, lastIndx);
     }
-    if (lastIndx + 1 != tmp.size())
+    if (lastIndx != 0 && lastIndx + 1 != tmp.size())
         b->append(tmp.substr(lastIndx, tmp.size() - lastIndx));
 }
 
@@ -308,10 +319,7 @@ int Server::ft_exec_communication_commands(int flag, std::string text, Client *c
             execNick(message, client, this);
             return (flag | 2);
         case (2):                                    //PASS
-            if (!(flag & 3))
-                execPass(message, client);
-            else
-                reply.makeErrorAlreadyRegistered(client->getNickname());
+            execPass(message, client, this);
             return (flag);
         case (3):
             execSPing(message, client);

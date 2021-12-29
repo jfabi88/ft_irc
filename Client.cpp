@@ -23,6 +23,7 @@ Client::Client()
     this->socket = -1;
     this->away = false;
     this->registered = false;
+    this->access = 0;
     std::cout << "Client created" << std::endl;
 }
 
@@ -32,6 +33,7 @@ Client::Client(const Client &copy)
     this->password = copy.getPassword();
     this->socket = copy.getSocketFd();
     this->away = copy.getAway();
+    this->access = copy.getAccess();
     std::cout << "Client created" << std::endl;
 }
 
@@ -46,7 +48,8 @@ Client &Client::operator=(const Client &copy)
         return (*this);
     this->nickname = copy.getNickname();
     this->password = copy.getPassword();
-    this->socket = copy.getSocketFd();    
+    this->socket = copy.getSocketFd();
+    this->access = copy.getAccess();
     std::cout << "Client created" << std::endl;
     return (*this);
 }
@@ -76,6 +79,11 @@ std::string Client::getRealname() const
 int Client::getSocketFd() const
 {
     return (this->socket);
+}
+
+int Client::getAccess() const
+{
+    return (this->access);
 }
 
 bool Client::getAway() const
@@ -111,6 +119,11 @@ void Client::setPassword(std::string newpassword)
 void Client::setSocketFd(int fd)
 {
     this->socket = fd;
+}
+
+void Client::setAccess(int flag)
+{
+    this->access = flag;
 }
 
 void Client::setAway(bool flag, std::string message)

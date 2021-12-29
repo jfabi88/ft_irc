@@ -176,18 +176,27 @@ int execNotice(Message message, Client *client, Server *server)
     return (0);   
 }
 
-int execPass(Message message, Client *client)
+int execPass(Message message, Client *client, Server *server)
 {
     RepliesCreator  reply;
     std::string     cNick;
+    std::string     text = "";
+    int             flag;
 
     cNick = client->getNickname();
     if (client->getRegistered())
-        reply.makeErrorAlreadyRegistered(cNick);
+        text = reply.makeErrorAlreadyRegistered(cNick);
     else if (message.getParametersIndex(0) == "")
-        reply.makeErrorNeedMoreParams(cNick, "PASS");
+        text = reply.makeErrorNeedMoreParams(cNick, "PASS");
     else
-        client->setPassword(message.getParametersIndex(0));
+    {
+        flag = server->verifyPassword(message.getParametersIndex(0));
+        client->setAccess(flag);
+        if (flag != 1)
+            text = reply.makePasswdMisMatch(cNick);
+    }
+    if (text != "")
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
 

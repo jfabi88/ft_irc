@@ -21,9 +21,8 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    Server          irc;
     fd_set master;    // master file descriptor list
     fd_set read_fds;  // temp file descriptor list for select()
     int fdmax;        // maximum file descriptor number
@@ -46,6 +45,11 @@ int main(void)
     FD_ZERO(&master);    // clear the master and temp sets
     FD_ZERO(&read_fds);
 
+    if (argc != 2)
+        return (0);
+     Server          irc(0,0, argv[1]);
+    for (int m = 0; m < 512; m++)
+        buf[m] = 0;
     // get us a socket and bind it
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
@@ -127,7 +131,7 @@ int main(void)
                                 get_in_addr((struct sockaddr*)&remoteaddr),
                                 remoteIP, INET6_ADDRSTRLEN),
                             newfd);
-                        irc.startCommunication(newfd);
+                        irc.startCommunication(newfd, buf);
                     }
                 } else {
                     // handle data from a client
@@ -141,8 +145,11 @@ int main(void)
                         }
                         close(i); // bye!
                         FD_CLR(i, &master); // remove from master set
-                    } else { 
-                        irc.receiveCommand(i, buf);
+                    } else {
+                        if (irc.getClient(i))
+                            irc.receiveCommand(i, buf);
+                        else
+                            irc.startCommunication(i, buf);
                         //std::cout << "Ciao a tutti" << std::endl;
                         //send(i, buf, nbytes, 0);
                         // we got some data from a client

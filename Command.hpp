@@ -22,7 +22,7 @@ int execCommand(Message message, Client *client, Server *server);
 
 int execCap(Message message, Client *client, Server *server);
 int execNick(Message message, Client *client, Server *server);
-int execPass(Message message, Client *client);
+int execPass(Message message, Client *client, Server *server);
 int execRPing(Message message, Client *client);
 int execSPing(Message message, Client *client);
 int execPrivmsg(Message message, Client *client, Server *server);

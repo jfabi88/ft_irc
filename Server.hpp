@@ -30,7 +30,7 @@ class Server
 {
     public:
         Server();
-        Server(int port, int fd);
+        Server(int port, int fd, std::string password);
 
         int     getPort() const;
         int     getSocket() const;
@@ -48,17 +48,19 @@ class Server
         void    setServername(std::string servername);
         void    setVersion(std::string version);
 
-        int     startCommunication(int fdNewClient);
+        int     startCommunication(int fdNewClient, char *buffer);
         int     receiveCommand(int fdClient, char *buffer);
 
         int     hasCapability(std::string name) const;
         int     hasCapabilities(std::vector<std::string> prefix) const;
         int     findClient(std::string nickname) const;
 
+        int     verifyPassword(std::string userPassword);
         void    printClients();
     private:
         int                 port;
         int                 fd;
+        std::string         password;
         std::string         servername;
         std::string         version;
         std::string         date;
@@ -69,7 +71,7 @@ class Server
 
         //**START COMMUNICATION**/
         void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);
-        std::vector<std::string> ft_take_messages(int fdNewClient);
+        std::vector<std::string> ft_take_messages(int fdNewClient, char *buffer);
         int ft_exec_communication_commands(int flag, std::string text, Client *client);
 
         void ft_memset(char *buffer, int size);

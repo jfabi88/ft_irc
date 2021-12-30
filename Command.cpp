@@ -13,6 +13,7 @@
 #include "Server.hpp"
 
 #define USERLEN 16
+#define CHANLIMIT 2
 
 int execAway(Client *client, std::string message)
 {
@@ -153,6 +154,85 @@ int execNick(Message message, Client *client, Server *server)
     return (0);
 }
 
+//*******JOIN**********//
+
+static int ft_parse_channel_key(Message message, std::vector<std::string> *channels, std::vector<std::string> *key)
+{
+    int i;
+
+    i = 0;
+    while (i < 15 && message.getParametersIndex(i) != "")
+        i++;
+    if (i % 2 != 0)
+        return (1);
+    i = i / 2;
+    for (int j = 0; j < i; j ++)
+    {
+        (*channels).push_back(message.getParametersIndex(j));
+        (*key).push_back(message.getParametersIndex(j + i));
+    }
+    return (0);
+}
+
+static std::string ft_exec_join(std::string channelName, std::string key, Client *client, Server *server)
+{
+    RepliesCreator reply;
+
+    if (client->getChannelSub() >= CHANLIMIT)
+        return (reply.makeTooManyChannels(client->getNickname(), channelName));
+    if (server->getChannel(channelName) == NULL)
+    {
+        try
+        {
+            Channel *newChannel = new Channel(channelName, key, client);
+            client->addChannel(newChannel);
+            server->addChannel(newChannel);
+            return ("");
+        }
+        catch (const std::exception& e)
+        {
+            return (reply.makeErrorBadChanMask(channelName));
+        }
+    }
+    else
+    {
+
+    }
+}
+
+int execJoin(Message message, Client *client, Server *server)
+{
+    RepliesCreator  reply;
+    std::string     text;
+    std::vector<std::string> listChannel;
+    std::vector<std::string> listKey;
+
+    if (ft_parse_channel_key(message, &listChannel, &listKey))
+        text = reply.makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
+    else
+    {
+        std::vector<std::string>::iterator it;
+        std::vector<std::string>::iterator keyIt;
+
+        keyIt = listKey.begin();
+        for (it = listChannel.begin(); it < listChannel.end(); it++)
+        {
+            text = ft_exec_join(*it, *keyIt, client, server);
+            if (text != "")
+            {
+                send(client->getSocketFd(), text.c_str(), text.size(), 0);
+                return (1);
+            }
+            else
+            {
+
+            }
+            keyIt++;
+        }
+    }
+}
+//***************************//
+
 int execNotice(Message message, Client *client, Server *server)
 {
     std::string target;
@@ -282,8 +362,9 @@ int execUser(Message message, Client *client)
     return (0);
 }
 
-std::string listCommands[3] = {
+std::string listCommands[4] = {
     "AWAY",
+    "JOIN",
     "NOTICE",
     "PRIVMSG"
 };
@@ -298,11 +379,13 @@ int execCommand(Message message, Client *client, Server *server)
     switch (i)
     {
         case 0:
-            return (execAway(client, message.getParametersIndex(0)));
+            return (execAway(client, message.getParametersIndex(0))); //AWAY
         case 1:
-            return (execNotice(message, client, server));
+            return (execJoin(message, client, server));                                    //JOIN
         case 2:
-            return (execPrivmsg(message, client, server));
+            return (execNotice(message, client, server));            //NOTICE
+        case 3:
+            return (execPrivmsg(message, client, server));         //PRIVMSG
         default:
             return (0);
     }

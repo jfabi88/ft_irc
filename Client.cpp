@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Client.hpp"
+#include "Channel.hpp"
 
 /**CONSTRUCTOR**/
 
@@ -24,6 +25,7 @@ Client::Client()
     this->away = false;
     this->registered = false;
     this->access = 0;
+    this->channelSub = 0;
     std::cout << "Client created" << std::endl;
 }
 
@@ -34,6 +36,7 @@ Client::Client(const Client &copy)
     this->socket = copy.getSocketFd();
     this->away = copy.getAway();
     this->access = copy.getAccess();
+    this->channelSub = copy.channelSub;
     std::cout << "Client created" << std::endl;
 }
 
@@ -50,6 +53,7 @@ Client &Client::operator=(const Client &copy)
     this->password = copy.getPassword();
     this->socket = copy.getSocketFd();
     this->access = copy.getAccess();
+    this->channelSub = copy.getChannelSub();
     std::cout << "Client created" << std::endl;
     return (*this);
 }
@@ -76,6 +80,33 @@ std::string Client::getRealname() const
     return (this->realname);
 }
 
+Channel *Client::getChannel(int indx) const
+{
+    int i;
+    std::vector<Channel *>::const_iterator it;
+
+    i = 0;
+    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    {
+        if (i  == indx)
+            return (*it);
+        i++;
+    }
+    return (NULL);
+}
+
+Channel *Client::getChannel(std::string name) const
+{
+    std::vector<Channel *>::const_iterator it;
+
+    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    {
+        if (!(*it)->getName().compare(name))
+            return (*it);
+    }
+    return (NULL);
+}
+
 int Client::getSocketFd() const
 {
     return (this->socket);
@@ -84,6 +115,11 @@ int Client::getSocketFd() const
 int Client::getAccess() const
 {
     return (this->access);
+}
+
+int Client::getChannelSub() const
+{
+    return (this->channelSub);
 }
 
 bool Client::getAway() const
@@ -151,6 +187,11 @@ void Client::setCapabilities(std::vector<std::string> newVector)
 void Client::setRegistered(bool flag)
 {
     this->registered = flag;
+}
+
+void Client::addChannel(Channel *newChannel)
+{
+    this->channels.push_back(newChannel);
 }
 
 int Client::hasCapability(std::string name) const

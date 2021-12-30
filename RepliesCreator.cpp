@@ -98,6 +98,14 @@ std::string RepliesCreator::makeErrorNickNameInUse(std::string CNick, std::strin
     return (text);
 }
 
+std::string RepliesCreator::makeErrorBadChanMask(std::string channel)
+{
+    std::string text;
+
+    text = channel + " :Bad Channel Mask";
+    return (text);
+}
+
 std::string RepliesCreator::makeAway(std::string Client, std::string CNick, std::string message)
 {
     std::string text;
@@ -130,5 +138,13 @@ std::string RepliesCreator::makeNoSuchNick(std::string CNick, int flag)
         text = CNick + " :No such channel" + DEL;
     else
         text = CNick + " :No such nick" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeTooManyChannels(std::string CNick, std::string ChannelName)
+{
+    std::string text;
+
+    text = CNick + " " + ChannelName + " :You have joined too many channels";
     return (text);
 }

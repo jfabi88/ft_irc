@@ -16,6 +16,8 @@
 #include <iostream>
 #include <vector>
 
+class Channel;
+
 class Client
 {
     public:
@@ -29,7 +31,10 @@ class Client
         std::string getPassword() const;
         std::string getUsername() const;
         std::string getRealname() const;
+        Channel *getChannel(int indx) const;
+        Channel *getChannel(std::string name) const;
         int         getSocketFd() const;
+        int         getChannelSub() const;
         int         getAccess() const;
         bool        getAway() const;
         bool        getRegistered() const;
@@ -45,6 +50,8 @@ class Client
         void        setCapabilities(std::vector<std::string> newVector);
         void        setRegistered(bool flag);
         void        setAccess(int flag);
+        void        addChannel(Channel *newChannel);
+
         int hasCapability(std::string name) const;
         int hasCapabilities(std::vector<std::string> prefix) const;
     private:
@@ -53,11 +60,13 @@ class Client
         std::string username;
         std::string realname;
         std::string awayMessage;
+        int         channelSub;
         int         socket;
         int         access;
         bool        away;
         bool        registered;
         std::vector<std::string> capabilities;
+        std::vector<Channel *> channels;
 };
 
 std::ostream& operator<<(std::ostream& os, const Client &copy);

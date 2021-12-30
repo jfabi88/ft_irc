@@ -22,9 +22,10 @@
 #include <netinet/in.h>
 
 #include "Client.hpp"
+#include "Channel.hpp"
+#include "Command.hpp"
 #include "Message.hpp"
 #include "RepliesCreator.hpp"
-#include "Command.hpp"
 
 class Server
 {
@@ -40,6 +41,7 @@ class Server
         std::vector<Client*> getClients() const;
         Client  *getClient(int indx) const;
         Client  *getClient(std::string name) const;
+        Channel *getChannel(std::string name) const;
         std::vector<std::string> getCapabilities() const;
 
         void    setPort(int newport);
@@ -47,6 +49,7 @@ class Server
         void    setClient(Client *newclient);
         void    setServername(std::string servername);
         void    setVersion(std::string version);
+        void    addChannel(Channel *channel);
 
         int     startCommunication(int fdNewClient, char *buffer);
         int     receiveCommand(int fdClient, char *buffer);
@@ -65,6 +68,7 @@ class Server
         std::string         version;
         std::string         date;
         std::vector<Client *> clients;
+        std::vector<Channel *> channels;
         std::vector<std::string> capabilities;
 
         std::string         ft_set_date();

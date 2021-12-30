@@ -13,6 +13,7 @@
 NAME		=	ft_irc
 
 SRCS		=	Client.cpp \
+				Channel.cpp \
 				Command.cpp \
 				Message.cpp \
 				RepliesCreator.cpp \

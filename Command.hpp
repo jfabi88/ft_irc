@@ -21,6 +21,7 @@ class Server;
 int execCommand(Message message, Client *client, Server *server);
 
 int execCap(Message message, Client *client, Server *server);
+int execJoin(Message message, Client *client, Server *server);
 int execNick(Message message, Client *client, Server *server);
 int execPass(Message message, Client *client, Server *server);
 int execRPing(Message message, Client *client);

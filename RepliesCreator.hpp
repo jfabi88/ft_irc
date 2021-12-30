@@ -33,12 +33,15 @@ class RepliesCreator
         std::string makeErrorNoNickNameGiven(std::string CNick);
         std::string makeErrorErroneusNickName(std::string CNick, std::string nick);
         std::string makeErrorNickNameInUse(std::string CNick, std::string nick);
+        std::string makeErrorBadChannelKey(std::string CNick, std::string channelName);
+        std::string makeErrorBadChanMask(std::string channel);
         std::string makePasswdMisMatch(std::string CNick);
 
         std::string makeAway(std::string Client, std::string CNick, std::string message);
         std::string makeUnAway(std::string Client);
         std::string makeNowAway(std::string Client);
         std::string makeNoSuchNick(std::string CNick, int flag);
+        std::string makeTooManyChannels(std::string CNick, std::string ChannelName);
     private:
 };
 

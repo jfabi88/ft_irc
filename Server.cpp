@@ -83,6 +83,18 @@ std::vector<std::string> Server::getCapabilities() const
     return (this->capabilities);
 }
 
+Channel *Server::getChannel(std::string name) const
+{
+    std::vector<Channel *>::const_iterator it;
+
+    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    {
+        if (!(*it)->getName().compare(name))
+            return (*it);
+    }
+    return (NULL);
+}
+
 void    Server::setPort(int newport)
 {
     this->port = newport;
@@ -115,6 +127,11 @@ int    Server::verifyPassword(std::string userPassword)
     else if (!userPassword.compare(this->password))
         return (1);
     return (0);
+}
+
+void    Server::addChannel(Channel *channel)
+{
+    this->channels.push_back(channel);
 }
 
 /**PUBLIC-FUNCTIONS**/

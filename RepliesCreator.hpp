@@ -14,6 +14,8 @@
 #define REPLIES_CREATOR
 
 #include <iostream>
+#include <vector>
+#include "Channel.hpp"
 
 #define DEL "\n"
 #define DELSIZE 1
@@ -36,12 +38,20 @@ class RepliesCreator
         std::string makeErrorBadChannelKey(std::string CNick, std::string channelName);
         std::string makeErrorBadChanMask(std::string channel);
         std::string makePasswdMisMatch(std::string CNick);
+        std::string makeErrorBannedFromChan(std::string CNick, std::string channelName);
+        std::string makeInviteOnlyChan(std::string CNick, std::string channelName);
+        std::string makeBadChannelKey(std::string CNick, std::string channelName);
+        std::string makeErrorChannelIsFull(std::string CNick, std::string channelName);
 
         std::string makeAway(std::string Client, std::string CNick, std::string message);
         std::string makeUnAway(std::string Client);
         std::string makeNowAway(std::string Client);
         std::string makeNoSuchNick(std::string CNick, int flag);
         std::string makeTooManyChannels(std::string CNick, std::string ChannelName);
+
+        std::string makeTopic(std::string channelName, std::string topic, std::string CNick);
+        std::string makeNamReply(Channel channel, std::string CNick);
+        std::string makeEndOfNames(std::string channelName, std::string CNick);
     private:
 };
 

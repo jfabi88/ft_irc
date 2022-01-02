@@ -102,8 +102,40 @@ std::string RepliesCreator::makeErrorBadChanMask(std::string channel)
 {
     std::string text;
 
-    text = channel + " :Bad Channel Mask";
+    text = channel + " :Bad Channel Mask" + DEL;
     return (text);
+}
+
+std::string RepliesCreator::makeErrorBannedFromChan(std::string CNick, std::string channelName)
+{
+    std::string text;
+
+    text = CNick + " " + channelName + " :Cannot join channel (+b)" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeInviteOnlyChan(std::string CNick, std::string channelName)
+{
+    std::string text;
+
+    text = CNick + " " + channelName + " :Cannot join channel (+i)" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeBadChannelKey(std::string CNick, std::string channelName)
+{
+    std::string text;
+
+    text = CNick + " " + channelName + " :Cannot join channel (+k)" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeErrorChannelIsFull(std::string CNick, std::string channelName)
+{
+    std::string text;
+
+    text = CNick + " " + channelName + " :Cannot join channel (+l)" + DEL;
+    return (text);   
 }
 
 std::string RepliesCreator::makeAway(std::string Client, std::string CNick, std::string message)
@@ -145,6 +177,38 @@ std::string RepliesCreator::makeTooManyChannels(std::string CNick, std::string C
 {
     std::string text;
 
-    text = CNick + " " + ChannelName + " :You have joined too many channels";
+    text = CNick + " " + ChannelName + " :You have joined too many channels" + DEL;
+    return (text);
+}
+
+std::string makeTopic(std::string channelName, std::string topic, std::string CNick)
+{
+    std::string text;
+
+    text = CNick + " " + channelName + " :" + topic + DEL; 
+    return (text);
+}
+
+std::string RepliesCreator::makeNamReply(Channel channel, std::string CNick)
+{
+    std::string text;
+
+    text = CNick + " " + channel.getSymbol() + " " + channel.getName() + " :";
+    std::vector<t_PChannel>::const_iterator it;
+    for (it = channel.getFirstClient(); it < channel.getLastClient() ;it++)
+    {
+        if (((*it).prefix) != 0)
+            text += (*it).prefix + " ";
+        text += (*it).client->getNickname() + " ";
+    }
+    text += DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeEndOfNames(std::string channelName, std::string CNick)
+{
+    std::string text;
+
+    text = CNick + " " + channelName + " :End of /NAMES list";
     return (text);
 }

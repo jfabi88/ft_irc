@@ -16,11 +16,18 @@ Channel::Channel(std::string name, std::string key, Client *clientOperator)
 {
     if (ft_test_name(name))
         throw Channel::WrongCharacter();
+    t_PChannel newClient;
     this->name = name;
     this->chop = clientOperator;
     this->password = key;
-    this->listClient.push_back(clientOperator);
-    mode = 0;
+    this->topic = "";
+    newClient.prefix = '~';
+    newClient.modeLetter[1] = 'q';
+    this->listClient.push_back(newClient);
+    this->symbol = '=';
+    this->limit = 2147483647;
+    this->mode = 1;  //jfabi: non ricordo. Forse c'è qualche errore
+    this->numberClient = 1;
     std::cout << "Channel created" << std::endl;
 }
 
@@ -36,38 +43,65 @@ std::string Channel::getName() const
 
 Client *Channel::getClient(int fd) const
 {
-    std::vector<Client *>::const_iterator it;
+    std::vector<t_PChannel>::const_iterator it;
 
     for (it = this->listClient.begin(); it != this->listClient.end(); it++)
     {
-        if ((*it)->getSocketFd() == fd)
-            return (*it);
+        if ((*it).client->getSocketFd() == fd)
+            return (*it).client;
     }
     return (NULL);
 }
 
 Client *Channel::getClient(std::string name) const
 {
-    std::vector<Client *>::const_iterator it;
+    std::vector<t_PChannel>::const_iterator it;
 
     for (it = this->listClient.begin(); it != this->listClient.end(); it++)
     {
-        if (!(*it)->getNickname().compare(name))
-            return (*it);
+        if (!(*it).client->getNickname().compare(name))
+            return (*it).client;
     }
     return (NULL);
+}
+
+char	Channel::getSymbol() const
+{
+    return (this->symbol);
 }
 
 Client *Channel::getOperator() const
 {
     return (this->chop);
 }
-		
-int Channel::addClient(Client *client, std::string password)
+
+std::vector<t_PChannel>::const_iterator Channel::getFirstClient() const
+{
+    return (this->listClient.begin());
+}
+
+std::vector<t_PChannel>::const_iterator Channel::getLastClient() const
+{
+    return (this->listClient.end());
+}
+
+std::string Channel::getTopic() const
+{
+    return (this->topic);
+}
+
+int Channel::addClient(Client *client, std::string password, char prefix, char letter)
 {
     if (this->password.compare(password))
         return (1);
-    this->listClient.push_back(client);
+    if (this->hasMode("+l") && this->numberClient >= this->limit)
+        return (2);
+    t_PChannel newClient;
+    newClient.client = client;
+    newClient.prefix = prefix;
+    newClient.modeLetter[1] = letter;
+    this->listClient.push_back(newClient);
+    this->numberClient += 1;
     return (0);
 }
 
@@ -82,6 +116,16 @@ void Channel::setMode(std::string m, int flag)
         this->mode = this->mode ^ bit;
     else
         this->mode = this->mode || flag;
+}
+
+void	Channel::setSymbol(char c)
+{
+    this->symbol = c;
+}
+
+void    Channel::setTopic(std::string newTopic)
+{
+    this->topic = newTopic;
 }
 
 void Channel::addBanned(std::string CNick, std::string cUser)

@@ -177,14 +177,16 @@ static int ft_parse_channel_key(Message message, std::vector<std::string> *chann
 static std::string ft_exec_join(std::string channelName, std::string key, Client *client, Server *server)
 {
     RepliesCreator reply;
+    Channel *newChannel;
 
     if (client->getChannelSub() >= CHANLIMIT)
         return (reply.makeTooManyChannels(client->getNickname(), channelName));
-    if (server->getChannel(channelName) == NULL)
+    newChannel = server->getChannel(channelName);
+    if (newChannel == NULL)
     {
         try
         {
-            Channel *newChannel = new Channel(channelName, key, client);
+            newChannel = new Channel(channelName, key, client);
             client->addChannel(newChannel);
             server->addChannel(newChannel);
             return ("");
@@ -196,8 +198,31 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     }
     else
     {
-
+        int num;
+        if (newChannel->isBanned(client->getNickname(), client->getUsername()))
+            return (reply.makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
+        else if (newChannel->hasMode("+i"))
+            return (reply.makeInviteOnlyChan(client->getNickname(), newChannel->getName()));
+        num = newChannel->addClient(client, key, 0, 0);
+        if (num == 1)
+            return (reply.makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
+        else if (num == 2)
+            return (reply.makeErrorChannelIsFull(client->getNickname(), newChannel->getName()));
     }
+    return ("");
+}
+
+static int ft_success_join(Channel channel, Client client)
+{
+    RepliesCreator  reply;
+    std::string     text = "";
+
+    if (channel.getTopic() != "")
+        text += reply.makeTopic(channel.getName(), channel.getTopic(), client.getNickname());
+    text += reply.makeNamReply(channel, client.getNickname());
+    text += reply.makeEndOfNames(channel.getName(), client.getNickname());
+    send(client.getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
 }
 
 int execJoin(Message message, Client *client, Server *server)
@@ -219,17 +244,13 @@ int execJoin(Message message, Client *client, Server *server)
         {
             text = ft_exec_join(*it, *keyIt, client, server);
             if (text != "")
-            {
                 send(client->getSocketFd(), text.c_str(), text.size(), 0);
-                return (1);
-            }
             else
-            {
-
-            }
+                ft_success_join(*server->getChannel(*it), *client);
             keyIt++;
         }
     }
+    return (0);
 }
 //***************************//
 
@@ -381,7 +402,7 @@ int execCommand(Message message, Client *client, Server *server)
         case 0:
             return (execAway(client, message.getParametersIndex(0))); //AWAY
         case 1:
-            return (execJoin(message, client, server));                                    //JOIN
+            return (execJoin(message, client, server));              //JOIN
         case 2:
             return (execNotice(message, client, server));            //NOTICE
         case 3:

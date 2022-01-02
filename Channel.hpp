@@ -33,6 +33,21 @@
 #define T 256
 #define N 512
 
+/*Prefix
+	Founder "~" "+q"
+	Protected "&" "+a"
+	Operator "@" "+o"
+	Halfop "%" "+h"
+	Voice "+" "+v"
+*/
+
+typedef struct PChannel
+{
+	char prefix;
+	char modeLetter[2] = {'+', 0};
+	Client *client;
+}				t_PChannel;
+
 class Channel
 {
 	public:
@@ -43,22 +58,32 @@ class Channel
 		Client *getClient(int fd) const;
 		Client *getClient(std::string name) const;
 		Client *getOperator() const;
+		std::vector<t_PChannel>::const_iterator getFirstClient() const;
+		std::vector<t_PChannel>::const_iterator getLastClient() const;
+		char	getSymbol() const;
+		std::string	getTopic() const;
 		
-		int		addClient(Client *client, std::string password);
+		int		addClient(Client *client, std::string password, char prefix, char letter);
 		void	setOperator(Client client);
 		void	setMode(std::string m, int flag);
 		void	addBanned(std::string CNick, std::string cUser);
 		int		isBanned(std::string CNick, std::string CUser);
+		void	setSymbol(char c);
+		void	setTopic(std::string topic);
 
 		void	removeBanned(std::string CNick, std::string cUser);
 		int		hasMode(std::string m);
 	private:
 		std::string name;
 		std::string password;
-		std::vector<Client *> listClient;
+		std::string	topic;
+		std::vector<t_PChannel> listClient;
 		Client *chop;
 		std::vector<std::string> banned;
 		int	mode;
+		int	limit;
+		int	numberClient;
+		char symbol;
 
 		class WrongCharacter : public std::exception
         {

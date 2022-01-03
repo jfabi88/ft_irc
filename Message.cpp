@@ -26,6 +26,7 @@ Message::Message()
 
 Message::Message(const Message &copy)
 {
+    this->size = copy.getSize();
     this->prefix = copy.getPrefix();
     this->command = copy.getCommand();
     this->text = copy.getText();
@@ -117,6 +118,7 @@ void Message::setMessage(std::string text)
     int last_pos = 0;
     int end;
     int i = 0;
+    int add = 0;
 
     this->prefix = "";
     this->text = text;
@@ -138,9 +140,16 @@ void Message::setMessage(std::string text)
     end = text.find(DEL, last_pos);
     if (end >= 0)
     {
-        int add = (text[last_pos] == ':');
+        add = (text[last_pos] == ':');
         this->parameters[i] = text.substr(last_pos + add, end - (last_pos + add));
+        i++;
     }
+    this->size = i;
+}
+
+int Message::getSize() const
+{
+    return (this->size);
 }
 
 Message &Message::operator=(const Message &copy)

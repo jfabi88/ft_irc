@@ -105,6 +105,40 @@ int Channel::addClient(Client *client, std::string password, char prefix, char l
     return (0);
 }
 
+int Channel::removeClient(std::string CNick)
+{
+    std::vector<t_PChannel>::const_iterator it;
+
+    for (it = this->listClient.begin(); it != this->listClient.end(); it++)
+    {
+        if (!(*it).client->getNickname().compare(CNick))
+        {
+            this->listClient.erase(it);
+            this->numberClient -= 1;
+            if (this->numberClient == 0)
+                return (-1);
+            return (0);
+        }
+    }
+    return (1);
+}
+
+int Channel::removeClient(int fd)
+{
+    std::vector<t_PChannel>::const_iterator it;
+
+    for (it = this->listClient.begin(); it != this->listClient.end(); it++)
+    {
+        if ((*it).client->getSocketFd() == fd)
+        {
+            this->listClient.erase(it);
+
+            return (0);            
+        }
+    }
+    return (1);
+}
+
 void Channel::setMode(std::string m, int flag)
 {
     int bit;

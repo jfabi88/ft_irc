@@ -51,6 +51,7 @@ class Client
         void        setRegistered(bool flag);
         void        setAccess(int flag);
         void        addChannel(Channel *newChannel);
+        void        removeChannel(std::string channelName);
 
         int hasCapability(std::string name) const;
         int hasCapabilities(std::vector<std::string> prefix) const;

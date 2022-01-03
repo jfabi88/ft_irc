@@ -138,6 +138,22 @@ std::string RepliesCreator::makeErrorChannelIsFull(std::string CNick, std::strin
     return (text);   
 }
 
+std::string RepliesCreator::makeErrorNoSuchChannel(std::string CNick, std::string channelName)
+{
+    std::stirng text;
+
+    text = CNick + " " + channelName  + " :No such channel" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeErrorNotOnChannel(std::string CNick, std::string channelName)
+{
+    std::stirng text;
+
+    text = CNick + " " + channelName  + " :You're not on that channel" + DEL;
+    return (text);
+}
+
 std::string RepliesCreator::makeAway(std::string Client, std::string CNick, std::string message)
 {
     std::string text;

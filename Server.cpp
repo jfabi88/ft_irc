@@ -134,6 +134,21 @@ void    Server::addChannel(Channel *channel)
     this->channels.push_back(channel);
 }
 
+void    Server::removeChannel(std::string channelName)
+{
+    std::vector<Channel *>::iterator it;
+
+    for (it = this->channels.begin(); it < this->channels.end(); it++)
+    {
+        if (!((*it)->getName().compare(channelName)))
+        {
+            this->channels.erase(it);
+            delete (*it);
+            return ;
+        }
+    }
+}
+
 /**PUBLIC-FUNCTIONS**/
 
 int Server::hasCapability(std::string name) const

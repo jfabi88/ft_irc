@@ -50,6 +50,7 @@ class Server
         void    setServername(std::string servername);
         void    setVersion(std::string version);
         void    addChannel(Channel *channel);
+        void    removeChannel(std::string channelName);
 
         int     startCommunication(int fdNewClient, char *buffer);
         int     receiveCommand(int fdClient, char *buffer);

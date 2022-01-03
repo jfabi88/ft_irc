@@ -194,6 +194,20 @@ void Client::addChannel(Channel *newChannel)
     this->channels.push_back(newChannel);
 }
 
+void Client::removeChannel(std::string channelName)
+{
+    std::vector<Channel *>::const_iterator it;
+
+    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    {
+        if (!(*it)->getName().compare(name))
+        {
+            this->channels.erase(it);
+            return ;
+        }
+    }   
+}
+
 int Client::hasCapability(std::string name) const
 {
     std::vector<std::string>::const_iterator  it;

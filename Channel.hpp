@@ -64,6 +64,8 @@ class Channel
 		std::string	getTopic() const;
 		
 		int		addClient(Client *client, std::string password, char prefix, char letter);
+		int		removeClient(std::string CNick);
+		int		removeClient(int fd);
 		void	setOperator(Client client);
 		void	setMode(std::string m, int flag);
 		void	addBanned(std::string CNick, std::string cUser);

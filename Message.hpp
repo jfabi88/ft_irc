@@ -34,12 +34,14 @@ class Message
         std::string getLastParameter() const;
         std::vector<std::string> getLastParameterMatrix() const;
         std::string getText() const;
+        int         getSize() const;
         void setMessage(std::string text);
     private:
         std::string prefix;
         std::string command;
         std::string parameters[15];
         std::string text;
+        int         size;   //jfabi: non include l'ultimo parametro con ':'
         int         ft_set_element(std::string text, int start, std::string *element);
 };
 

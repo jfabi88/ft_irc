@@ -277,6 +277,34 @@ int execNotice(Message message, Client *client, Server *server)
     return (0);   
 }
 
+int execPart(Message message, Client *client, Server *server)
+{
+    int i;
+    std::string channelName;
+    std::string toSend;
+    Channel *channel;
+    RepliesCreator reply;
+
+    i = 0;
+    while (i < message.getSize())
+    {
+        channelName = message.getParametersIndex(i);
+        channel = server->getChannel(channelName);
+        if (channel == NULL)
+            toSend = reply.makeErrorNoSuchChannel(client->getNickname(), channelName);
+        else if (!channel->getClient(client->getNickname()))
+            toSend = reply.makeErrorNotOnChannel(client->getNickname(), channelName);
+        else
+        {
+            if (channel->removeClient(client->getNickname()) == -1)
+                server->removeChannel(channelName);
+            toSend = ":" + client->getNickname() + " PART " + channelName + DEL;
+        }
+        send(client->getSocketFd(), toSend.c_str(), toSend.size(), 0);
+        i++;
+    }
+}
+
 int execPass(Message message, Client *client, Server *server)
 {
     RepliesCreator  reply;

@@ -200,7 +200,7 @@ void Client::removeChannel(std::string channelName)
 
     for (it = this->channels.begin(); it != this->channels.end() ;it++)
     {
-        if (!(*it)->getName().compare(name))
+        if (!(*it)->getName().compare(channelName))
         {
             this->channels.erase(it);
             return ;

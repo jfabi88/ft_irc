@@ -19,19 +19,20 @@ Message::Message()
     this->prefix = "";
     this->command = "";
     this->text = "";
-    for (int i = 0; i < 15; i++)
-        this->parameters[i] = "";
+    this->lastParameter = NULL;
     std::cout << "Message created" << std::endl;
 }
 
 Message::Message(const Message &copy)
 {
-    this->size = copy.getSize();
+    std::vector<std::string>::iterator it;
+
     this->prefix = copy.getPrefix();
     this->command = copy.getCommand();
     this->text = copy.getText();
-    for (int i = 0; i < 15; i++)
-        this->parameters[i] = copy.getParametersIndex(i);
+    this->lastParameter = copy.getLastParameter();
+    for (it = copy.getParameters().begin(); it < copy.getParameters().end(); it++)
+        this->parameters.push_back(*it);
     std::cout << "Message created" << std::endl;
 }
 
@@ -65,16 +66,14 @@ std::string Message::getParametersIndex(int i) const
     return (this->parameters[i]);
 }
 
-std::string Message::getLastParameter() const
+const char *Message::getLastParameter() const
 {
-    int i;
+    return (lastParameter);
+}
 
-    i = 0;
-    while (this->parameters[i] != "")
-        i++;
-    if (i != 0)
-        return (this->parameters[i - 1]);
-    return ("");
+std::vector<std::string> Message::getParameters() const
+{
+    return (this->parameters);
 }
 
 std::vector<std::string> ft_split(std::string text, char delimiter)
@@ -122,8 +121,6 @@ void Message::setMessage(std::string text)
 
     this->prefix = "";
     this->text = text;
-    for (int j = 0; j < 15; j++)
-        this->parameters[j] = "";
     if (text == "")
         return ;
     if (text[0] == ':')
@@ -133,6 +130,7 @@ void Message::setMessage(std::string text)
     end = text.find(" ", last_pos);
     while (end >= 0 && text[last_pos] != ':')
     {
+        this->parameters.push_back("");
         last_pos = this->ft_set_element(text, last_pos, &(this->parameters[i]));
         i++;
         end = text.find(" ", last_pos);
@@ -141,15 +139,8 @@ void Message::setMessage(std::string text)
     if (end >= 0)
     {
         add = (text[last_pos] == ':');
-        this->parameters[i] = text.substr(last_pos + add, end - (last_pos + add));
-        i++;
+        this->lastParameter = text.substr(last_pos + add, end - (last_pos + add)).c_str();
     }
-    this->size = i;
-}
-
-int Message::getSize() const
-{
-    return (this->size);
 }
 
 Message &Message::operator=(const Message &copy)

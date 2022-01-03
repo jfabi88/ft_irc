@@ -44,7 +44,7 @@
 typedef struct PChannel
 {
 	char prefix;
-	char modeLetter[2] = {'+', 0};
+	char modeLetter[2];
 	Client *client;
 }				t_PChannel;
 

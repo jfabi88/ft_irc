@@ -31,17 +31,17 @@ class Message
         std::string getPrefix() const;
         std::string getCommand() const;
         std::string getParametersIndex(int indx) const;
-        std::string getLastParameter() const;
+        const char  *getLastParameter() const;
+        std::vector<std::string> getParameters() const;
         std::vector<std::string> getLastParameterMatrix() const;
         std::string getText() const;
-        int         getSize() const;
         void setMessage(std::string text);
     private:
         std::string prefix;
         std::string command;
-        std::string parameters[15];
+        std::vector<std::string> parameters;
         std::string text;
-        int         size;   //jfabi: non include l'ultimo parametro con ':'
+        const char  *lastParameter;
         int         ft_set_element(std::string text, int start, std::string *element);
 };
 

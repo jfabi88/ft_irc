@@ -22,6 +22,7 @@ Channel::Channel(std::string name, std::string key, Client *clientOperator)
     this->password = key;
     this->topic = "";
     newClient.prefix = '~';
+    newClient.modeLetter[0] = '+';
     newClient.modeLetter[1] = 'q';
     this->listClient.push_back(newClient);
     this->symbol = '=';
@@ -99,6 +100,7 @@ int Channel::addClient(Client *client, std::string password, char prefix, char l
     t_PChannel newClient;
     newClient.client = client;
     newClient.prefix = prefix;
+    newClient.modeLetter[0] = '+';
     newClient.modeLetter[1] = letter;
     this->listClient.push_back(newClient);
     this->numberClient += 1;

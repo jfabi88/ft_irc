@@ -279,16 +279,15 @@ int execNotice(Message message, Client *client, Server *server)
 
 int execPart(Message message, Client *client, Server *server)
 {
-    int i;
+    std::vector<std::string>::iterator it;
     std::string channelName;
     std::string toSend;
     Channel *channel;
     RepliesCreator reply;
 
-    i = 0;
-    while (i < message.getSize())
+    for (it = message.getParameters().begin(); it <= message.getParameters().end(); it++)
     {
-        channelName = message.getParametersIndex(i);
+        channelName = *it;
         channel = server->getChannel(channelName);
         if (channel == NULL)
             toSend = reply.makeErrorNoSuchChannel(client->getNickname(), channelName);
@@ -301,8 +300,8 @@ int execPart(Message message, Client *client, Server *server)
             toSend = ":" + client->getNickname() + " PART " + channelName + DEL;
         }
         send(client->getSocketFd(), toSend.c_str(), toSend.size(), 0);
-        i++;
     }
+    return (0);
 }
 
 int execPass(Message message, Client *client, Server *server)

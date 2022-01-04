@@ -122,7 +122,7 @@ std::string RepliesCreator::makeInviteOnlyChan(std::string CNick, std::string ch
     return (text);
 }
 
-std::string RepliesCreator::makeBadChannelKey(std::string CNick, std::string channelName)
+std::string RepliesCreator::makeErrorBadChannelKey(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -140,7 +140,7 @@ std::string RepliesCreator::makeErrorChannelIsFull(std::string CNick, std::strin
 
 std::string RepliesCreator::makeErrorNoSuchChannel(std::string CNick, std::string channelName)
 {
-    std::stirng text;
+    std::string text;
 
     text = CNick + " " + channelName  + " :No such channel" + DEL;
     return (text);
@@ -148,7 +148,7 @@ std::string RepliesCreator::makeErrorNoSuchChannel(std::string CNick, std::strin
 
 std::string RepliesCreator::makeErrorNotOnChannel(std::string CNick, std::string channelName)
 {
-    std::stirng text;
+    std::string text;
 
     text = CNick + " " + channelName  + " :You're not on that channel" + DEL;
     return (text);
@@ -214,7 +214,10 @@ std::string RepliesCreator::makeNamReply(Channel channel, std::string CNick)
     for (it = channel.getFirstClient(); it < channel.getLastClient() ;it++)
     {
         if (((*it).prefix) != 0)
-            text += (*it).prefix + " ";
+        {
+            text += (*it).prefix;
+            text.append(" ");
+        }
         text += (*it).client->getNickname() + " ";
     }
     text += DEL;
@@ -226,5 +229,13 @@ std::string RepliesCreator::makeEndOfNames(std::string channelName, std::string 
     std::string text;
 
     text = CNick + " " + channelName + " :End of /NAMES list";
+    return (text);
+}
+
+std::string RepliesCreator::makeTopic(std::string channelName, std::string topic, std::string CNick)
+{
+    std::string text;
+
+    text = CNick + " " + channelName + " :" + topic;
     return (text);
 }

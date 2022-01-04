@@ -16,8 +16,8 @@
 #include <iostream>
 #include <vector>
 
-#define DEL "\n"
-#define DELSIZE 1
+#define DEL "\r\n"
+#define DELSIZE 2
 
 class Message
 {
@@ -27,21 +27,20 @@ class Message
         Message(const Message &copy);
         ~Message();
 
-        Message &operator=(const Message &copy);
         std::string getPrefix() const;
         std::string getCommand() const;
         std::string getParametersIndex(int indx) const;
-        const char  *getLastParameter() const;
+        std::string getLastParameter() const;
         std::vector<std::string> getParameters() const;
         std::vector<std::string> getLastParameterMatrix() const;
         std::string getText() const;
+        int getSize() const;
         void setMessage(std::string text);
     private:
         std::string prefix;
         std::string command;
         std::vector<std::string> parameters;
         std::string text;
-        const char  *lastParameter;
         int         ft_set_element(std::string text, int start, std::string *element);
 };
 

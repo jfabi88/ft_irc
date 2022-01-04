@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2)
         return (0);
-     Server          irc(0,0, argv[1]);
+    Server          irc(0,0, argv[1]);
     for (int m = 0; m < 512; m++)
         buf[m] = 0;
     // get us a socket and bind it
@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
     // main loop
     for(;;) {
         read_fds = master; // copy it
+        std::cout << "Il client: " << irc.getClient("pollo") << std::endl;
         std::cout << "Prima del select" << std::endl;
         if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
             perror("select");

@@ -15,20 +15,22 @@
 #define USERLEN 16
 #define CHANLIMIT 2
 
-int execAway(Client *client, std::string message)
+int execAway(Message message, Client *client)
 {
     std::string text;
 
-    if (client->getAway() && message == "")
+    if (message.getSize() < 1)
+        return (0);
+    if (client->getAway() && message.getParametersIndex(0) == "")
     {
-        client->setAway(false, message);
+        client->setAway(false, message.getParametersIndex(0));
         RepliesCreator reply;
         text = reply.makeUnAway(client->getUsername());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
-    else if (!client->getAway() && message != "")
+    else if (!client->getAway() && message.getParametersIndex(0) != "")
     {
-        client->setAway(true, message);
+        client->setAway(true, message.getParametersIndex(0));
         RepliesCreator reply;
         text = reply.makeNowAway(client->getUsername());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
@@ -112,8 +114,10 @@ int execCap(Message message, Client *client, Server *server)
 {
     std::string subcommand;
 
-    subcommand = message.getParametersIndex(0);
-    std::cout << subcommand << std::endl;
+    if (message.getSize() > 0)
+        subcommand = message.getParametersIndex(0);
+    else
+        return (0);
     if (subcommand == "LIST")
         return (execList(client, server));
     else if (subcommand == "REQ")
@@ -158,11 +162,13 @@ int execNick(Message message, Client *client, Server *server)
 
 static int ft_parse_channel_key(Message message, std::vector<std::string> *channels, std::vector<std::string> *key)
 {
+    std::vector<std::string>::iterator it;
     int i;
 
     i = 0;
-    while (i < 15 && message.getParametersIndex(i) != "")
-        i++;
+    it = message.getParameters().begin();
+    while (it < message.getParameters().end())
+        it++;
     if (i % 2 != 0)
         return (1);
     i = i / 2;
@@ -261,7 +267,7 @@ int execNotice(Message message, Client *client, Server *server)
     RepliesCreator reply;
     std::string text;
 
-    if (message.getParametersIndex(0) == "" || message.getParametersIndex(1) == "")
+    if (message.getSize() < 2)
         return (0);
     target = message.getParametersIndex(0);
     clientTarget = server->getClient(target);
@@ -314,7 +320,7 @@ int execPass(Message message, Client *client, Server *server)
     cNick = client->getNickname();
     if (client->getRegistered())
         text = reply.makeErrorAlreadyRegistered(cNick);
-    else if (message.getParametersIndex(0) == "")
+    else if (message.getSize() < 1)
         text = reply.makeErrorNeedMoreParams(cNick, "PASS");
     else
     {
@@ -333,7 +339,7 @@ int execRPing(Message message, Client *client)
     RepliesCreator  reply;
     std::string     text;
 
-    if (message.getParametersIndex(0) == "")
+    if (message.getSize() < 1)
         reply.makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
     else
     {
@@ -349,8 +355,11 @@ int execSPing(Message message, Client *client)
 {
     std::string text;
 
-    text = "PING SiamoTuttiSimpatici";
+    if (message.getSize() < 1)
+        return (0);
+    text = "PONG " + message.getParametersIndex(0) + DEL;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    std::cout << "ciaone" << std::endl; 
     return (0);
 }
 
@@ -361,7 +370,7 @@ int execPrivmsg(Message message, Client *client, Server *server)
     RepliesCreator reply;
     std::string text;
 
-    if (message.getParametersIndex(0) == "" || message.getParametersIndex(1) == "")
+    if (message.getSize() < 2)
         return (0);
     target = message.getParametersIndex(0);
     clientTarget = server->getClient(target);
@@ -377,7 +386,7 @@ int execPrivmsg(Message message, Client *client, Server *server)
     }
     else
     {
-        text = ":" + client->getNickname() + " " + message.getLastParameter() + DEL;
+        text = "PRIVMSG :" + client->getNickname() + " " + message.getLastParameter() + DEL;
         send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
     }
     std::cout << "Prezzemolino" << std::endl;
@@ -392,7 +401,7 @@ int execUser(Message message, Client *client)
     std::string     error;
 
     cNick = client->getNickname();
-    if (message.getParametersIndex(0) == "" || message.getParametersIndex(3) == "")
+    if (message.getSize() < 4)
         error = reply.makeErrorNeedMoreParams(cNick, "USER");
     else if (client->getUsername() != "")
         error = reply.makeErrorAlreadyRegistered(cNick);
@@ -427,7 +436,7 @@ int execCommand(Message message, Client *client, Server *server)
     switch (i)
     {
         case 0:
-            return (execAway(client, message.getParametersIndex(0))); //AWAY
+            return (execAway(message, client)); //AWAY
         case 1:
             return (execJoin(message, client, server));              //JOIN
         case 2:

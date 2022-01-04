@@ -16,6 +16,7 @@ Server::Server(int port, int fd, std::string password)
     this->fd = fd;
     std::cout << password << std::endl;
     this->password = password;
+    this->date = this->ft_set_date();
     this->servername = "IRC1ONE";
 }
 
@@ -280,9 +281,11 @@ std::vector<std::string> Server::ft_take_messages(int fdClient, char *buffer)
     std::vector<std::string> array;
     std::string b;
 
+    std::cout << "prima di recv" << std::endl;
     b = "";
     if (buffer[0] == 0)
         recv(fdClient, buffer, 512, 0);
+    std::cout << "dopo di recv" << std::endl;
     this->ft_parse_data(&array, &b, buffer);
     ft_memset(buffer, 512);
     while (b != "")
@@ -338,7 +341,8 @@ int Server::ft_exec_communication_commands(int flag, std::string text, Client *c
     switch (i)
     {
         case (0):                                   //CAP
-            //return (flag);
+            return (flag);
+            /*
             if ((flag & 4) == 0 || (flag & 4) == 4)
             {
                 num = execCap(message, client, this);
@@ -347,6 +351,7 @@ int Server::ft_exec_communication_commands(int flag, std::string text, Client *c
                 else if (num == 2 && (flag & 3) == 3)
                     return (7);
             }
+            */
         case (1):                                   //NICK
             execNick(message, client, this);
             return (flag | 2);
@@ -372,6 +377,7 @@ int Server::ft_welcome(Client *client)
     text = reply.makeWelcome(client->getNickname(), client->getUsername(), this->getServername());
     text.append(reply.makeYourHost(this->getServername(), this->getVersion(), client->getNickname()));
     text.append(reply.makeCreated(this->getDate(), client->getNickname()));
+    std::cout << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return(0);
 }

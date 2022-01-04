@@ -28,7 +28,7 @@ std::string RepliesCreator::makeWelcome(std::string CNickname, std::string CUser
 {
     std::string text;
  
-    text =  CNickname + " :Welcome to the" + SName +  \
+    text =  "001 "+ CNickname + " :Welcome to the" + SName +  \
             "Network, " + CUsername + DEL;
     return (text);
 }
@@ -37,7 +37,7 @@ std::string RepliesCreator::makeYourHost(std::string Servname, std::string SVers
 {
     std::string text;
 
-    text =  CNickname + " :Your host is " + Servname + \
+    text =  "002 " + CNickname + " :Your host is " + Servname + \
             ", running version " + SVersion + DEL;
     return (text);
 }
@@ -46,7 +46,7 @@ std::string RepliesCreator::makeCreated(std::string SDate, std::string CNick)
 {
     std::string text;
 
-    text = CNick + " :This server was created " + SDate + DEL;
+    text = "003 " + CNick + " :This server was created " + SDate + DEL;
     return (text);
 }
 

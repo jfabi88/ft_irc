@@ -19,8 +19,7 @@ Message::Message()
     this->prefix = "";
     this->command = "";
     this->text = "";
-    this->lastParameter = NULL;
-    std::cout << "Message created" << std::endl;
+    std::cout << "Message vuoto created" << std::endl;
 }
 
 Message::Message(const Message &copy)
@@ -30,10 +29,8 @@ Message::Message(const Message &copy)
     this->prefix = copy.getPrefix();
     this->command = copy.getCommand();
     this->text = copy.getText();
-    this->lastParameter = copy.getLastParameter();
-    for (it = copy.getParameters().begin(); it < copy.getParameters().end(); it++)
-        this->parameters.push_back(*it);
-    std::cout << "Message created" << std::endl;
+    this->setMessage(text);
+    std::cout << "Message copia created" << std::endl;
 }
 
 Message::Message(std::string text)
@@ -41,6 +38,7 @@ Message::Message(std::string text)
     std::cout << "Il messaggio dentro message: " << text << std::endl;
     this->setMessage(text);
     this->text = text;
+    std::cout << *this << std::endl;
     std::cout << "Message created" << std::endl;
 }
 
@@ -63,12 +61,18 @@ std::string Message::getCommand() const
 
 std::string Message::getParametersIndex(int i) const
 {
+    int size;
+
+    size = this->parameters.size();
+    std::cout << size << std::endl;
+    if (i >= size)
+        return ("");
     return (this->parameters[i]);
 }
 
-const char *Message::getLastParameter() const
+std::string Message::getLastParameter() const
 {
-    return (lastParameter);
+    return (*(this->parameters.begin()));
 }
 
 std::vector<std::string> Message::getParameters() const
@@ -112,47 +116,43 @@ std::string Message::getText() const
     return (this->text);
 }
 
+int Message::getSize() const
+{
+    return (this->parameters.size());
+}
+
 void Message::setMessage(std::string text)
 {
     int last_pos = 0;
     int end;
-    int i = 0;
     int add = 0;
+    std::string tmp;
 
     this->prefix = "";
     this->text = text;
+    std::cout << "Il message: " << text << std::endl;
+    this->parameters.clear();
     if (text == "")
         return ;
     if (text[0] == ':')
         last_pos = this->ft_set_element(text, 0, &(this->prefix));
     last_pos = this->ft_set_element(text, last_pos, &(this->command));
-    std::cout << "Last command: " << last_pos << " " << text[last_pos] << std::endl;
     end = text.find(" ", last_pos);
     while (end >= 0 && text[last_pos] != ':')
     {
-        this->parameters.push_back("");
-        last_pos = this->ft_set_element(text, last_pos, &(this->parameters[i]));
-        i++;
+        last_pos = this->ft_set_element(text, last_pos, &(tmp));
+        this->parameters.push_back(tmp);
         end = text.find(" ", last_pos);
     }
     end = text.find(DEL, last_pos);
     if (end >= 0)
     {
         add = (text[last_pos] == ':');
-        this->lastParameter = text.substr(last_pos + add, end - (last_pos + add)).c_str();
+        std::cout << "Il primo valore é" << text[last_pos] << std::endl;
+        std::cout << "La grandezza della stringa: " << text.substr(last_pos + add, end - (last_pos + add))<< std::endl;
+        this->parameters.push_back(text.substr(last_pos + add, end - (last_pos + add)));
     }
-}
-
-Message &Message::operator=(const Message &copy)
-{
-    if (this == &copy)
-        return (*this);
-    this->prefix = copy.getPrefix();
-    this->command = copy.getCommand();
-    for (int i = 0; i < 15; i++)
-        this->parameters[i] = copy.getParametersIndex(i);
-    std::cout << "Message created" << std::endl;
-    return (*this);
+    std::cout << *this << std::endl;
 }
 
 /**UTILS**/
@@ -182,10 +182,16 @@ int Message::ft_set_element(std::string text, int start, std::string *element)
 
 std::ostream& operator<<(std::ostream& os, const Message &copy)
 {
+    std::vector<std::string>::iterator it;
+
     os << "Prefix: " << copy.getPrefix() << "\n";
     os << "Command: " << copy.getCommand() << "\n";
     os << "Parameters:\n";
-    for (int i = 0; i < 15; i++)
-        os << i << ": " << copy.getParametersIndex(i) << "\n";
+    it = copy.getParameters().begin();
+    while (it < copy.getParameters().end())
+    {
+        std::cout << "Dentro il ciclo: " << *it << std::endl; 
+        it++;
+    }
     return (os);
 }

@@ -68,7 +68,17 @@ std::string Message::getParametersIndex(int i) const
 
 std::string Message::getLastParameter() const
 {
-    return (*(this->parameters.begin()));
+    std::vector<std::string>::const_iterator  it;
+
+    it = this->parameters.begin();
+    if (it == this->parameters.end())
+        return ("");
+    else
+    {
+        while (it + 1 < this->parameters.end())
+            it++;
+    }
+    return (*(it));
 }
 
 std::vector<std::string> Message::getParameters() const

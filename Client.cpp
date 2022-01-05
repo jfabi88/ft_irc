@@ -246,7 +246,8 @@ int     Client::hasCapabilities(std::vector<std::string> prefix) const
 std::ostream& operator<<(std::ostream& os, const Client &copy)
 {
     os << "Nickname: " << copy.getNickname() << "\n";
-    os << "Password: " << copy.getPassword() << "\n";
+    os << "User: " << copy.getUsername() << "\n";
+    os << "RealName: " << copy.getRealname() << "\n";
     os << "Socket: " << copy.getSocketFd() << "\n";
     return (os);
 }

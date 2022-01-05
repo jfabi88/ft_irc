@@ -225,6 +225,7 @@ int Server::startCommunication(int fdNewClient, char *buffer)
         return (0);
     }
     this->setClient(client);
+    std::cout << *client << std::endl;
     ft_welcome(client);
     return (0);
 }

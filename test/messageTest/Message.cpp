@@ -19,28 +19,26 @@ Message::Message()
     this->prefix = "";
     this->command = "";
     this->text = "";
-    std::cout << "Message vuoto created" << std::endl;
 }
 
 Message::Message(const Message &copy)
 {
+    std::vector<std::string>::iterator it;
+
     this->prefix = copy.getPrefix();
     this->command = copy.getCommand();
     this->text = copy.getText();
     this->setMessage(text);
-    std::cout << "Message copia created" << std::endl;
 }
 
 Message::Message(std::string text)
 {
     this->setMessage(text);
     this->text = text;
-    std::cout << "Message created" << std::endl;
 }
 
 Message::~Message()
 {
-    std::cout << "Message deleted" << std::endl;
 }
 
 /**GET-SET**/
@@ -68,7 +66,17 @@ std::string Message::getParametersIndex(int i) const
 
 std::string Message::getLastParameter() const
 {
-    return (*(this->parameters.begin()));
+    std::vector<std::string>::const_iterator  it;
+
+    it = this->parameters.begin();
+    if (it == this->parameters.end())
+        return ("");
+    else
+    {
+        while (it + 1 < this->parameters.end())
+            it++;
+    }
+    return (*(it));
 }
 
 std::vector<std::string> Message::getParameters() const

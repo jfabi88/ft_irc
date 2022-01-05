@@ -168,7 +168,10 @@ static int ft_parse_channel_key(Message message, std::vector<std::string> *chann
     i = 0;
     it = message.getParameters().begin();
     while (it < message.getParameters().end())
+    {
+        i++;
         it++;
+    }
     if (i % 2 != 0)
         return (1);
     i = i / 2;
@@ -221,12 +224,14 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
 static int ft_success_join(Channel channel, Client client)
 {
     RepliesCreator  reply;
-    std::string     text = "";
+    std::string     text;
 
+    text = ":" + client.getNickname() + " JOIN " + channel.getName() + DEL;
     if (channel.getTopic() != "")
-        text += reply.makeTopic(channel.getName(), channel.getTopic(), client.getNickname());
-    text += reply.makeNamReply(channel, client.getNickname());
-    text += reply.makeEndOfNames(channel.getName(), client.getNickname());
+        text.append(reply.makeTopic(channel.getName(), channel.getTopic(), client.getNickname()));
+    text.append(reply.makeNamReply(channel, client.getNickname()));
+    text.append(reply.makeEndOfNames(channel.getName(), client.getNickname()));
+    std::cout << "TESTO INVIATOOOOOOO" << std::endl;
     send(client.getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
@@ -239,7 +244,10 @@ int execJoin(Message message, Client *client, Server *server)
     std::vector<std::string> listKey;
 
     if (ft_parse_channel_key(message, &listChannel, &listKey))
+    {
         text = reply.makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    }
     else
     {
         std::vector<std::string>::iterator it;
@@ -277,7 +285,7 @@ int execNotice(Message message, Client *client, Server *server)
         return (0);
     else
     {
-        text = ":" + client->getNickname() + " " + message.getLastParameter() + DEL;
+        text = ":" + client->getNickname() + " NOTICE " + clientTarget->getNickname() + " " + message.getLastParameter() + DEL;
         send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
     }
     return (0);   
@@ -363,16 +371,38 @@ int execSPing(Message message, Client *client)
     return (0);
 }
 
-int execPrivmsg(Message message, Client *client, Server *server)
+//**********PRIVMSG***********************//
+
+static int execPrivmsgChannel(Message message, Client *client, Server *server, std::string target)
 {
-    std::string target;
+    RepliesCreator  reply;
+    Channel *channel;
+    std::string text;
+    std::vector<t_PChannel>::const_iterator it;
+
+    channel = server->getChannel(target);
+    if (channel == NULL)
+    {
+        text = reply.makeCannotSendToChan(client->getNickname(), target);
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    else
+    {
+        for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
+        {
+            text = ":" + client->getNickname() +  " PRIVMSG " +  target + " :" + message.getLastParameter() + DEL;
+            send((*it).client->getSocketFd(), text.c_str(), text.size(), 0);
+        }
+    }
+    return (0);
+}
+
+static int execPrivmsgClient(Message message, Client *client, Server *server, std::string target)
+{
     Client      *clientTarget;
     RepliesCreator reply;
     std::string text;
 
-    if (message.getSize() < 2)
-        return (0);
-    target = message.getParametersIndex(0);
     clientTarget = server->getClient(target);
     if (clientTarget == NULL)
     {
@@ -386,12 +416,26 @@ int execPrivmsg(Message message, Client *client, Server *server)
     }
     else
     {
-        text = "PRIVMSG :" + client->getNickname() + " " + message.getLastParameter() + DEL;
+        text = ":" + client->getNickname() +  " PRIVMSG " + clientTarget->getNickname() + " :" + message.getLastParameter() + DEL;
         send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
     }
-    std::cout << "Prezzemolino" << std::endl;
     return (0);
 }
+
+int execPrivmsg(Message message, Client *client, Server *server)
+{
+    std::string target;
+
+    if (message.getSize() < 2)
+        return (0);
+    target = message.getParametersIndex(0);
+    if (target != "" && (target[0] == '#' || target[0] == '&'))
+        return (execPrivmsgChannel(message, client, server, target));
+    else
+        return (execPrivmsgClient(message, client, server, target));
+    return (0);
+}
+//*******************************************************************//
 
 int execUser(Message message, Client *client)
 {

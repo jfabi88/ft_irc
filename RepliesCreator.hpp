@@ -44,7 +44,7 @@ class RepliesCreator
         std::string makeErrorChannelIsFull(std::string CNick, std::string channelName);
         std::string makeErrorNoSuchChannel(std::string CNick, std::string channelName);
         std::string makeErrorNotOnChannel(std::string CNick, std::string channelName);
-
+        std::string makeCannotSendToChan(std::string CNick, std::string channelName);
         std::string makeAway(std::string Client, std::string CNick, std::string message);
         std::string makeUnAway(std::string Client);
         std::string makeNowAway(std::string Client);

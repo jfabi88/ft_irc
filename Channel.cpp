@@ -24,6 +24,7 @@ Channel::Channel(std::string name, std::string key, Client *clientOperator)
     newClient.prefix = '~';
     newClient.modeLetter[0] = '+';
     newClient.modeLetter[1] = 'q';
+    newClient.client = clientOperator;
     this->listClient.push_back(newClient);
     this->symbol = '=';
     this->limit = 2147483647;
@@ -237,7 +238,6 @@ int Channel::ft_test_name(std::string name)
     {
         for (int j = 0; j < NOCHARSIZE; j++)
         {
-            std::cout << "Il valore " << j << " è: " << NOCHAR[j] << std::endl;
             if (name[i] == NOCHAR[j])
                 return (j);
         }

@@ -128,6 +128,14 @@ std::string RepliesCreator::makeErrorNoSuchChannel(std::string CNick, std::strin
     return (text);
 }
 
+std::string RepliesCreator::makeCannotSendToChan(std::string CNick, std::string channelName)
+{
+    std::string text;
+
+    text = "404 " + CNick + " " + channelName  + " :Cannot send to channel" + DEL;
+    return (text);
+}
+
 std::string RepliesCreator::makeTooManyChannels(std::string CNick, std::string ChannelName)
 {
     std::string text;

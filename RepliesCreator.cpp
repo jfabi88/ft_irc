@@ -74,7 +74,7 @@ std::string RepliesCreator::makeNowAway(std::string Client)
     return (text);
 }
 
-std::string makeTopic(std::string channelName, std::string topic, std::string CNick)
+std::string RepliesCreator::makeTopic(std::string channelName, std::string topic, std::string CNick)
 {
     std::string text;
 
@@ -125,6 +125,14 @@ std::string RepliesCreator::makeErrorNoSuchChannel(std::string CNick, std::strin
     std::string text;
 
     text = "403 " + CNick + " " + channelName  + " :No such channel" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeTooManyChannels(std::string CNick, std::string ChannelName)
+{
+    std::string text;
+
+    text = "405 " + CNick + ChannelName + " :You have joined too many channels" + DEL;
     return (text);
 }
 

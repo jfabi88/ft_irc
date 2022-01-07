@@ -163,24 +163,39 @@ int execNick(Message message, Client *client, Server *server)
 static int ft_parse_channel_key(Message message, std::vector<std::string> *channels, std::vector<std::string> *key)
 {
     std::vector<std::string>::iterator it;
+    std::vector<std::string>::const_iterator tmp;
+    int size;
     int i;
 
-    i = 0;
     it = message.getParameters().begin();
+    tmp = message.getLastParameterMatrix().begin();
+    size = message.getLastParameterMatrix().size();
+    i = 0;
     while (it < message.getParameters().end())
     {
-        i++;
+        (*channels).push_back(*it);
+        if (i < size)
+        {
+            (*key).push_back(*tmp);
+            tmp++;
+        }
         it++;
-    }
-    if (i % 2 != 0)
-        return (1);
-    i = i / 2;
-    for (int j = 0; j < i; j ++)
-    {
-        (*channels).push_back(message.getParametersIndex(j));
-        (*key).push_back(message.getParametersIndex(j + i));
+        i++;
     }
     return (0);
+}
+
+static std::string ft_success_join(Channel channel, Client client)
+{
+    RepliesCreator  reply;
+    std::string     text;
+
+    text = ":" + client.getNickname() + " JOIN " + channel.getName() + DEL;
+    if (channel.getTopic() != "")
+        text.append(reply.makeTopic(channel.getName(), channel.getTopic(), client.getNickname()));
+    text.append(reply.makeNamReply(channel, client.getNickname()));
+    text.append(reply.makeEndOfNames(channel.getName(), client.getNickname()));
+    return (text);
 }
 
 static std::string ft_exec_join(std::string channelName, std::string key, Client *client, Server *server)
@@ -198,7 +213,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
             newChannel = new Channel(channelName, key, client);
             client->addChannel(newChannel);
             server->addChannel(newChannel);
-            return ("");
+            return (ft_success_join(*newChannel, *client));
         }
         catch (const std::exception& e)
         {
@@ -217,23 +232,9 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
             return (reply.makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
         else if (num == 2)
             return (reply.makeErrorChannelIsFull(client->getNickname(), newChannel->getName()));
+        return (ft_success_join(*newChannel, *client));
     }
     return ("");
-}
-
-static int ft_success_join(Channel channel, Client client)
-{
-    RepliesCreator  reply;
-    std::string     text;
-
-    text = ":" + client.getNickname() + " JOIN " + channel.getName() + DEL;
-    if (channel.getTopic() != "")
-        text.append(reply.makeTopic(channel.getName(), channel.getTopic(), client.getNickname()));
-    text.append(reply.makeNamReply(channel, client.getNickname()));
-    text.append(reply.makeEndOfNames(channel.getName(), client.getNickname()));
-    std::cout << "TESTO INVIATOOOOOOO" << std::endl;
-    send(client.getSocketFd(), text.c_str(), text.size(), 0);
-    return (0);
 }
 
 int execJoin(Message message, Client *client, Server *server)
@@ -257,10 +258,7 @@ int execJoin(Message message, Client *client, Server *server)
         for (it = listChannel.begin(); it < listChannel.end(); it++)
         {
             text = ft_exec_join(*it, *keyIt, client, server);
-            if (text != "")
-                send(client->getSocketFd(), text.c_str(), text.size(), 0);
-            else
-                ft_success_join(*server->getChannel(*it), *client);
+            send(client->getSocketFd(), text.c_str(), text.size(), 0);
             keyIt++;
         }
     }
@@ -425,14 +423,22 @@ static int execPrivmsgClient(Message message, Client *client, Server *server, st
 int execPrivmsg(Message message, Client *client, Server *server)
 {
     std::string target;
+    int         size;
+    int         i;
 
-    if (message.getSize() < 2)
+    i = 0;
+    size = message.getSize();
+    if (size < 2)
         return (0);
-    target = message.getParametersIndex(0);
-    if (target != "" && (target[0] == '#' || target[0] == '&'))
-        return (execPrivmsgChannel(message, client, server, target));
-    else
-        return (execPrivmsgClient(message, client, server, target));
+    while (i < size - 1)
+    {
+        target = message.getParametersIndex(i);
+        if (target != "" && (target[0] == '#' || target[0] == '&'))
+            execPrivmsgChannel(message, client, server, target);
+        else
+            execPrivmsgClient(message, client, server, target);
+        i++;
+    }
     return (0);
 }
 //*******************************************************************//

@@ -30,6 +30,7 @@ class Message
         std::string getPrefix() const;
         std::string getCommand() const;
         std::string getParametersIndex(int indx) const;
+        std::string getLastParameters() const;
         std::string getLastParameter() const;
         std::vector<std::string> getParameters() const;
         std::vector<std::string> getLastParameterMatrix() const;
@@ -41,6 +42,7 @@ class Message
         std::string command;
         std::vector<std::string> parameters;
         std::string text;
+        std::string lastParameter;
         int         ft_set_element(std::string text, int start, std::string *element);
 };
 

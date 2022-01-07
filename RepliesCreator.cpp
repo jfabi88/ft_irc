@@ -82,6 +82,14 @@ std::string RepliesCreator::makeTopic(std::string channelName, std::string topic
     return (text);
 }
 
+std::string RepliesCreator::makeInviting(std::string CNick, std::string CNickTarget, std::string channel)
+{
+    std::string text;
+
+    text = "341 " + CNick + " " + CNickTarget + " " + channel + DEL;
+    return (text);
+}
+
 std::string RepliesCreator::makeNamReply(Channel channel, std::string CNick)
 {
     std::string text;
@@ -105,7 +113,7 @@ std::string RepliesCreator::makeEndOfNames(std::string channelName, std::string 
 {
     std::string text;
 
-    text = "366 " + CNick + " " + channelName + " :End of /NAMES list";
+    text = "366 " + CNick + " " + channelName + " :End of /NAMES list" + DEL;
     return (text);
 }
 
@@ -176,6 +184,14 @@ std::string RepliesCreator::makeErrorNotOnChannel(std::string CNick, std::string
     return (text);
 }
 
+std::string RepliesCreator::makeErrorUserOnChannel(std::string CNick, std::string CNickTarget, std::string channelName)
+{
+    std::string text;
+
+    text = "443 " + CNick + " " + CNickTarget + " " + channelName  + " :is already on channel" + DEL;
+    return (text);
+}
+
 std::string RepliesCreator::makeErrorNeedMoreParams(std::string CNick, std::string command)
 {
     std::string text;
@@ -237,5 +253,13 @@ std::string RepliesCreator::makeErrorBadChanMask(std::string channel)
     std::string text;
 
     text = "476 " + channel + " :Bad Channel Mask" + DEL;
+    return (text);
+}
+
+std::string RepliesCreator::makeChanNoPrivsNeeded(std::string CNick, std::string channel)
+{
+    std::string text;
+
+    text = "482 " + CNick + " " + channel + " :You're not channel operator" + DEL;
     return (text);
 }

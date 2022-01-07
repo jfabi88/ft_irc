@@ -150,6 +150,21 @@ void    Server::removeChannel(std::string channelName)
     }
 }
 
+void    Server::removeClient(std::string clientName)
+{
+    std::vector<Client *>::iterator it;
+
+    for (it = this->clients.begin(); it < this->clients.end(); it++)
+    {
+        if (!((*it)->getNickname().compare(clientName)))
+        {
+            this->clients.erase(it);
+            delete (*it);
+            return ;
+        }
+    }    
+}
+
 /**PUBLIC-FUNCTIONS**/
 
 int Server::hasCapability(std::string name) const

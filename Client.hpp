@@ -33,6 +33,8 @@ class Client
         std::string getRealname() const;
         Channel *getChannel(int indx) const;
         Channel *getChannel(std::string name) const;
+        std::vector<Channel *>::const_iterator getFirstChannel() const;
+        std::vector<Channel *>::const_iterator getLastChannel() const;
         int         getSocketFd() const;
         int         getChannelSub() const;
         int         getAccess() const;

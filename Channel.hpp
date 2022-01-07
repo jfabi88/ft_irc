@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <vector>
+#include <sys/socket.h>
 #include "Client.hpp"
 
 //Mode "ntsmkIileb//
@@ -61,6 +62,7 @@ class Channel
 		std::vector<t_PChannel>::const_iterator getFirstClient() const;
 		std::vector<t_PChannel>::const_iterator getLastClient() const;
 		char	getSymbol() const;
+		t_PChannel  getT_PChannel(std::string name) const;
 		std::string	getTopic() const;
 		
 		int		addClient(Client *client, std::string password, char prefix, char letter);
@@ -75,6 +77,7 @@ class Channel
 
 		void	removeBanned(std::string CNick, std::string cUser);
 		int		hasMode(std::string m);
+		int		sendToAll(std::string text);
 	private:
 		std::string name;
 		std::string password;
@@ -86,6 +89,12 @@ class Channel
 		int	limit;
 		int	numberClient;
 		char symbol;
+
+		class NoSuchChannel : public std::exception
+		{
+			public:
+				const char* what() const throw();
+		};
 
 		class WrongCharacter : public std::exception
         {

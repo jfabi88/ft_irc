@@ -61,6 +61,7 @@ class Server
 
         int     verifyPassword(std::string userPassword);
         void    printClients();
+        void    removeClient(std::string clientName);
     private:
         int                 port;
         int                 fd;

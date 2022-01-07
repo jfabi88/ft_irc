@@ -67,6 +67,18 @@ Client *Channel::getClient(std::string name) const
     return (NULL);
 }
 
+t_PChannel  Channel::getT_PChannel(std::string name) const
+{
+    std::vector<t_PChannel>::const_iterator it;
+
+    for (it = this->listClient.begin(); it != this->listClient.end(); it++)
+    {
+        if (!(*it).client->getNickname().compare(name))
+            return (*it);
+    }
+    throw Channel::NoSuchChannel();
+}
+
 char	Channel::getSymbol() const
 {
     return (this->symbol);
@@ -203,6 +215,17 @@ int Channel::hasMode(std::string m)
     return (this->mode && bit);
 }
 
+int Channel::sendToAll(std::string text)
+{
+    std::vector<t_PChannel>::iterator    it;
+    std::vector<t_PChannel>::iterator    end;
+
+    end = this->listClient.end();
+    for (it = this->listClient.begin(); it < end; it++)
+        send((*it).client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+
 /****PRIVATE*****/
 
 int	Channel::ft_converter(std::string m)
@@ -243,6 +266,11 @@ int Channel::ft_test_name(std::string name)
         }
     }
     return (0);
+}
+
+const char *Channel::NoSuchChannel::what() const throw()
+{
+    return ("No such client");
 }
 
 const char *Channel::WrongCharacter::what() const throw()

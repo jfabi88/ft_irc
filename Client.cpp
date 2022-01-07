@@ -107,6 +107,16 @@ Channel *Client::getChannel(std::string name) const
     return (NULL);
 }
 
+std::vector<Channel *>::const_iterator Client::getFirstChannel() const
+{
+    return (this->channels.begin());
+}
+
+std::vector<Channel *>::const_iterator Client::getLastChannel() const
+{
+    return (this->channels.end());
+}
+
 int Client::getSocketFd() const
 {
     return (this->socket);

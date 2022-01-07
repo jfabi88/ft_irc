@@ -110,7 +110,7 @@ int Channel::addClient(Client *client, std::string password, char prefix, char l
 
 int Channel::removeClient(std::string CNick)
 {
-    std::vector<t_PChannel>::const_iterator it;
+    std::vector<t_PChannel>::iterator it;
 
     for (it = this->listClient.begin(); it != this->listClient.end(); it++)
     {
@@ -128,7 +128,7 @@ int Channel::removeClient(std::string CNick)
 
 int Channel::removeClient(int fd)
 {
-    std::vector<t_PChannel>::const_iterator it;
+    std::vector<t_PChannel>::iterator it;
 
     for (it = this->listClient.begin(); it != this->listClient.end(); it++)
     {
@@ -200,7 +200,7 @@ int Channel::hasMode(std::string m)
     int bit;
 
     bit = this->ft_converter(m);
-    return (this->mode && bit);
+    return (this->mode & bit);
 }
 
 /****PRIVATE*****/

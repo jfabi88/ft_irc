@@ -19,6 +19,7 @@ Message::Message()
     this->prefix = "";
     this->command = "";
     this->text = "";
+    this->lastParameter = "";
     std::cout << "Message vuoto created" << std::endl;
 }
 
@@ -64,6 +65,11 @@ std::string Message::getParametersIndex(int i) const
     if (i >= size)
         return ("");
     return (this->parameters[i]);
+}
+
+std::string Message::getLastParameters() const
+{
+    return (this->lastParameter);
 }
 
 std::string Message::getLastParameter() const
@@ -114,7 +120,7 @@ std::vector<std::string> ft_split(std::string text, char delimiter)
 
 std::vector<std::string> Message::getLastParameterMatrix() const
 {
-    return (ft_split(this->getLastParameter(), ' '));
+    return (ft_split(this->getLastParameters(), ' '));
 }
 
 std::string Message::getText() const
@@ -136,6 +142,7 @@ void Message::setMessage(std::string text)
 
     this->prefix = "";
     this->text = text;
+    this->lastParameter = "";
     this->parameters.clear();
     if (text == "")
         return ;
@@ -153,6 +160,8 @@ void Message::setMessage(std::string text)
     if (end >= 0)
     {
         add = (text[last_pos] == ':');
+        if (add)
+            lastParameter = text.substr(last_pos + add, end - (last_pos + add));
         this->parameters.push_back(text.substr(last_pos + add, end - (last_pos + add)));
     }
 }

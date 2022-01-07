@@ -196,7 +196,7 @@ void Client::addChannel(Channel *newChannel)
 
 void Client::removeChannel(std::string channelName)
 {
-    std::vector<Channel *>::const_iterator it;
+    std::vector<Channel *>::iterator it;
 
     for (it = this->channels.begin(); it != this->channels.end() ;it++)
     {

@@ -35,89 +35,89 @@
 # define N 512
 
 /*Prefix
-	Founder "~" "+q"
-	Protected "&" "+a"
-	Operator "@" "+o"
-	Halfop "%" "+h"
-	Voice "+" "+v"
+    Founder "~" "+q"
+    Protected "&" "+a"
+    Operator "@" "+o"
+    Halfop "%" "+h"
+    Voice "+" "+v"
 */
 
 //? Questo rappresenta un SINGOLO CLIENT connesso al canale
 //! Questo è da rivedere, credo ci sia un modo migliore per implementare questo struct
 typedef struct PChannel
 {
-	char prefix;
-	char modeLetter[2];
-	Client *client;
+    char prefix;
+    char modeLetter[2];
+    Client *client;
 }				t_PChannel;
 
 class Channel
 {
-	public:
+    public:
         
         typedef std::vector<std::string>                    usr_list;
         typedef std::vector<t_PChannel>::const_iterator     usr_pos;
 
-		Channel(std::string chName, std::string chKey, Client *chOperator);
-		~Channel();
+        Channel(std::string chName, std::string chKey, Client *chOperator);
+        ~Channel();
 
         //* ################# GETTERS #################
 
-		std::string     getName() const;
-		std::string	    getTopic() const;
-		Client          *getClient(int fd) const;
-		Client          *getClient(std::string name) const;
-		Client          *getOperator() const;
-		usr_pos         getFirstClient() const;
-		usr_pos         getLastClient() const;
-		t_PChannel      getT_PChannel(std::string name) const;
-		char	        getSymbol() const; //! Questo c'è ancora da capire cosa sia, però di default è settato su "="
-		
+        std::string     getName() const;
+        std::string	    getTopic() const;
+        Client          *getClient(int fd) const;
+        Client          *getClient(std::string name) const;
+        Client          *getOperator() const;
+        usr_pos         getFirstClient() const;
+        usr_pos         getLastClient() const;
+        t_PChannel      getT_PChannel(std::string name) const;
+        char	        getSymbol() const; //! Questo c'è ancora da capire cosa sia, però di default è settato su "="
+        
         //* ################# OPERATIONS #################
 
-		int		addClient(Client *client, std::string password, char prefix, char letter);
-		int		removeClient(std::string CNick);
-		int		removeClient(int fd);
-		void	setOperator(const Client &client);
-		void	setMode(std::string m, int flag);
-		void	addBanned(std::string CNick, std::string cUser);
-		void	setSymbol(char c);
-		void	setTopic(std::string topic);
-		int		sendToAll(std::string text);
-		void	removeBanned(std::string CNick, std::string cUser);
+        int		addClient(Client *client, std::string password, char prefix, char letter);
+        int		removeClient(std::string CNick);
+        int		removeClient(int fd);
+        void	setOperator(const Client &client);
+        void	setMode(std::string m, int flag);
+        void	addBanned(std::string CNick, std::string cUser);
+        void	setSymbol(char c);
+        void	setTopic(std::string topic);
+        int		sendToAll(std::string text);
+        void	removeBanned(std::string CNick, std::string cUser);
 
         //* ################# CHECKS #################
 
         int		isBanned(std::string CNick, std::string CUser);
-		int		hasMode(std::string m);
+        int		hasMode(std::string m);
 
-	private:
-		std::string _chName;
-		std::string _chKey;
-		std::string	_topic;
-		std::vector<t_PChannel> _clientList; //? Questa è la lista di client connessi a quel canale
-		Client      *_chOperator;
-		usr_list    _bannedClients; 
-		int	        _chMode;
-		int	        _clientLimit;
-		int	        _clientNumber;
-		char        _symbol; //! Ancora devo capire cosa sia
+    private:
+        std::string _chName;
+        std::string _chKey;
+        std::string	_topic;
+        std::vector<t_PChannel> _clientList; //? Questa è la lista di client connessi a quel canale
+        Client      *_chOperator;
+        usr_list    _bannedClients; 
+        int	        _chMode;
+        int	        _clientLimit;
+        int	        _clientNumber;
+        char        _symbol; //! Ancora devo capire cosa sia
 
-		class NoSuchChannel : public std::exception
-		{
-			public:
-				const char* what() const throw();
-		};
+        class NoSuchChannel : public std::exception
+        {
+            public:
+                const char* what() const throw();
+        };
 
-		class WrongCharacter : public std::exception
+        class WrongCharacter : public std::exception
         {
             public:
                 const char* what() const throw();
         };
 
         //! Devo capire queste cosa sono
-		int	ft_converter(std::string m);
-		int	checkChName(std::string name);
+        int	ft_converter(std::string m);
+        int	checkChName(std::string name);
 };
 
 #endif

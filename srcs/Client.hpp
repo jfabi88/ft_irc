@@ -21,6 +21,7 @@ class Channel;
 class Client
 {
     public:
+        
         Client();
         Client(const Client &copy);
         ~Client();

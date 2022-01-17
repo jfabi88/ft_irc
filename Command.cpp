@@ -130,6 +130,102 @@ int execCap(Message message, Client *client, Server *server)
 }
 /****************************************************************/
 
+int execInvite(Message message, Client *client, Server *server)
+{
+    std::string     text;
+    std::string     channelName;
+    std::string     cNick;
+    std::string     cTargetNick;
+    Channel         *channel;
+    RepliesCreator  reply;
+
+    cNick = client->getNickname();
+    if (message.getSize() < 2)
+        text = reply.makeErrorNeedMoreParams(cNick, message.getCommand());
+    else
+    {
+        cTargetNick = message.getParametersIndex(0);
+        channelName = message.getParametersIndex(1);
+        channel = server->getChannel(channelName);
+        if (server->getClient(cTargetNick) == NULL)
+            text = reply.makeNoSuchNick(cTargetNick, 0);
+        else if (channel == NULL)
+            text  = reply.makeErrorNoSuchChannel(cNick, channelName);
+        else if (!channel->getClient(cNick))
+            text = reply.makeErrorNotOnChannel(cNick, channelName);
+        else if (channel->hasMode("+i") && channel->getT_PChannel(cNick).prefix != '@')
+            text = reply.makeChanNoPrivsNeeded(cNick, channelName);
+        else if (channel->getClient(cTargetNick))
+            text = reply.makeErrorUserOnChannel(cNick, cTargetNick, channelName);
+        else
+        {
+            text = cNick + " INVITE " + cTargetNick + " " + channelName + DEL;
+            send(server->getClient(cTargetNick)->getSocketFd(), text.c_str(), text.size(), 0);
+            text = reply.makeInviting(cNick, cTargetNick, channelName);
+        }
+    }
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+
+/*********KICK**************/
+
+static int sendKick(std::string sender, std::string kicked, std::string reason, Channel *channel)
+{
+    std::vector<t_PChannel>::const_iterator it;
+    std::string text;
+    std::vector<t_PChannel>::const_iterator end;
+
+    text = ":" + sender + " KICK " + channel->getName() + " " + kicked;
+    if (reason != "")
+        text += " :" + reason;
+    text += DEL;
+    end = channel->getLastClient();
+    for (it = channel->getFirstClient(); it < end; it++)
+        send((*it).client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+
+int execKick(Message message, Client *client, Server *server)
+{
+    std::string     text;
+    RepliesCreator  reply;
+    std::string     channelName;
+    std::string     cNick;
+    std::string     cTargetNick;
+
+    cNick = client->getNickname();
+    if (message.getSize() < 2)
+        text = reply.makeErrorNeedMoreParams(cNick, message.getCommand());
+    else
+    {
+        Channel *channel = server->getChannel(channelName);
+        channelName = message.getParametersIndex(0);
+        if (!server->getClient(cTargetNick))
+            text = reply.makeNoSuchNick(cTargetNick, 0);
+        else if(!channel)
+            text = reply.makeErrorNoSuchChannel(cNick, channelName);
+        else if (!channel->getClient(cNick))
+            text = reply.makeErrorNotOnChannel(cNick, channelName);
+        else if (!channel->getClient(cTargetNick))
+            text = reply.makeErrorNotOnChannel(cTargetNick, channelName);
+        else if (channel->getT_PChannel(cNick).prefix != '@')
+            text = reply.makeChanNoPrivsNeeded(cNick, channelName);
+        else
+        {
+            Client *clientTarget = server->getClient(cTargetNick);
+            channel->removeClient(cTargetNick);
+            clientTarget->removeChannel(channelName);
+            if (message.getSize() == 3)
+                sendKick(cNick, cTargetNick, message.getLastParameter(), channel);
+            else
+                sendKick(cNick, cTargetNick, "", channel);
+        }
+    }
+    return (0);
+}
+/********************************/
+
 int execNick(Message message, Client *client, Server *server)
 {
     RepliesCreator  reply;
@@ -443,6 +539,26 @@ int execPrivmsg(Message message, Client *client, Server *server)
 }
 //*******************************************************************//
 
+int execQuit(Message message, Client *client, Server *server)
+{
+    std::string text;
+    std::vector<Channel *>::const_iterator  it;
+    std::vector<Channel *>::const_iterator  end;
+
+    text = ":" + client->getNickname() + " QUIT";
+    if (message.getSize() == 1)
+        text += " :Quit:" + message.getParametersIndex(0);
+    text += DEL;
+    end = client->getLastChannel();
+    for (it = client->getFirstChannel(); it < end; it++)
+    {
+        (*it)->removeClient(client->getSocketFd());
+        (*it)->sendToAll(text);
+    }
+    server->removeClient(client->getNickname());
+    return (0);
+}
+
 int execUser(Message message, Client *client)
 {
     RepliesCreator  reply;
@@ -469,11 +585,14 @@ int execUser(Message message, Client *client)
     return (0);
 }
 
-std::string listCommands[4] = {
+std::string listCommands[7] = {
     "AWAY",
+    "INVITE",
     "JOIN",
+    "KICK",
     "NOTICE",
-    "PRIVMSG"
+    "PRIVMSG",
+    "QUIT"
 };
 
 int execCommand(Message message, Client *client, Server *server)
@@ -488,11 +607,17 @@ int execCommand(Message message, Client *client, Server *server)
         case 0:
             return (execAway(message, client)); //AWAY
         case 1:
-            return (execJoin(message, client, server));              //JOIN
+            return (execInvite(message, client, server));           //INVITE
         case 2:
-            return (execNotice(message, client, server));            //NOTICE
+            return (execJoin(message, client, server));              //JOIN
         case 3:
+            return (execKick(message, client, server));             //KICK
+        case 4:
+            return (execNotice(message, client, server));            //NOTICE
+        case 5:
             return (execPrivmsg(message, client, server));         //PRIVMSG
+        case 6:
+            return (execQuit(message, client, server));            //QUIT
         default:
             return (0);
     }

@@ -21,9 +21,12 @@ class Server;
 int execCommand(Message message, Client *client, Server *server);
 
 int execCap(Message message, Client *client, Server *server);
+int execInvite(Message message, Client *client, Server *server);
 int execJoin(Message message, Client *client, Server *server);
+int execKick(Message message, Client *client, Server *server);
 int execNick(Message message, Client *client, Server *server);
 int execPass(Message message, Client *client, Server *server);
+int execQuit(Message message, Client *client, Server *server);
 int execRPing(Message message, Client *client);
 int execSPing(Message message, Client *client);
 int execPrivmsg(Message message, Client *client, Server *server);

@@ -132,7 +132,11 @@ int main(int argc, char *argv[])
                                 get_in_addr((struct sockaddr*)&remoteaddr),
                                 remoteIP, INET6_ADDRSTRLEN),
                             newfd);
-                        irc.startCommunication(newfd, buf);
+                        std::cout << "Ciao ciao" << std::endl;
+                        Client  *client = new Client();
+                        client->setSocketFd(newfd);
+                        irc.setClient(client);
+                        std::cout << "Ciao ciao ciao" << std::endl;
                     }
                 } else {
                     // handle data from a client
@@ -147,10 +151,12 @@ int main(int argc, char *argv[])
                         close(i); // bye!
                         FD_CLR(i, &master); // remove from master set
                     } else {
-                        if (irc.getClient(i))
+                        Client *client = irc.getClient(i);
+                        std::cout << "Il client: " << client << std::endl;
+                        if (client && client->getRegistered())
                             irc.receiveCommand(i, buf);
                         else
-                            irc.startCommunication(i, buf);
+                            irc.startCommunication(i, buf, client);
                         //std::cout << "Ciao a tutti" << std::endl;
                         //send(i, buf, nbytes, 0);
                         // we got some data from a client

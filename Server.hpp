@@ -52,7 +52,7 @@ class Server
         void    addChannel(Channel *channel);
         void    removeChannel(std::string channelName);
 
-        int     startCommunication(int fdNewClient, char *buffer);
+        int     startCommunication(int fdNewClient, char *buffer, Client *client);
         int     receiveCommand(int fdClient, char *buffer);
 
         int     hasCapability(std::string name) const;

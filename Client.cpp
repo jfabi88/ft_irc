@@ -26,6 +26,7 @@ Client::Client()
     this->registered = false;
     this->access = 0;
     this->channelSub = 0;
+    this->recFlag = 0;
     std::cout << "Client created" << std::endl;
 }
 
@@ -132,6 +133,11 @@ int Client::getChannelSub() const
     return (this->channelSub);
 }
 
+int Client::getRecFlag() const
+{
+    return (this->recFlag);
+}
+
 bool Client::getAway() const
 {
     return (this->away);
@@ -160,6 +166,11 @@ void Client::setNickname(std::string newname)
 void Client::setPassword(std::string newpassword)
 {
     this->password = newpassword;
+}
+
+void Client::setRecFlag(int flag)
+{
+    this->recFlag = flag;
 }
 
 void Client::setSocketFd(int fd)

@@ -16,8 +16,8 @@
 #include <iostream>
 #include <vector>
 
-#define DEL "\r\n"
-#define DELSIZE 2
+#define DEL "\n"
+#define DELSIZE 1
 
 class Message
 {

@@ -12,19 +12,7 @@
 
 #include "RepliesCreator.hpp"
 
-RepliesCreator::RepliesCreator()
-{
-    std::cout << "RepliesCreator created" << std::endl;
-}
-
-RepliesCreator::~RepliesCreator()
-{
-    std::cout << "RepliesCreator deleted" << std::endl;
-}
-
-/**PUBBLIC-FUNCTIONS**/
-
-std::string RepliesCreator::makeWelcome(std::string CNickname, std::string CUsername, std::string SName)
+std::string makeWelcome(std::string CNickname, std::string CUsername, std::string SName)
 {
     std::string text;
  
@@ -33,7 +21,7 @@ std::string RepliesCreator::makeWelcome(std::string CNickname, std::string CUser
     return (text);
 }
 
-std::string RepliesCreator::makeYourHost(std::string Servname, std::string SVersion, std::string CNickname)
+std::string makeYourHost(std::string Servname, std::string SVersion, std::string CNickname)
 {
     std::string text;
 
@@ -42,7 +30,7 @@ std::string RepliesCreator::makeYourHost(std::string Servname, std::string SVers
     return (text);
 }
 
-std::string RepliesCreator::makeCreated(std::string SDate, std::string CNick)
+std::string makeCreated(std::string SDate, std::string CNick)
 {
     std::string text;
 
@@ -50,7 +38,7 @@ std::string RepliesCreator::makeCreated(std::string SDate, std::string CNick)
     return (text);
 }
 
-std::string RepliesCreator::makeAway(std::string Client, std::string CNick, std::string message)
+std::string makeAway(std::string Client, std::string CNick, std::string message)
 {
     std::string text;
 
@@ -58,7 +46,7 @@ std::string RepliesCreator::makeAway(std::string Client, std::string CNick, std:
     return (text);
 }
 
-std::string RepliesCreator::makeUnAway(std::string Client)
+std::string makeUnAway(std::string Client)
 {
     std::string text;
 
@@ -66,7 +54,7 @@ std::string RepliesCreator::makeUnAway(std::string Client)
     return (text);
 }
 
-std::string RepliesCreator::makeNowAway(std::string Client)
+std::string makeNowAway(std::string Client)
 {
     std::string text;
 
@@ -74,7 +62,7 @@ std::string RepliesCreator::makeNowAway(std::string Client)
     return (text);
 }
 
-std::string RepliesCreator::makeTopic(std::string channelName, std::string topic, std::string CNick)
+std::string makeTopic(std::string channelName, std::string topic, std::string CNick)
 {
     std::string text;
 
@@ -82,7 +70,7 @@ std::string RepliesCreator::makeTopic(std::string channelName, std::string topic
     return (text);
 }
 
-std::string RepliesCreator::makeInviting(std::string CNick, std::string CNickTarget, std::string channel)
+std::string makeInviting(std::string CNick, std::string CNickTarget, std::string channel)
 {
     std::string text;
 
@@ -90,7 +78,7 @@ std::string RepliesCreator::makeInviting(std::string CNick, std::string CNickTar
     return (text);
 }
 
-std::string RepliesCreator::makeNamReply(Channel channel, std::string CNick)
+std::string makeNamReply(Channel channel, std::string CNick)
 {
     std::string text;
 
@@ -109,7 +97,7 @@ std::string RepliesCreator::makeNamReply(Channel channel, std::string CNick)
     return (text);
 }
 
-std::string RepliesCreator::makeEndOfNames(std::string channelName, std::string CNick)
+std::string makeEndOfNames(std::string channelName, std::string CNick)
 {
     std::string text;
 
@@ -117,7 +105,7 @@ std::string RepliesCreator::makeEndOfNames(std::string channelName, std::string 
     return (text);
 }
 
-std::string RepliesCreator::makeNoSuchNick(std::string CNick, int flag)
+std::string makeNoSuchNick(std::string CNick, int flag)
 {
     std::string text;
 
@@ -128,7 +116,7 @@ std::string RepliesCreator::makeNoSuchNick(std::string CNick, int flag)
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNoSuchChannel(std::string CNick, std::string channelName)
+std::string makeErrorNoSuchChannel(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -136,7 +124,7 @@ std::string RepliesCreator::makeErrorNoSuchChannel(std::string CNick, std::strin
     return (text);
 }
 
-std::string RepliesCreator::makeCannotSendToChan(std::string CNick, std::string channelName)
+std::string makeCannotSendToChan(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -144,7 +132,7 @@ std::string RepliesCreator::makeCannotSendToChan(std::string CNick, std::string 
     return (text);
 }
 
-std::string RepliesCreator::makeTooManyChannels(std::string CNick, std::string ChannelName)
+std::string makeTooManyChannels(std::string CNick, std::string ChannelName)
 {
     std::string text;
 
@@ -152,7 +140,7 @@ std::string RepliesCreator::makeTooManyChannels(std::string CNick, std::string C
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNoNickNameGiven(std::string CNick)
+std::string makeErrorNoNickNameGiven(std::string CNick)
 {
     std::string text;
 
@@ -160,7 +148,7 @@ std::string RepliesCreator::makeErrorNoNickNameGiven(std::string CNick)
     return (text);
 }
 
-std::string RepliesCreator::makeErrorErroneusNickName(std::string CNick, std::string nick)
+std::string makeErrorErroneusNickName(std::string CNick, std::string nick)
 {
     std::string text;
 
@@ -168,7 +156,7 @@ std::string RepliesCreator::makeErrorErroneusNickName(std::string CNick, std::st
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNickNameInUse(std::string CNick, std::string nick)
+std::string makeErrorNickNameInUse(std::string CNick, std::string nick)
 {
     std::string text;
 
@@ -176,7 +164,7 @@ std::string RepliesCreator::makeErrorNickNameInUse(std::string CNick, std::strin
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNotOnChannel(std::string CNick, std::string channelName)
+std::string makeErrorNotOnChannel(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -184,7 +172,7 @@ std::string RepliesCreator::makeErrorNotOnChannel(std::string CNick, std::string
     return (text);
 }
 
-std::string RepliesCreator::makeErrorUserOnChannel(std::string CNick, std::string CNickTarget, std::string channelName)
+std::string makeErrorUserOnChannel(std::string CNick, std::string CNickTarget, std::string channelName)
 {
     std::string text;
 
@@ -192,7 +180,7 @@ std::string RepliesCreator::makeErrorUserOnChannel(std::string CNick, std::strin
     return (text);
 }
 
-std::string RepliesCreator::makeErrorNeedMoreParams(std::string CNick, std::string command)
+std::string makeErrorNeedMoreParams(std::string CNick, std::string command)
 {
     std::string text;
 
@@ -200,7 +188,7 @@ std::string RepliesCreator::makeErrorNeedMoreParams(std::string CNick, std::stri
     return (text);
 }
 
-std::string RepliesCreator::makeErrorAlreadyRegistered(std::string CNick)
+std::string makeErrorAlreadyRegistered(std::string CNick)
 {
     std::string text;
 
@@ -208,7 +196,7 @@ std::string RepliesCreator::makeErrorAlreadyRegistered(std::string CNick)
     return (text);
 }
 
-std::string RepliesCreator::makePasswdMisMatch(std::string CNick)
+std::string makePasswdMisMatch(std::string CNick)
 {
     std::string text;
 
@@ -216,7 +204,7 @@ std::string RepliesCreator::makePasswdMisMatch(std::string CNick)
     return (text);
 }
 
-std::string RepliesCreator::makeErrorChannelIsFull(std::string CNick, std::string channelName)
+std::string makeErrorChannelIsFull(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -224,7 +212,7 @@ std::string RepliesCreator::makeErrorChannelIsFull(std::string CNick, std::strin
     return (text);   
 }
 
-std::string RepliesCreator::makeInviteOnlyChan(std::string CNick, std::string channelName)
+std::string makeInviteOnlyChan(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -232,7 +220,7 @@ std::string RepliesCreator::makeInviteOnlyChan(std::string CNick, std::string ch
     return (text);
 }
 
-std::string RepliesCreator::makeErrorBannedFromChan(std::string CNick, std::string channelName)
+std::string makeErrorBannedFromChan(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -240,7 +228,7 @@ std::string RepliesCreator::makeErrorBannedFromChan(std::string CNick, std::stri
     return (text);
 }
 
-std::string RepliesCreator::makeErrorBadChannelKey(std::string CNick, std::string channelName)
+std::string makeErrorBadChannelKey(std::string CNick, std::string channelName)
 {
     std::string text;
 
@@ -248,7 +236,7 @@ std::string RepliesCreator::makeErrorBadChannelKey(std::string CNick, std::strin
     return (text);
 }
 
-std::string RepliesCreator::makeErrorBadChanMask(std::string channel)
+std::string makeErrorBadChanMask(std::string channel)
 {
     std::string text;
 
@@ -256,7 +244,7 @@ std::string RepliesCreator::makeErrorBadChanMask(std::string channel)
     return (text);
 }
 
-std::string RepliesCreator::makeChanNoPrivsNeeded(std::string CNick, std::string channel)
+std::string makeChanNoPrivsNeeded(std::string CNick, std::string channel)
 {
     std::string text;
 

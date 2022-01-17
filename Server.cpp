@@ -217,31 +217,39 @@ int     Server::findClient(std::string nickname) const
     return (-1);
 }
 
-int Server::startCommunication(int fdNewClient, char *buffer)
+int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
 {
     int flag;
-    Client  *client = new Client();
     std::vector<std::string> array;
 
-    flag = 0;
-    client->setSocketFd(fdNewClient);
-    while (flag != 3 && flag != 7)
+    flag = client->getRecFlag();
+    std::cout << "All'inzio la flag: " << flag << std::endl;
+    if (flag != 3 && flag != 7)
     {
+        std::cout << "POllo" << std::endl;
         array = ft_take_messages(fdNewClient, buffer);
         for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
+        {
+            std::cout << "ciao" << std::endl;
             flag = this->ft_exec_communication_commands(flag, *it, client);
+        }
     }
-    if (this->password != "" && !client->getAccess())
+    std::cout << "LA FLAG: " << flag << std::endl;
+    client->setRecFlag(flag);
+    std::cout << "IL REC FLAGGGGGGGGGGGGG " << client->getRecFlag() << std::endl;
+    if (flag == 3 || flag == 7)
     {
-        RepliesCreator reply;
-        std::string text = reply.makePasswdMisMatch(client->getNickname());
-        send(fdNewClient, text.c_str(), text.size(), 0);
-        delete client;
-        return (0);
+        if (this->password != "" && !client->getAccess())
+        {
+            std::string text = makePasswdMisMatch(client->getNickname());
+            send(fdNewClient, text.c_str(), text.size(), 0);
+            delete client;
+            return (0);
+        }
+        client->setRegistered(true);
+        std::cout << *client << std::endl;
+        ft_welcome(client);
     }
-    this->setClient(client);
-    std::cout << *client << std::endl;
-    ft_welcome(client);
     return (0);
 }
 
@@ -300,11 +308,11 @@ std::vector<std::string> Server::ft_take_messages(int fdClient, char *buffer)
     std::cout << "prima di recv" << std::endl;
     b = "";
     if (buffer[0] == 0)
-        recv(fdClient, buffer, 512, 0);
-    std::cout << "dopo di recv" << std::endl;
+        recv(fdClient, buffer, 512, 0);   //jfabi: a che serve questa cosa?
+    std::cout << "dopo di recv. Il buffer: " << buffer << std::endl;
     this->ft_parse_data(&array, &b, buffer);
     ft_memset(buffer, 512);
-    while (b != "")
+    while (b != "")                        //jfabi: questo serve per il multilines, cosa che noi non dobbiamo gestire per forza
     {
         std::cout << "Prima di recv" << std::endl;
         recv(fdClient, buffer, 512, 0);
@@ -338,7 +346,6 @@ void Server::ft_parse_data(std::vector<std::string> *array, std::string *b, char
 
 int Server::ft_exec_communication_commands(int flag, std::string text, Client *client)
 {
-    RepliesCreator  reply;
     Message message;
     std::string commands[5] = {
         "CAP",
@@ -387,12 +394,11 @@ int Server::ft_exec_communication_commands(int flag, std::string text, Client *c
 
 int Server::ft_welcome(Client *client)
 {
-    RepliesCreator  reply;
     std::string text;
 
-    text = reply.makeWelcome(client->getNickname(), client->getUsername(), this->getServername());
-    text.append(reply.makeYourHost(this->getServername(), this->getVersion(), client->getNickname()));
-    text.append(reply.makeCreated(this->getDate(), client->getNickname()));
+    text = makeWelcome(client->getNickname(), client->getUsername(), this->getServername());
+    text.append(makeYourHost(this->getServername(), this->getVersion(), client->getNickname()));
+    text.append(makeCreated(this->getDate(), client->getNickname()));
     std::cout << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return(0);

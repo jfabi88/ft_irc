@@ -24,15 +24,13 @@ int execAway(Message message, Client *client)
     if (client->getAway() && message.getParametersIndex(0) == "")
     {
         client->setAway(false, message.getParametersIndex(0));
-        RepliesCreator reply;
-        text = reply.makeUnAway(client->getUsername());
+        text = makeUnAway(client->getUsername());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
     else if (!client->getAway() && message.getParametersIndex(0) != "")
     {
         client->setAway(true, message.getParametersIndex(0));
-        RepliesCreator reply;
-        text = reply.makeNowAway(client->getUsername());
+        text = makeNowAway(client->getUsername());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
     return (0);
@@ -137,31 +135,30 @@ int execInvite(Message message, Client *client, Server *server)
     std::string     cNick;
     std::string     cTargetNick;
     Channel         *channel;
-    RepliesCreator  reply;
 
     cNick = client->getNickname();
     if (message.getSize() < 2)
-        text = reply.makeErrorNeedMoreParams(cNick, message.getCommand());
+        text = makeErrorNeedMoreParams(cNick, message.getCommand());
     else
     {
         cTargetNick = message.getParametersIndex(0);
         channelName = message.getParametersIndex(1);
         channel = server->getChannel(channelName);
         if (server->getClient(cTargetNick) == NULL)
-            text = reply.makeNoSuchNick(cTargetNick, 0);
+            text = makeNoSuchNick(cTargetNick, 0);
         else if (channel == NULL)
-            text  = reply.makeErrorNoSuchChannel(cNick, channelName);
+            text  = makeErrorNoSuchChannel(cNick, channelName);
         else if (!channel->getClient(cNick))
-            text = reply.makeErrorNotOnChannel(cNick, channelName);
+            text = makeErrorNotOnChannel(cNick, channelName);
         else if (channel->hasMode("+i") && channel->getT_PChannel(cNick).prefix != '@')
-            text = reply.makeChanNoPrivsNeeded(cNick, channelName);
+            text = makeChanNoPrivsNeeded(cNick, channelName);
         else if (channel->getClient(cTargetNick))
-            text = reply.makeErrorUserOnChannel(cNick, cTargetNick, channelName);
+            text = makeErrorUserOnChannel(cNick, cTargetNick, channelName);
         else
         {
             text = cNick + " INVITE " + cTargetNick + " " + channelName + DEL;
             send(server->getClient(cTargetNick)->getSocketFd(), text.c_str(), text.size(), 0);
-            text = reply.makeInviting(cNick, cTargetNick, channelName);
+            text = makeInviting(cNick, cTargetNick, channelName);
         }
     }
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
@@ -189,28 +186,27 @@ static int sendKick(std::string sender, std::string kicked, std::string reason, 
 int execKick(Message message, Client *client, Server *server)
 {
     std::string     text;
-    RepliesCreator  reply;
     std::string     channelName;
     std::string     cNick;
     std::string     cTargetNick;
 
     cNick = client->getNickname();
     if (message.getSize() < 2)
-        text = reply.makeErrorNeedMoreParams(cNick, message.getCommand());
+        text = makeErrorNeedMoreParams(cNick, message.getCommand());
     else
     {
         Channel *channel = server->getChannel(channelName);
         channelName = message.getParametersIndex(0);
         if (!server->getClient(cTargetNick))
-            text = reply.makeNoSuchNick(cTargetNick, 0);
+            text = makeNoSuchNick(cTargetNick, 0);
         else if(!channel)
-            text = reply.makeErrorNoSuchChannel(cNick, channelName);
+            text = makeErrorNoSuchChannel(cNick, channelName);
         else if (!channel->getClient(cNick))
-            text = reply.makeErrorNotOnChannel(cNick, channelName);
+            text = makeErrorNotOnChannel(cNick, channelName);
         else if (!channel->getClient(cTargetNick))
-            text = reply.makeErrorNotOnChannel(cTargetNick, channelName);
+            text = makeErrorNotOnChannel(cTargetNick, channelName);
         else if (channel->getT_PChannel(cNick).prefix != '@')
-            text = reply.makeChanNoPrivsNeeded(cNick, channelName);
+            text = makeChanNoPrivsNeeded(cNick, channelName);
         else
         {
             Client *clientTarget = server->getClient(cTargetNick);
@@ -228,7 +224,6 @@ int execKick(Message message, Client *client, Server *server)
 
 int execNick(Message message, Client *client, Server *server)
 {
-    RepliesCreator  reply;
     std::string     nick;
     std::string     cNick;
     std::string     error;
@@ -239,13 +234,13 @@ int execNick(Message message, Client *client, Server *server)
     nick = message.getLastParameter();
     cNick = client->getNickname();
     if (nick == "")
-        error = reply.makeErrorNoNickNameGiven(cNick);
+        error = makeErrorNoNickNameGiven(cNick);
     else if (server->findClient(nick) != -1)
-        error = reply.makeErrorNickNameInUse(cNick, nick);
+        error = makeErrorNickNameInUse(cNick, nick);
     for (i = 0; i < nick.size(); i++)
     {
         if (banCharacters.find(nick[i]) != -1)
-            error = reply.makeErrorErroneusNickName(cNick, nick);
+            error = makeErrorErroneusNickName(cNick, nick);
     }
     if (error == "")
         client->setNickname(nick);
@@ -283,24 +278,22 @@ static int ft_parse_channel_key(Message message, std::vector<std::string> *chann
 
 static std::string ft_success_join(Channel channel, Client client)
 {
-    RepliesCreator  reply;
     std::string     text;
 
     text = ":" + client.getNickname() + " JOIN " + channel.getName() + DEL;
     if (channel.getTopic() != "")
-        text.append(reply.makeTopic(channel.getName(), channel.getTopic(), client.getNickname()));
-    text.append(reply.makeNamReply(channel, client.getNickname()));
-    text.append(reply.makeEndOfNames(channel.getName(), client.getNickname()));
+        text.append(makeTopic(channel.getName(), channel.getTopic(), client.getNickname()));
+    text.append(makeNamReply(channel, client.getNickname()));
+    text.append(makeEndOfNames(channel.getName(), client.getNickname()));
     return (text);
 }
 
 static std::string ft_exec_join(std::string channelName, std::string key, Client *client, Server *server)
 {
-    RepliesCreator reply;
     Channel *newChannel;
 
     if (client->getChannelSub() >= CHANLIMIT)
-        return (reply.makeTooManyChannels(client->getNickname(), channelName));
+        return (makeTooManyChannels(client->getNickname(), channelName));
     newChannel = server->getChannel(channelName);
     if (newChannel == NULL)
     {
@@ -313,21 +306,21 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
         }
         catch (const std::exception& e)
         {
-            return (reply.makeErrorBadChanMask(channelName));
+            return (makeErrorBadChanMask(channelName));
         }
     }
     else
     {
         int num;
         if (newChannel->isBanned(client->getNickname(), client->getUsername()))
-            return (reply.makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
+            return (makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
         else if (newChannel->hasMode("+i"))
-            return (reply.makeInviteOnlyChan(client->getNickname(), newChannel->getName()));
+            return (makeInviteOnlyChan(client->getNickname(), newChannel->getName()));
         num = newChannel->addClient(client, key, 0, 0);
         if (num == 1)
-            return (reply.makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
+            return (makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
         else if (num == 2)
-            return (reply.makeErrorChannelIsFull(client->getNickname(), newChannel->getName()));
+            return (makeErrorChannelIsFull(client->getNickname(), newChannel->getName()));
         return (ft_success_join(*newChannel, *client));
     }
     return ("");
@@ -335,14 +328,13 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
 
 int execJoin(Message message, Client *client, Server *server)
 {
-    RepliesCreator  reply;
     std::string     text;
     std::vector<std::string> listChannel;
     std::vector<std::string> listKey;
 
     if (ft_parse_channel_key(message, &listChannel, &listKey))
     {
-        text = reply.makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
+        text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
     else
@@ -366,7 +358,6 @@ int execNotice(Message message, Client *client, Server *server)
 {
     std::string target;
     Client      *clientTarget;
-    RepliesCreator reply;
     std::string text;
 
     if (message.getSize() < 2)
@@ -391,16 +382,15 @@ int execPart(Message message, Client *client, Server *server)
     std::string channelName;
     std::string toSend;
     Channel *channel;
-    RepliesCreator reply;
 
     for (it = message.getParameters().begin(); it <= message.getParameters().end(); it++)
     {
         channelName = *it;
         channel = server->getChannel(channelName);
         if (channel == NULL)
-            toSend = reply.makeErrorNoSuchChannel(client->getNickname(), channelName);
+            toSend = makeErrorNoSuchChannel(client->getNickname(), channelName);
         else if (!channel->getClient(client->getNickname()))
-            toSend = reply.makeErrorNotOnChannel(client->getNickname(), channelName);
+            toSend = makeErrorNotOnChannel(client->getNickname(), channelName);
         else
         {
             if (channel->removeClient(client->getNickname()) == -1)
@@ -414,22 +404,21 @@ int execPart(Message message, Client *client, Server *server)
 
 int execPass(Message message, Client *client, Server *server)
 {
-    RepliesCreator  reply;
     std::string     cNick;
     std::string     text = "";
     int             flag;
 
     cNick = client->getNickname();
     if (client->getRegistered())
-        text = reply.makeErrorAlreadyRegistered(cNick);
+        text = makeErrorAlreadyRegistered(cNick);
     else if (message.getSize() < 1)
-        text = reply.makeErrorNeedMoreParams(cNick, "PASS");
+        text = makeErrorNeedMoreParams(cNick, "PASS");
     else
     {
         flag = server->verifyPassword(message.getParametersIndex(0));
         client->setAccess(flag);
         if (flag != 1)
-            text = reply.makePasswdMisMatch(cNick);
+            text = makePasswdMisMatch(cNick);
     }
     if (text != "")
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
@@ -438,11 +427,10 @@ int execPass(Message message, Client *client, Server *server)
 
 int execRPing(Message message, Client *client)
 {
-    RepliesCreator  reply;
     std::string     text;
 
     if (message.getSize() < 1)
-        reply.makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
+        makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
     else
     {
         text.append("PONG ");
@@ -469,7 +457,6 @@ int execSPing(Message message, Client *client)
 
 static int execPrivmsgChannel(Message message, Client *client, Server *server, std::string target)
 {
-    RepliesCreator  reply;
     Channel *channel;
     std::string text;
     std::vector<t_PChannel>::const_iterator it;
@@ -477,7 +464,7 @@ static int execPrivmsgChannel(Message message, Client *client, Server *server, s
     channel = server->getChannel(target);
     if (channel == NULL)
     {
-        text = reply.makeCannotSendToChan(client->getNickname(), target);
+        text = makeCannotSendToChan(client->getNickname(), target);
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
     else
@@ -494,18 +481,17 @@ static int execPrivmsgChannel(Message message, Client *client, Server *server, s
 static int execPrivmsgClient(Message message, Client *client, Server *server, std::string target)
 {
     Client      *clientTarget;
-    RepliesCreator reply;
     std::string text;
 
     clientTarget = server->getClient(target);
     if (clientTarget == NULL)
     {
-        text = reply.makeNoSuchNick(target, 0);
+        text = makeNoSuchNick(target, 0);
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
     else if (clientTarget->getAway())
     {
-        text = reply.makeAway(clientTarget->getUsername(), clientTarget->getNickname(), clientTarget->getAwayMessage());
+        text = makeAway(clientTarget->getUsername(), clientTarget->getNickname(), clientTarget->getAwayMessage());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
     else
@@ -561,16 +547,15 @@ int execQuit(Message message, Client *client, Server *server)
 
 int execUser(Message message, Client *client)
 {
-    RepliesCreator  reply;
     std::string     username;
     std::string     cNick;
     std::string     error;
 
     cNick = client->getNickname();
     if (message.getSize() < 4)
-        error = reply.makeErrorNeedMoreParams(cNick, "USER");
+        error = makeErrorNeedMoreParams(cNick, "USER");
     else if (client->getUsername() != "")
-        error = reply.makeErrorAlreadyRegistered(cNick);
+        error = makeErrorAlreadyRegistered(cNick);
     else
     {
         username = message.getParametersIndex(0);

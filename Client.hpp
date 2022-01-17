@@ -38,6 +38,7 @@ class Client
         int         getSocketFd() const;
         int         getChannelSub() const;
         int         getAccess() const;
+        int         getRecFlag() const;
         bool        getAway() const;
         bool        getRegistered() const;
         std::string getAwayMessage() const;
@@ -48,6 +49,7 @@ class Client
         void        setUsername(std::string newusername);
         void        setRealname(std::string newrealname);
         void        setSocketFd(int fd);
+        void        setRecFlag(int flag);
         void        setAway(bool flag, std::string message);
         void        setCapabilities(std::vector<std::string> newVector);
         void        setRegistered(bool flag);
@@ -63,6 +65,7 @@ class Client
         std::string username;
         std::string realname;
         std::string awayMessage;
+        int         recFlag;
         int         channelSub;
         int         socket;
         int         access;

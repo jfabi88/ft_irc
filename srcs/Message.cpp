@@ -38,7 +38,7 @@ Message::~Message() {
 std::string Message::getPrefix() const  { return (this->_prefix);  }
 std::string Message::getCommand() const { return (this->_command); }
 
-std::string Message::getParametersIndex(int i) const
+std::string Message::getParametersIndex(size_t i) const
 {
     std::cout << "Parameters size: " << this->_parameters.size() << std::endl;
     return (i >= this->_parameters.size()) ? ("") : (this->_parameters[i]); 

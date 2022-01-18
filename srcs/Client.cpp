@@ -11,19 +11,20 @@
 /* ************************************************************************** */
 
 #include "Client.hpp"
+#include "Channel.hpp"
 
 //* ::smenna
 //? Ho usato le initialization list per ridurre le linee di codice e rendere tutto più pulito
 
 Client::Client() : \
-    _nickname(""), _password(""), _username(""), _realname(""), _socket(-1),
-    _isAway(false), _isRegistered(false), _access(0), _subChannelsNum(0) {
+    _nickname(""), _password(""), _username(""), _realname(""), _subChannelsNum(0),
+    _socket(-1), _access(0), _recFlag(0), _isAway(false), _isRegistered(false) {
     std::cout << "Client constructor called" << std::endl;
 }
 
 Client::Client(const Client &copy) : \
-    _nickname(copy.getNickname()), _password(copy.getPassword()), _socket(copy.getSocketFd()),
-    _isAway(copy.getAwayStatus()), _access(copy.getAccess()), _subChannelsNum(copy.getChannelSub()) {
+    _nickname(copy.getNickname()), _password(copy.getPassword()), _subChannelsNum(copy.getChannelSub()), 
+    _socket(copy.getSocketFd()), _access(copy.getAccess()), _isAway(copy.getAwayStatus()) {
     std::cout << "Client copy constructor called" << std::endl;
 }
 
@@ -90,6 +91,7 @@ bool Client::getRegisteredStatus() const                    { return (this->_isR
 int Client::getSocketFd() const                             { return (this->_socket); }
 int Client::getChannelSub() const                           { return (this->_subChannelsNum); }
 int Client::getAccess() const                               { return (this->_access); }
+int Client::getRecFlag() const                              {return (this->_recFlag);}
 
 //* ################# SETTERS #################
 
@@ -126,7 +128,7 @@ void Client::setCapabilities(str_list newVector) {
 void Client::setRegistered(bool flag) { this->_isRegistered = flag; }
 void Client::setSocketFd(int fd)      { this->_socket = fd; }
 void Client::setAccess(int flag)      { this->_access = flag; }
-
+void Client::setRecFlag(int flag)     {this->_recFlag = flag;}
 //* ################# CHECKS #################
 
 int Client::hasCapability(std::string name) const

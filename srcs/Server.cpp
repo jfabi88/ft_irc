@@ -318,7 +318,7 @@ std::vector<std::string> Server::ft_take_messages(int fdClient, char *buffer)
 void Server::ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer)
 {
     int num;
-    int lastIndx;
+    size_t lastIndx;
     std::string tmp = "";
 
     num = 0;

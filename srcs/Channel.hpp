@@ -20,8 +20,6 @@
 # include <vector>
 # include <sys/socket.h>
 
-# include "Client.hpp"
-
 //Mode "ntsmkIileb//
 
 # define B 1
@@ -51,6 +49,9 @@
 
 //? Questo rappresenta un SINGOLO CLIENT connesso al canale
 //! Questo è da rivedere, credo ci sia un modo migliore per implementare questo struct
+
+class Client;
+
 typedef struct PChannel
 {
     char prefix;

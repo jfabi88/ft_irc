@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include "srcs/Server.hpp""
+#include "Server.hpp"
 
 #define PORT "9034"   // port we're listening on
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     char remoteIP[INET6_ADDRSTRLEN];
 
     int yes=1;        // for setsockopt() SO_REUSEADDR, below
-    int i, j, rv;
+    int i, rv;
 
     struct addrinfo hints, *ai, *p;
 
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
                     } else {
                         Client *client = irc.getClient(i);
                         std::cout << "Il client: " << client << std::endl;
-                        if (client && client->getRegistered())
+                        if (client && client->getRegisteredStatus())
                             irc.receiveCommand(i, buf);
                         else
                             irc.startCommunication(i, buf, client);

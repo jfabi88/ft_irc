@@ -16,7 +16,7 @@
 # include <iostream>
 # include <vector>
 
-# include <utils.hpp>
+# include "utils.hpp"
 class Message
 {
     public:
@@ -31,7 +31,7 @@ class Message
 
         std::string     getPrefix() const;
         std::string     getCommand() const;
-        std::string     getParametersIndex(int indx) const;
+        std::string     getParametersIndex(size_t indx) const;
         std::string     getLastParameters() const;
         std::string     getLastParameter() const;
         str_list        getParameters() const;

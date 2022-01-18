@@ -49,6 +49,7 @@ class Client
         int                 getSocketFd() const;
         int                 getChannelSub() const;
         int                 getAccess() const;
+        int                 getRecFlag() const;
 
         //* ################# SETTERS #################
 
@@ -63,6 +64,7 @@ class Client
         void                setRegistered(bool flag);
         void                setSocketFd(int fd);
         void                setAccess(int flag);
+        void                setRecFlag(int flag);
 
         //* ################# CHECKS #################
 
@@ -81,6 +83,7 @@ class Client
         int                 _subChannelsNum;
         int                 _socket;
         int                 _access;
+        int                 _recFlag;
         bool                _isAway;
         bool                _isRegistered;
 };

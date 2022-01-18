@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include "Client.hpp"
 
 Channel::Channel(std::string chName, std::string chKey, Client *chOperator) : \
     _chName(chName), _chKey(chKey), _chOperator(chOperator) {

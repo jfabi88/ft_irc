@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "RepliesCreator.hpp"
+#include "Client.hpp"
 
 std::string makeWelcome(std::string CNickname, std::string CUsername, std::string SName)
 {

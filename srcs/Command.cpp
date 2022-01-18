@@ -236,7 +236,7 @@ int execNick(Message message, Client *client, Server *server)
         error = makeErrorNickNameInUse(cNick, nick);
     for (i = 0; i < nick.size(); i++)
     {
-        if (banCharacters.find(nick[i]) != -1)
+        if (banCharacters.find(nick[i]) != std::string::npos)
             error = makeErrorErroneusNickName(cNick, nick);
     }
     if (error == "")
@@ -406,7 +406,7 @@ int execPass(Message message, Client *client, Server *server)
     int             flag;
 
     cNick = client->getNickname();
-    if (client->getRegistered())
+    if (client->getRegisteredStatus())
         text = makeErrorAlreadyRegistered(cNick);
     else if (message.getSize() < 1)
         text = makeErrorNeedMoreParams(cNick, "PASS");
@@ -579,7 +579,7 @@ std::string listCommands[7] = {
 
 int execCommand(Message message, Client *client, Server *server)
 {
-    int i = 0;
+    size_t i = 0;
     std::string command = message.getCommand();
 
     while (i < listCommands->size() && listCommands[i].compare(command))

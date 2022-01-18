@@ -3,21 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfabi <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: smenna <smenna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/30 10:02:21 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/30 10:07:22 by jfabi            ###   ########.fr       */
+/*   Updated: 2022/01/18 17:37:12 by smenna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
-//? Questi sono i caratteri che non possono essere contenuti nel nome del canale
-# define NOCHAR ", ˆG"
-
 # include <iostream>
 # include <vector>
+# include <map>
 # include <sys/socket.h>
 
 //Mode "ntsmkIileb//
@@ -52,19 +50,25 @@
 
 class Client;
 
-typedef struct PChannel
+/* typedef struct PChannel
 {
     char prefix;
     char modeLetter[2];
     Client *client;
-}				t_PChannel;
+}				t_PChannel; */
+
+
+class Modes {
+    public:
+    
+    private:
+};
 
 class Channel
 {
     public:
         
-        typedef std::vector<std::string>                    usr_list;
-        typedef std::vector<t_PChannel>::const_iterator     usr_pos;
+        typedef std::map<std::string, Client*>                    usr_list;
 
         Channel(std::string chName, std::string chKey, Client *chOperator);
         ~Channel();
@@ -76,9 +80,6 @@ class Channel
         Client          *getClient(int fd) const;
         Client          *getClient(std::string name) const;
         Client          *getOperator() const;
-        usr_pos         getFirstClient() const;
-        usr_pos         getLastClient() const;
-        t_PChannel      getT_PChannel(std::string name) const;
         char	        getSymbol() const; 
         
         //* ################# OPERATIONS #################
@@ -103,7 +104,6 @@ class Channel
         std::string _chName;
         std::string _chKey;
         std::string	_topic;
-        std::vector<t_PChannel> _clientList; //? Questa è la lista di client connessi a quel canale
         Client      *_chOperator;
         usr_list    _bannedClients; 
         int	        _chMode;

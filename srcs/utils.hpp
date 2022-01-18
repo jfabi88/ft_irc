@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfabi <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: smenna <smenna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 18:29:26 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/14 18:29:31 by jfabi            ###   ########.fr       */
+/*   Updated: 2022/01/18 17:31:54 by smenna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # define DELSIZE 2
 # define USERLEN 16
 # define CHANLIMIT 2
+# define NOCHAR ", ˆG" //? Questi sono i caratteri che non possono essere contenuti nel nome del canale
 
 //* ################# Message #################
 

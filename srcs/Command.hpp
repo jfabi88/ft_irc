@@ -11,10 +11,11 @@
 /* ************************************************************************** */
 
 #ifndef COMMAND_HPP
-#define COMMAND_HPP
+# define COMMAND_HPP
 
-#include "Message.hpp"
-#include "Client.hpp"
+# include "Message.hpp"
+# include "Client.hpp"
+# include "Utils.hpp"
 
 class Server;
 

@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "Server.hpp"
+#include "srcs/Server.hpp""
 
 struct addrinfo ft_set_hints(void)
 {

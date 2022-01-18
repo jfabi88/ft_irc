@@ -12,11 +12,6 @@
 
 #include "Channel.hpp"
 
-//TODO 1. CAPIRE QUESTA COSA DEL SYMBOL
-//TODO 2. TROVARE UN MODO MIGLIORE PER GESTIRE I CLIENT CONNESSI (ELIMINANDO LO STRUCT)
-//TODO 3. OTTIMIZZARE IL CODICE E RENDERLO PIU' LEGGIBILE
-
-
 Channel::Channel(std::string chName, std::string chKey, Client *chOperator) : \
     _chName(chName), _chKey(chKey), _chOperator(chOperator) {
     if (checkChName(chName))

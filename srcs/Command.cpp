@@ -12,23 +12,20 @@
 
 #include "Server.hpp"
 
-#define USERLEN 16
-#define CHANLIMIT 2
-
 int execAway(Message message, Client *client)
 {
     std::string text;
 
     if (message.getSize() < 1)
         return (0);
-    if (client->getAway() && message.getParametersIndex(0) == "")
+    if (client->getAwayStatus() && message.getParametersIndex(0) == "")
     {
         client->setAway(false, message.getParametersIndex(0));
         RepliesCreator reply;
         text = reply.makeUnAway(client->getUsername());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
-    else if (!client->getAway() && message.getParametersIndex(0) != "")
+    else if (!client->getAwayStatus() && message.getParametersIndex(0) != "")
     {
         client->setAway(true, message.getParametersIndex(0));
         RepliesCreator reply;
@@ -137,7 +134,7 @@ int execNick(Message message, Client *client, Server *server)
     std::string     cNick;
     std::string     error;
     std::string     banCharacters = "?";
-    int             i;
+    size_t          i;
 
     error = "";
     nick = message.getLastParameter();
@@ -279,7 +276,7 @@ int execNotice(Message message, Client *client, Server *server)
     clientTarget = server->getClient(target);
     if (clientTarget == NULL)
         return (0);
-    else if (clientTarget->getAway())
+    else if (clientTarget->getAwayStatus())
         return (0);
     else
     {
@@ -407,7 +404,7 @@ static int execPrivmsgClient(Message message, Client *client, Server *server, st
         text = reply.makeNoSuchNick(target, 0);
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
-    else if (clientTarget->getAway())
+    else if (clientTarget->getAwayStatus())
     {
         text = reply.makeAway(clientTarget->getUsername(), clientTarget->getNickname(), clientTarget->getAwayMessage());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);

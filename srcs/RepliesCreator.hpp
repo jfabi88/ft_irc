@@ -11,14 +11,12 @@
 /* ************************************************************************** */
 
 #ifndef REPLIES_CREATOR
-#define REPLIES_CREATOR
+# define REPLIES_CREATOR
 
-#include <iostream>
-#include <vector>
-#include "Channel.hpp"
-
-#define DEL "\r\n"
-#define DELSIZE 2
+# include <iostream>
+# include <vector>
+# include "Channel.hpp"
+# include "Utils.hpp"
 
 class RepliesCreator
 {

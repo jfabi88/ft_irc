@@ -44,13 +44,8 @@ Channel::~Channel() {
 
 //* ################# GETTERS #################
 
-std::string Channel::getName() const {
-    return (this->_chName);
-}
-
-std::string Channel::getTopic() const {
-    return (this->_topic);
-}
+std::string Channel::getName() const { return (this->_chName); }
+std::string Channel::getTopic() const { return (this->_topic); }
 
 Client *Channel::getClient(int fd) const {
     usr_pos it;
@@ -74,17 +69,9 @@ Client *Channel::getClient(std::string name) const {
     return (NULL);
 }
 
-Client *Channel::getOperator() const {
-    return (this->_chOperator);
-}
-
-Channel::usr_pos Channel::getFirstClient() const {
-    return (this->_clientList.begin());
-}
-
-Channel::usr_pos Channel::getLastClient() const {
-    return (this->_clientList.end());
-}
+Client *Channel::getOperator() const { return (this->_chOperator); }
+Channel::usr_pos Channel::getFirstClient() const { return (this->_clientList.begin()); }
+Channel::usr_pos Channel::getLastClient() const { return (this->_clientList.end()); }
 
 t_PChannel  Channel::getT_PChannel(std::string name) const {
     usr_pos it;
@@ -97,9 +84,7 @@ t_PChannel  Channel::getT_PChannel(std::string name) const {
     throw Channel::NoSuchChannel();
 }
 
-char	Channel::getSymbol() const {
-    return (this->_symbol);
-}
+char	Channel::getSymbol() const { return (this->_symbol); }
 
 //* ################# OPERATIONS #################
 
@@ -152,8 +137,9 @@ int Channel::removeClient(int fd) {
 }
 
 //! Ora come ora, non esiste una funzione che setti quel client come operator
-void Channel::setOperator(const Client &client) {
+/* void Channel::setOperator(Client *client) {
 }
+ */
 
 void Channel::setMode(std::string m, int flag) {
     int bit;

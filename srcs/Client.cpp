@@ -11,82 +11,53 @@
 /* ************************************************************************** */
 
 #include "Client.hpp"
-#include "Channel.hpp"
 
-/**CONSTRUCTOR**/
+//* ::smenna
+//? Ho usato le initialization list per ridurre le linee di codice e rendere tutto più pulito
 
-Client::Client()
-{
-    this->nickname = "";
-    this->password = "";
-    this->username = "";
-    this->realname = "";
-    this->socket = -1;
-    this->away = false;
-    this->registered = false;
-    this->access = 0;
-    this->channelSub = 0;
-    std::cout << "Client created" << std::endl;
+Client::Client() : \
+    _nickname(""), _password(""), _username(""), _realname(""), _socket(-1),
+    _isAway(false), _isRegistered(false), _access(0), _subChannelsNum(0) {
+    std::cout << "Client constructor called" << std::endl;
 }
 
-Client::Client(const Client &copy)
-{
-    this->nickname = copy.getNickname();
-    this->password = copy.getPassword();
-    this->socket = copy.getSocketFd();
-    this->away = copy.getAway();
-    this->access = copy.getAccess();
-    this->channelSub = copy.channelSub;
-    std::cout << "Client created" << std::endl;
+Client::Client(const Client &copy) : \
+    _nickname(copy.getNickname()), _password(copy.getPassword()), _socket(copy.getSocketFd()),
+    _isAway(copy.getAwayStatus()), _access(copy.getAccess()), _subChannelsNum(copy.getChannelSub()) {
+    std::cout << "Client copy constructor called" << std::endl;
 }
 
-Client::~Client()
-{
-    std::cout << "Client delated" << std::endl;
+Client::~Client() {
+    std::cout << "Client destructor called" << std::endl;
 }
 
-Client &Client::operator=(const Client &copy)
-{
+Client &Client::operator=(const Client &copy) {
     if (this == &copy)
         return (*this);
-    this->nickname = copy.getNickname();
-    this->password = copy.getPassword();
-    this->socket = copy.getSocketFd();
-    this->access = copy.getAccess();
-    this->channelSub = copy.getChannelSub();
-    std::cout << "Client created" << std::endl;
+
+    this->_nickname = copy.getNickname();
+    this->_password = copy.getPassword();
+    this->_socket = copy.getSocketFd();
+    this->_access = copy.getAccess();
+    this->_subChannelsNum = copy.getChannelSub();
+
+    std::cout << "Client overload (operator=) called" << std::endl;
     return (*this);
 }
 
-/**GET-SET**/
+//* ################# GETTERS #################
 
-std::string Client::getNickname() const
-{
-    return (this->nickname);
-}
+std::string Client::getNickname() const { return (this->_nickname); }
+std::string Client::getPassword() const { return (this->_password); }
+std::string Client::getUsername() const { return (this->_username); }
+std::string Client::getRealname() const { return (this->_realname); }
 
-std::string Client::getPassword() const
-{
-    return (this->password);
-}
+Channel *Client::getChannel(int indx) const {
 
-std::string Client::getUsername() const
-{
-    return (this->username);
-}
+    ch_iter it;
+    int i = 0;
 
-std::string Client::getRealname() const
-{
-    return (this->realname);
-}
-
-Channel *Client::getChannel(int indx) const
-{
-    int i;
-    std::vector<Channel *>::const_iterator it;
-
-    i = 0;
-    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    for (it = this->_subChannels.begin(); it != this->_subChannels.end() ;it++)
     {
         if (i  == indx)
             return (*it);
@@ -95,128 +66,68 @@ Channel *Client::getChannel(int indx) const
     return (NULL);
 }
 
-Channel *Client::getChannel(std::string name) const
-{
-    std::vector<Channel *>::const_iterator it;
+Channel *Client::getChannel(std::string name) const {
 
-    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    ch_iter it;
+
+    for (it = this->_subChannels.begin(); it != this->_subChannels.end() ;it++)
     {
         if (!(*it)->getName().compare(name))
             return (*it);
     }
+
     return (NULL);
 }
 
-std::vector<Channel *>::const_iterator Client::getFirstChannel() const
-{
-    return (this->channels.begin());
-}
+Client::ch_iter Client::getFirstChannel() const             { return (this->_subChannels.begin()); }
+Client::ch_iter Client::getLastChannel() const              { return (this->_subChannels.end());   }
 
-std::vector<Channel *>::const_iterator Client::getLastChannel() const
-{
-    return (this->channels.end());
-}
+std::vector<std::string> Client::getCapabilities() const    { return (this->_capabilities); }
+std::string Client::getAwayMessage() const                  { return (this->_awayMessage); }
 
-int Client::getSocketFd() const
-{
-    return (this->socket);
-}
+bool Client::getAwayStatus() const                          { return (this->_isAway); }
+bool Client::getRegisteredStatus() const                    { return (this->_isRegistered); }
+int Client::getSocketFd() const                             { return (this->_socket); }
+int Client::getChannelSub() const                           { return (this->_subChannelsNum); }
+int Client::getAccess() const                               { return (this->_access); }
 
-int Client::getAccess() const
-{
-    return (this->access);
-}
+//* ################# SETTERS #################
 
-int Client::getChannelSub() const
-{
-    return (this->channelSub);
-}
-
-bool Client::getAway() const
-{
-    return (this->away);
-}
-
-bool Client::getRegistered() const
-{
-    return (this->registered);
-}
-
-std::string Client::getAwayMessage() const
-{
-    return (this->awayMessage);
-}
-
-std::vector<std::string> Client::getCapabilities() const
-{
-    return (this->capabilities);
-}
-
-void Client::setNickname(std::string newname)
-{
-    this->nickname = newname;
-}
-
-void Client::setPassword(std::string newpassword)
-{
-    this->password = newpassword;
-}
-
-void Client::setSocketFd(int fd)
-{
-    this->socket = fd;
-}
-
-void Client::setAccess(int flag)
-{
-    this->access = flag;
-}
-
-void Client::setAway(bool flag, std::string message)
-{
-    this->away = flag;
-    this->awayMessage = message;
-}
-
-void Client::setUsername(std::string newusername)
-{
-    this->username = newusername;
-}
-
-void Client::setRealname(std::string newrealname)
-{
-    this->realname = newrealname;
-}
-
-void Client::setCapabilities(std::vector<std::string> newVector)
-{
-    this->capabilities.clear();
-    this->capabilities = newVector;
-}
-
-void Client::setRegistered(bool flag)
-{
-    this->registered = flag;
-}
-
-void Client::addChannel(Channel *newChannel)
-{
-    this->channels.push_back(newChannel);
-}
+void Client::setNickname(std::string newName)     { this->_nickname = newName; }
+void Client::setPassword(std::string newPassword) { this->_password = newPassword; }
+void Client::setUsername(std::string newUsername) { this->_username = newUsername; }
+void Client::setRealname(std::string newRealname) { this->_realname = newRealname; }
+void Client::addChannel(Channel *newChannel)      { this->_subChannels.push_back(newChannel); }
 
 void Client::removeChannel(std::string channelName)
 {
     std::vector<Channel *>::iterator it;
 
-    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    for (it = this->_subChannels.begin(); it != this->_subChannels.end() ;it++)
     {
         if (!(*it)->getName().compare(channelName))
         {
-            this->channels.erase(it);
+            this->_subChannels.erase(it);
             return ;
         }
     }   
 }
+
+void Client::setAway(bool status, std::string message) {
+    this->_isAway = status;
+    this->_awayMessage = message;
+}
+
+void Client::setCapabilities(str_list newVector) {
+    this->_capabilities.clear();
+    this->_capabilities = newVector;
+}
+
+void Client::setRegistered(bool flag) { this->_isRegistered = flag; }
+void Client::setSocketFd(int fd)      { this->_socket = fd; }
+void Client::setAccess(int flag)      { this->_access = flag; }
+
+//* ################# CHECKS #################
 
 int Client::hasCapability(std::string name) const
 {
@@ -225,11 +136,11 @@ int Client::hasCapability(std::string name) const
     int         i;
 
     i = 0;
-    it = this->capabilities.begin();
+    it = this->_capabilities.begin();
     tmp = name;
     if (name != "" && name[0] == '-')
         tmp = name.substr(1, name.size());
-    while (!(*it).compare(tmp) && it != this->capabilities.end())
+    while (!(*it).compare(tmp) && it != this->_capabilities.end())
     {
         it++;
         i++;
@@ -251,7 +162,7 @@ int     Client::hasCapabilities(std::vector<std::string> prefix) const
     return (1);
 }
 
-/**EXTERNAL-FUNCTIONS**/
+//* ################# EXTERNAL FUNCTIONS #################
 
 std::ostream& operator<<(std::ostream& os, const Client &copy)
 {

@@ -22,55 +22,67 @@ class Client
 {
     public:
         
+        typedef std::vector<std::string>                        str_list;
+        typedef std::vector<Channel *>::const_iterator          ch_iter;
+        typedef std::vector<Channel *>                          ch_list;
+
         Client();
         Client(const Client &copy);
         ~Client();
 
         Client &operator=(const Client &copy);
 
-        std::string getNickname() const;
-        std::string getPassword() const;
-        std::string getUsername() const;
-        std::string getRealname() const;
-        Channel *getChannel(int indx) const;
-        Channel *getChannel(std::string name) const;
-        std::vector<Channel *>::const_iterator getFirstChannel() const;
-        std::vector<Channel *>::const_iterator getLastChannel() const;
-        int         getSocketFd() const;
-        int         getChannelSub() const;
-        int         getAccess() const;
-        bool        getAway() const;
-        bool        getRegistered() const;
-        std::string getAwayMessage() const;
-        std::vector<std::string> getCapabilities() const;
+        //* ################# GETTERS #################
 
-        void        setNickname(std::string newname);
-        void        setPassword(std::string newpassword);
-        void        setUsername(std::string newusername);
-        void        setRealname(std::string newrealname);
-        void        setSocketFd(int fd);
-        void        setAway(bool flag, std::string message);
-        void        setCapabilities(std::vector<std::string> newVector);
-        void        setRegistered(bool flag);
-        void        setAccess(int flag);
-        void        addChannel(Channel *newChannel);
-        void        removeChannel(std::string channelName);
+        std::string         getNickname() const;
+        std::string         getPassword() const;
+        std::string         getUsername() const;
+        std::string         getRealname() const;
+        Channel             *getChannel(int indx) const;
+        Channel             *getChannel(std::string name) const;
+        ch_iter             getFirstChannel() const;
+        ch_iter             getLastChannel() const;
+        str_list            getCapabilities() const;
+        std::string         getAwayMessage() const;
+        bool                getAwayStatus() const;
+        bool                getRegisteredStatus() const;
+        int                 getSocketFd() const;
+        int                 getChannelSub() const;
+        int                 getAccess() const;
 
-        int hasCapability(std::string name) const;
-        int hasCapabilities(std::vector<std::string> prefix) const;
+        //* ################# SETTERS #################
+
+        void                setNickname(std::string newname);
+        void                setPassword(std::string newpassword);
+        void                setUsername(std::string newusername);
+        void                setRealname(std::string newrealname);
+        void                addChannel(Channel *newChannel);
+        void                removeChannel(std::string channelName);
+        void                setCapabilities(str_list newVector);
+        void                setAway(bool flag, std::string message);
+        void                setRegistered(bool flag);
+        void                setSocketFd(int fd);
+        void                setAccess(int flag);
+
+        //* ################# CHECKS #################
+
+        int                 hasCapability(std::string name) const;
+        int                 hasCapabilities(str_list prefix) const;
+
     private:
-        std::string nickname;
-        std::string password;
-        std::string username;
-        std::string realname;
-        std::string awayMessage;
-        int         channelSub;
-        int         socket;
-        int         access;
-        bool        away;
-        bool        registered;
-        std::vector<std::string> capabilities;
-        std::vector<Channel *> channels;
+
+        std::string         _nickname;
+        std::string         _password;
+        std::string         _username;
+        std::string         _realname;
+        std::string         _awayMessage;
+        ch_list             _subChannels;
+        str_list            _capabilities;
+        int                 _subChannelsNum;
+        int                 _socket;
+        int                 _access;
+        bool                _isAway;
+        bool                _isRegistered;
 };
 
 std::ostream& operator<<(std::ostream& os, const Client &copy);

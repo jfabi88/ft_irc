@@ -19,6 +19,7 @@
 # include <iostream>
 # include <vector>
 # include <sys/socket.h>
+
 # include "Client.hpp"
 
 //Mode "ntsmkIileb//
@@ -41,6 +42,12 @@
     Halfop "%" "+h"
     Voice "+" "+v"
 */
+
+//* ::smenna
+//? Mi sono permesso di effettuare alcune modifiche all'interfaccia, più precisamente
+//? 1. Ho aggiunto un copy constructor/overload 
+//? 2. Tutti gli oggetti non sono passati by value ma come const reference (per semplici ragioni di efficienza)
+//? 3. Dove possibile ho aggiunto dei typedef che rendono più comprensibili i tipi con cui stiamo lavorando
 
 //? Questo rappresenta un SINGOLO CLIENT connesso al canale
 //! Questo è da rivedere, credo ci sia un modo migliore per implementare questo struct
@@ -71,14 +78,14 @@ class Channel
         usr_pos         getFirstClient() const;
         usr_pos         getLastClient() const;
         t_PChannel      getT_PChannel(std::string name) const;
-        char	        getSymbol() const; //! Questo c'è ancora da capire cosa sia, però di default è settato su "="
+        char	        getSymbol() const; 
         
         //* ################# OPERATIONS #################
 
         int		addClient(Client *client, std::string password, char prefix, char letter);
         int		removeClient(std::string CNick);
         int		removeClient(int fd);
-        void	setOperator(const Client &client);
+        void	setOperator(Client *client);
         void	setMode(std::string m, int flag);
         void	addBanned(std::string CNick, std::string cUser);
         void	setSymbol(char c);
@@ -101,7 +108,7 @@ class Channel
         int	        _chMode;
         int	        _clientLimit;
         int	        _clientNumber;
-        char        _symbol; //! Ancora devo capire cosa sia
+        char        _symbol; //? Questo symbol è necessario per le numeric replies
 
         class NoSuchChannel : public std::exception
         {
@@ -115,7 +122,6 @@ class Channel
                 const char* what() const throw();
         };
 
-        //! Devo capire queste cosa sono
         int	ft_converter(std::string m);
         int	checkChName(std::string name);
 };

@@ -1,47 +1,68 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: jfabi <marvin@42.fr>                       +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/12/11 11:59:17 by jfabi             #+#    #+#              #
-#    Updated: 2021/12/11 11:59:19 by jfabi            ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+#Name
+NAME =			irc
 
-NAME		=	ft_irc
+#Compiler
+CC = 			g++
+CFLAGS = 		-Wall -Wextra -Werror -std=c++98
+LIBRARIES =
+CFLAG = 		-c
+OFLAG =			-o
+IFLAG =			-I
 
-SRCS		=	Client.cpp \
-				Channel.cpp \
+#Make
+MAKE = 			make -s -C
+MAKE_CLEAN = 	make clean -s -C
+MAKE_FCLEAN = 	make fclean -s -C
+
+#Unzip
+UNZIP =			unzip -X -o -q
+
+#Shell
+MKDIR =			mkdir -p
+CP =			cp
+RM =			rm -rf
+
+#Directories
+SOURCES_DIR =	./srcs
+OBJECTS_DIR =	./objs
+HEADERS_DIR =	./includes
+
+#Files
+FILES =			Channel.cpp \
 				Command.cpp \
+				Client.cpp  \
+				Invite.cpp  \
+				Kick.cpp    \
 				Message.cpp \
+				Quit.cpp    \
 				RepliesCreator.cpp \
-				Server.cpp \
-				test2.cpp
+				Server.cpp  \
+				test.cpp    \
+				test2.cpp   \
+				utils.cpp
 
-OBJS		=	$(SRCS:.cpp=.o)
+#Srcs
+SRCS =			$(foreach FILE, $(FILES), $(shell find $(SOURCES_DIR) -name $(FILE)))
 
-CPP			=	clang++
+#Objs
+OBJS =			$(patsubst $(SOURCES_DIR)/%, $(OBJECTS_DIR)/%, $(SRCS:.cpp=.o))
 
-%.o:		%.cpp
-			$(CPP) $(CFLAGS)   -c $< -o $(<:.cpp=.o)
+$(OBJECTS_DIR)/%.o: $(SOURCES_DIR)/%.cpp
+	@$(MKDIR) $(@D)
+	@$(CC) $(CFLAGS) $(IFLAG) $(HEADERS_DIR) $(CFLAG) $(OFLAG) $@ $<
 
-CFLAGS		=	-std=c++98
+all: $(NAME)
 
-RM			=	rm -f
+$(NAME): $(OBJS)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBRARIES) $(OFLAG) $(NAME)
+	@printf '\x1B[35mDONE!\033[0m\n'
 
-all :		$(NAME)
+clean:
+	@$(RM) $(OBJECTS_DIR)
 
-$(NAME) :	$(OBJS)
-			$(CPP) $(CFLAGS) -o $(NAME) $(OBJS) -I.
+fclean: clean
+	@$(RM) $(NAME)
 
-clean :
-			$(RM) $(OBJS)
+re: fclean all
 
-fclean 	:	clean
-			$(RM) $(NAME)
-
-re :		fclean all
-
-.PHONY :	all clean fclean re
+.PHONY: all norminette clean fclean re

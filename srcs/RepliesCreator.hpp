@@ -3,22 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   RepliesCreator.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfabo <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: smenna <smenna@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 15:08:40 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/11 15:08:42 by jfabi            ###   ########.fr       */
+/*   Updated: 2022/01/18 15:49:53 by smenna           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REPLIES_CREATOR
-#define REPLIES_CREATOR
+# define REPLIES_CREATOR
 
 #include <iostream>
 #include <vector>
+#include <utils.hpp>
 #include "Channel.hpp"
-
-#define DEL "\n"
-#define DELSIZE 1
 
 std::string makeWelcome(std::string CNickname, std::string CUsername, std::string SName);
 std::string makeYourHost(std::string Servname, std::string SVersion, std::string CNickname);

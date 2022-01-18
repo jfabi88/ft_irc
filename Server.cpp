@@ -223,20 +223,13 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
     std::vector<std::string> array;
 
     flag = client->getRecFlag();
-    std::cout << "All'inzio la flag: " << flag << std::endl;
     if (flag != 3 && flag != 7)
     {
-        std::cout << "POllo" << std::endl;
         array = ft_take_messages(fdNewClient, buffer);
         for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
-        {
-            std::cout << "ciao" << std::endl;
             flag = this->ft_exec_communication_commands(flag, *it, client);
-        }
     }
-    std::cout << "LA FLAG: " << flag << std::endl;
     client->setRecFlag(flag);
-    std::cout << "IL REC FLAGGGGGGGGGGGGG " << client->getRecFlag() << std::endl;
     if (flag == 3 || flag == 7)
     {
         if (this->password != "" && !client->getAccess())

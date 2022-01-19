@@ -55,7 +55,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(LIBRARIES) $(OFLAG) $(NAME)
-	@printf '\x1B[35mDONE!\033[0m\n'
+	@printf 'DONE!'
 
 clean:
 	@$(RM) $(OBJECTS_DIR)

@@ -164,6 +164,16 @@ int     Client::hasCapabilities(std::vector<std::string> prefix) const
     return (1);
 }
 
+int Client::hasMode(char c) const
+{
+    std::string text;
+
+    text = this->_mode;
+    if (text.find(c) != std::string::npos)
+        return (1);
+    return (0);
+}
+
 //* ################# EXTERNAL FUNCTIONS #################
 
 std::ostream& operator<<(std::ostream& os, const Client &copy)

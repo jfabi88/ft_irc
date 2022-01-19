@@ -70,7 +70,7 @@ class Client
 
         int                 hasCapability(std::string name) const;
         int                 hasCapabilities(str_list prefix) const;
-
+        int                 hasMode(char c) const;
     private:
 
         std::string         _nickname;
@@ -78,6 +78,7 @@ class Client
         std::string         _username;
         std::string         _realname;
         std::string         _awayMessage;
+        std::string         _mode;
         ch_list             _subChannels;
         str_list            _capabilities;
         int                 _subChannelsNum;

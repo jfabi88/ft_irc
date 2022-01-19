@@ -12,6 +12,26 @@
 
 #include "Server.hpp"
 
+int execAdmin(Message message, Client *client, Server *server)
+{
+    std::string text;
+
+    if (message.getSize() > 0)
+    {
+        if (server->getClient(message.getParametersIndex(0)) == NULL)
+            text = makeNoSuchServer(client->getNickname(), message.getParametersIndex(0));
+    }
+    else
+    {
+        text = makeAdminMe(client->getNickname());
+        text.append(makeAdminLoc1(client->getNickname()));
+        text.append(makeAdminLoc2(client->getNickname()));
+        text.append(makeAdminEmail(client->getNickname()));
+    }
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+
 int execAway(Message message, Client *client)
 {
     std::string text;
@@ -158,6 +178,16 @@ int execInvite(Message message, Client *client, Server *server)
             text = makeInviting(cNick, cTargetNick, channelName);
         }
     }
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+
+int execInfo(Client *client)
+{
+    std::string text;
+
+    text = makeInfo(client->getNickname());
+    text.append(makeEndOfInfo(client->getNickname()));
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
@@ -351,6 +381,50 @@ int execJoin(Message message, Client *client, Server *server)
 }
 //***************************//
 
+//**************MOTD********//
+static std::string  makeRepliesMotD(std::string CNick, std::string Servername, std::string motd)
+{
+    std::string text;
+    int         size;
+    int         motdSize = motd.size();
+    int         start = 0;
+    int         end = 0;
+
+    size = 29 + DELSIZE + CNick.size() + Servername.size();
+    if (size + motdSize > 512)
+        end = 512 - size;
+    else
+        end = motdSize;
+    text = makeMotDStart(CNick, Servername, motd.substr(start, end));
+    while (end != motdSize)
+    {
+        size = 6 + DELSIZE + CNick.size();
+        start = end;
+        if (size + motd.substr(start, motdSize).size() > 512)
+            end = 512 - size + start;
+        else
+            end = motdSize;
+        text.append(makeMotDStart(CNick, Servername, motd.substr(start, end)));
+    }
+    text.append(makeEndOfMotD(CNick));
+    return (text);
+}
+
+int execMotd(Message message, Client *client, Server *server)
+{
+    std::string text;
+
+    if (message.getSize() > 0)
+        text = makeNoSuchServer(client->getNickname(), message.getParametersIndex(0));
+    else if (server->getMotD() == "")
+        text = makeErrorMotD(client->getNickname());
+    else
+        text = makeRepliesMotD(client->getNickname(), server->getServername(), server->getMotD());
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+//************************************//
+
 int execNotice(Message message, Client *client, Server *server)
 {
     std::string target;
@@ -542,6 +616,21 @@ int execQuit(Message message, Client *client, Server *server)
     return (0);
 }
 
+int execTime(Message message, Client *client, Server *server)
+{
+    std::string text;
+
+    if (message.getSize() > 0)
+    {
+        if (server->getClient(message.getParametersIndex(0)) == NULL)
+            text = makeNoSuchServer(client->getNickname(), message.getParametersIndex(0));
+    }
+    else
+        text = makeTime(client->getNickname(), server->getServername(), server->returnDate());
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);   
+}
+
 int execUser(Message message, Client *client)
 {
     std::string     username;
@@ -564,6 +653,24 @@ int execUser(Message message, Client *client)
         return (1);
     }
     send(client->getSocketFd(), error.c_str(), error.size(), 0);
+    return (0);
+}
+
+int execVersion(Message message, Client *client, Server *server)
+{
+    std::string text;
+
+    if (message.getSize() > 0)
+    {
+        if (server->getClient(message.getParametersIndex(0)) == NULL)
+            text = makeNoSuchServer(client->getNickname(), message.getParametersIndex(0));
+    }
+    else
+    {
+        text = makeVersion(client->getNickname());
+        text.append(makeISupport(client->getNickname(), server->getParameter()));
+    }
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
 

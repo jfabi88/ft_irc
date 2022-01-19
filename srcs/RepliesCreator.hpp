@@ -21,7 +21,12 @@
 std::string makeWelcome(std::string CNickname, std::string CUsername, std::string SName);
 std::string makeYourHost(std::string Servname, std::string SVersion, std::string CNickname);
 std::string makeCreated(std::string SDate, std::string CNick);
+std::string makeISupport(std::string CNick, std::vector<std::string> vector);
 
+std::string makeAdminMe(std::string CNick);
+std::string makeAdminLoc1(std::string CNick);
+std::string makeAdminLoc2(std::string CNick);
+std::string makeAdminEmail(std::string CNick);
 std::string makeErrorNeedMoreParams(std::string CNick, std::string command);
 std::string makeErrorAlreadyRegistered(std::string CNick);
 std::string makeErrorNoNickNameGiven(std::string CNick);
@@ -39,15 +44,24 @@ std::string makeErrorNotOnChannel(std::string CNick, std::string channelName);
 std::string makeCannotSendToChan(std::string CNick, std::string channelName);
 std::string makeAway(std::string Client, std::string CNick, std::string message);
 std::string makeUnAway(std::string Client);
+std::string makeMotD(std::string CNick, std::string motd);
+std::string makeEndOfInfo(std::string CNick);
 std::string makeNowAway(std::string Client);
+std::string makeMotDStart(std::string CNick, std::string ServeName, std::string motd);
+std::string makeEndOfMotD(std::string CNick);
+std::string makeTime(std::string CNick, std::string servername, std::string date);
 std::string makeNoSuchNick(std::string CNick, int flag);
+std::string makeNoSuchServer(std::string CNick, std::string SName);
 std::string makeTooManyChannels(std::string CNick, std::string ChannelName);
 
+std::string makeErrorMotD(std::string CNick);
 std::string makeTopic(std::string channelName, std::string topic, std::string CNick);
 std::string makeNamReply(Channel channel, std::string CNick);
 std::string makeEndOfNames(std::string channelName, std::string CNick);
+std::string makeInfo(std::string CNick);
 std::string makeChanNoPrivsNeeded(std::string CNick, std::string channel);
 std::string makeErrorUserOnChannel(std::string CNick, std::string CNickTarget, std::string channelName);
 std::string makeInviting(std::string CNick, std::string CNickTarget, std::string channel);
+std::string makeVersion(std::string CNick);
 
 #endif

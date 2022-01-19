@@ -38,17 +38,21 @@ class Server
         std::string getServername() const;
         std::string getVersion() const;
         std::string getDate() const;
+        std::string getMotD() const;
         std::vector<Client*> getClients() const;
         Client  *getClient(int indx) const;
         Client  *getClient(std::string name) const;
         Channel *getChannel(std::string name) const;
         std::vector<std::string> getCapabilities() const;
-
+        std::vector<std::string> getParameter() const;
+        std::string returnDate() const;
+        
         void    setPort(int newport);
         void    setSocket(int newfd);
         void    setClient(Client *newclient);
         void    setServername(std::string servername);
         void    setVersion(std::string version);
+        void    setMotD(std::string motd);
         void    addChannel(Channel *channel);
         void    removeChannel(std::string channelName);
 
@@ -62,18 +66,43 @@ class Server
         int     verifyPassword(std::string userPassword);
         void    printClients();
         void    removeClient(std::string clientName);
-    private:
-        int                 port;
-        int                 fd;
-        std::string         password;
-        std::string         servername;
-        std::string         version;
-        std::string         date;
-        std::vector<Client *> clients;
-        std::vector<Channel *> channels;
-        std::vector<std::string> capabilities;
 
-        std::string         ft_set_date();
+    private:
+        int                 _port;
+        int                 _fd;
+        std::string         _password;
+        std::string         _servername;
+        std::string         _version;
+        std::string         _date;
+        std::string         _motd;
+        std::vector<Client *> _clients;
+        std::vector<Channel *> _channels;
+        std::vector<std::string> _capabilities;
+
+        //**PARAMETER**//
+        int         _awaylen;
+        std::string _casemapping;
+        std::string _chanlimit;
+        int         _chanlen;
+        std::string _chantypes;
+        std::string _elist;
+        //EXCEPTS
+        //EXTBAN
+        int         _hostlen;
+        //INVEX
+        int         _kicklen;
+        //MAXLIST
+        int         _maxtargets;
+        int         _modes;
+        std::string _network;
+        int         _nicklen;
+        //PREFIX
+        bool        _safelist;
+        //SILENCE
+        //STATUSMSG
+        //TARGMAX
+        int         _topiclen;
+        int         _userlen;
 
         //**START COMMUNICATION**/
         void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);

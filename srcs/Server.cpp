@@ -4,54 +4,84 @@
 
 Server::Server()
 {
-    this->servername = "IRC1ONE";
-    this->date = this->ft_set_date();
-    this->password = "";
+    this->_servername = "IRC1ONE";
+    this->_date = this->returnDate();
+    this->_password = "";
+    this->_motd = "<3 <3 <3";
+
+    this->_awaylen = 256;
+    this->_casemapping = "ascii";
+    this->_chanlimit = "#:&:";
+    this->_chanlen = 32;
+    this->_chantypes = "#&";
+    this->_elist = "U";
+    //EXCEPTS
+    //EXTBAN
+    this->_hostlen = 64;
+    //INVEX
+    this->_kicklen = 256;
+    //MAXLIST
+    this->_maxtargets = -1;
+    this->_modes = -1;
+    this->_network = "network";
+    this->_nicklen = 30;
+    //PREFIX
+    this->_safelist = true;
+    //STATUSMSG
+    //TARGMAX
+    this->_topiclen = 307;
+    this->_userlen = 16;
+
     std::cout << "Server created" << std::endl;
 }
 
 Server::Server(int port, int fd, std::string password)
 {
-    this->port = port;
-    this->fd = fd;
+    this->_port = port;
+    this->_fd = fd;
     std::cout << password << std::endl;
-    this->password = password;
-    this->date = this->ft_set_date();
-    this->servername = "IRC1ONE";
+    this->_password = password;
+    this->_date = this->returnDate();
+    this->_servername = "IRC1ONE";
 }
 
 /**GET-SET**/
 
 int     Server::getPort() const
 {
-    return (this->port);
+    return (this->_port);
 }
 
 int     Server::getSocket() const
 {
-    return (this->fd);
+    return (this->_fd);
 }
 
 std::string Server::getServername() const
 {
-    return (this->servername);
+    return (this->_servername);
 }
 
 std::string Server::getVersion() const
 {
-    return (this->version);
+    return (this->_version);
+}
+
+std::string Server::getMotD() const
+{
+    return (this->_motd);
 }
 
 std::vector<Client *> Server::getClients() const
 {
-    return (this->clients);
+    return (this->_clients);
 }
 
 Client  *Server::getClient(int fd) const
 {
     std::vector<Client *>::const_iterator it;
 
-    for (it = this->clients.begin(); it != this->clients.end(); it++)
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
         if ((*it)->getSocketFd() == fd)
         {
@@ -62,14 +92,14 @@ Client  *Server::getClient(int fd) const
 }
 std::string Server::getDate() const
 {
-    return (this->date);
+    return (this->_date);
 }
 
 Client  *Server::getClient(std::string name) const
 {
     std::vector<Client *>::const_iterator it;
 
-    for (it = this->clients.begin(); it != this->clients.end(); it++)
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
         if ((*it)->getNickname() == name)
         {
@@ -81,14 +111,63 @@ Client  *Server::getClient(std::string name) const
 
 std::vector<std::string> Server::getCapabilities() const
 {
-    return (this->capabilities);
+    return (this->_capabilities);
+}
+
+std::vector<std::string> Server::getParameter() const
+{
+    std::vector<std::string> ret;
+    std::string text;
+    std::string textInt;
+
+    text = "AWAYLEN=";
+    textInt = _awaylen;
+    text.append(textInt);
+    ret.push_back(text);
+    text = "USERLEN=";
+    textInt = _userlen;
+    text.append(textInt);
+    ret.push_back(text);
+    ret.push_back("CASEMAPPING=" + _casemapping);
+    ret.push_back("CHANLIMIY=" + _chanlimit);
+    text = "CHANLEN=";
+    textInt = _chanlen;
+    text.append(textInt);
+    ret.push_back(text);
+    ret.push_back("CHANTYPES=" + _chantypes);
+    ret.push_back("ELIST=" + _elist);
+    text = "HOSTLEN=";
+    textInt = _hostlen;
+    text.append(textInt);
+    ret.push_back(text);
+    text = "KICKLEN";
+    textInt = _kicklen;
+    text.append(textInt);
+    ret.push_back(text);
+    ret.push_back("MAXTARGETS=");
+    ret.push_back("MODES=");
+    ret.push_back("ANETWORK=" + _network);
+    text = "NICKLEN";
+    textInt = _nicklen;
+    text.append(textInt);
+    ret.push_back(text);
+    ret.push_back("SAFELIST");
+    text = "TOPICLEN";
+    textInt = _topiclen;
+    text.append(textInt);
+    ret.push_back(text);
+    text = "USERLEN";
+    textInt = _topiclen;
+    text.append(textInt);
+    ret.push_back(text);
+    return (ret);
 }
 
 Channel *Server::getChannel(std::string name) const
 {
     std::vector<Channel *>::const_iterator it;
 
-    for (it = this->channels.begin(); it != this->channels.end() ;it++)
+    for (it = this->_channels.begin(); it != this->_channels.end() ;it++)
     {
         if (!(*it)->getName().compare(name))
             return (*it);
@@ -96,54 +175,73 @@ Channel *Server::getChannel(std::string name) const
     return (NULL);
 }
 
+std::string Server::returnDate() const
+{
+    time_t          now;
+    std::string     ret;
+
+    now = time(0);
+    tm *gt = gmtime(&now);
+    char *dt = asctime(gt);
+    ret.append(dt);
+    ret = ret.substr(0, ret.size() - 1);
+    ret.append(" UTC");
+    return (ret);
+}
+
 void    Server::setPort(int newport)
 {
-    this->port = newport;
+    this->_port = newport;
 }
 
 void    Server::setSocket(int newfd)
 {
-    this->fd = newfd;
+    this->_fd = newfd;
 }
 
 void    Server::setServername(std::string newservername)
 {
-    this->servername = newservername;
+    this->_servername = newservername;
 }
 
 void    Server::setVersion(std::string newversion)
 {
-    this->version = newversion;
+    this->_version = newversion;
 }
 
 void    Server::setClient(Client *newclient)
 {
-    this->clients.push_back(newclient);
+    this->_clients.push_back(newclient);
+}
+
+void    Server::setMotD(std::string motd)
+{
+    this->_motd = motd;
 }
 
 int    Server::verifyPassword(std::string userPassword)
 {
-    if (this->password == "")
+    if (this->_password == "")
         return (1);
-    else if (!userPassword.compare(this->password))
+    else if (!userPassword.compare(this->_password))
         return (1);
     return (0);
 }
 
 void    Server::addChannel(Channel *channel)
 {
-    this->channels.push_back(channel);
+    this->_channels.push_back(channel);
 }
 
 void    Server::removeChannel(std::string channelName)
 {
     std::vector<Channel *>::iterator it;
 
-    for (it = this->channels.begin(); it < this->channels.end(); it++)
+    for (it = this->_channels.begin(); it < this->_channels.end(); it++)
     {
         if (!((*it)->getName().compare(channelName)))
         {
-            this->channels.erase(it);
+            this->_channels.erase(it);
             delete (*it);
             return ;
         }
@@ -154,11 +252,11 @@ void    Server::removeClient(std::string clientName)
 {
     std::vector<Client *>::iterator it;
 
-    for (it = this->clients.begin(); it < this->clients.end(); it++)
+    for (it = this->_clients.begin(); it < this->_clients.end(); it++)
     {
         if (!((*it)->getNickname().compare(clientName)))
         {
-            this->clients.erase(it);
+            this->_clients.erase(it);
             delete (*it);
             return ;
         }
@@ -172,14 +270,14 @@ int Server::hasCapability(std::string name) const
     std::vector<std::string>::const_iterator  it;
     std::string tmp;
 
-    it = this->capabilities.begin();
-    if (it == this->capabilities.end())
+    it = this->_capabilities.begin();
+    if (it == this->_capabilities.end())
         return (0);
     std::cout << "COME VA" << std::endl;
     tmp = name;
     if (name != "" && name[0] == '-')
         tmp = name.substr(1, name.size());
-    while (!(*it).compare(tmp) && it != this->capabilities.end())
+    while (!(*it).compare(tmp) && it != this->_capabilities.end())
         it++;
     if ((*it) != "")
         return (1);
@@ -207,8 +305,8 @@ int     Server::findClient(std::string nickname) const
     int i;
 
     i = 0;
-    it = this->clients.begin();
-    for (it = this->clients.begin(); it != this->clients.end(); it++)
+    it = this->_clients.begin();
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
         if ((*it)->getNickname().compare(nickname) == 0)
             return (i);
@@ -232,7 +330,7 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
     client->setRecFlag(flag);
     if (flag == 3 || flag == 7)
     {
-        if (this->password != "" && !client->getAccess())
+        if (this->_password != "" && !client->getAccess())
         {
             std::string text = makePasswdMisMatch(client->getNickname());
             send(fdNewClient, text.c_str(), text.size(), 0);
@@ -272,20 +370,6 @@ void    Server::printClients()
 }
 
 /**PRIVATE-FUNCTIONS**/
-
-std::string Server::ft_set_date()
-{
-    time_t          now;
-    std::string     ret;
-
-    now = time(0);
-    tm *gt = gmtime(&now);
-    char *dt = asctime(gt);
-    ret.append(dt);
-    ret = ret.substr(0, ret.size() - 1);
-    ret.append(" UTC");
-    return (ret);
-}
 
 void Server::ft_memset(char *buffer, int size)
 {

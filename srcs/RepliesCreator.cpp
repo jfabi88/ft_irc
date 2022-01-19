@@ -39,6 +39,60 @@ std::string makeCreated(std::string SDate, std::string CNick)
     return (text);
 }
 
+std::string makeISupport(std::string CNick, std::vector<std::string> parameter)
+{
+    std::string text;
+    std::vector<std::string>::iterator  it;
+    int         n;
+
+    n = 1;
+    it = parameter.begin();
+    text = "005 " + CNick;
+    while (it < parameter.end())
+    {
+        while (it < parameter.end() && it - parameter.begin() < 13 * n)
+        {
+            text += " " + *it;
+            it++;
+        }
+        text += DEL;
+        n++;
+    }
+    return (text);
+}
+
+std::string makeAdminMe(std::string CNick)
+{
+    std::string text;
+
+    text = "256 " + CNick + " IRCIONE :Info" + DEL;
+    return (text);
+}
+
+std::string makeAdminLoc1(std::string CNick)
+{
+    std::string text;
+
+    text = "257 " + CNick + " :Rome, Italy" + DEL;
+    return (text);
+}
+
+std::string makeAdminLoc2(std::string CNick)
+{
+    std::string text;
+
+    text = "258 " + CNick + " :42 Roma Luiss" + DEL;
+    return (text);
+}
+
+std::string makeAdminEmail(std::string CNick)
+{
+    std::string text;
+
+    text = "259 " + CNick + " :jacopo.fabi8@gmail.com" DEL;
+    return (text);
+}
+
 std::string makeAway(std::string Client, std::string CNick, std::string message)
 {
     std::string text;
@@ -79,6 +133,14 @@ std::string makeInviting(std::string CNick, std::string CNickTarget, std::string
     return (text);
 }
 
+std::string makeVersion(std::string CNick)
+{
+    std::string text;
+
+    text = "351 " + CNick + " IRCIONE 1.0 IRCIONE" + DEL;
+    return (text);
+}
+
 std::string makeNamReply(Channel channel, std::string CNick)
 {
     std::string text;
@@ -106,6 +168,55 @@ std::string makeEndOfNames(std::string channelName, std::string CNick)
     return (text);
 }
 
+std::string makeInfo(std::string CNick)
+{
+    std::string text;
+
+    text = "371 " + CNick + ":server IRCIONE 1.0. Jacopo Fabi: jacopo.fabi8@gmail.com " + DEL;
+    return (text);
+}
+
+std::string makeMotD(std::string CNick, std::string motd)
+{
+    std::string text;
+
+    text = "372 " + CNick + ": " + motd + DEL;
+    return (text);
+}
+
+std::string makeEndOfInfo(std::string CNick)
+{
+    std::string text;
+
+    text = "374 " + CNick + ":End of INFO list" + DEL;
+    return (text);
+}
+
+std::string makeMotDStart(std::string CNick, std::string ServeName, std::string motd)
+{
+    std::string text;
+
+    text = "375 " + CNick + ":- " + ServeName + " Message of the day - " + motd + DEL; 
+    return (text);
+}
+
+std::string makeEndOfMotD(std::string CNick)
+{
+    std::string text;
+
+    text = "376 " + CNick + " :End of /MOTD command" + DEL;
+    return (text);
+}
+
+std::string makeTime(std::string CNick, std::string servername, std::string date)
+{
+    std::string text;
+
+
+    text = "391 " + CNick + " " + servername + " :" + date + DEL;
+    return (text);
+}
+
 std::string makeNoSuchNick(std::string CNick, int flag)
 {
     std::string text;
@@ -115,6 +226,14 @@ std::string makeNoSuchNick(std::string CNick, int flag)
     else
         text = "401 " + CNick + " :No such nick" + DEL;
     return (text);
+}
+
+std::string makeNoSuchServer(std::string CNick, std::string SName)
+{
+    std::string text;
+
+    text = "402 " + CNick + " " + SName + " :No such server" + DEL;
+    return (text); 
 }
 
 std::string makeErrorNoSuchChannel(std::string CNick, std::string channelName)
@@ -138,6 +257,14 @@ std::string makeTooManyChannels(std::string CNick, std::string ChannelName)
     std::string text;
 
     text = "405 " + CNick + ChannelName + " :You have joined too many channels" + DEL;
+    return (text);
+}
+
+std::string makeErrorMotD(std::string CNick)
+{
+    std::string text;
+
+    text = "422 " + CNick + " :MOTD File is missing" + DEL;
     return (text);
 }
 

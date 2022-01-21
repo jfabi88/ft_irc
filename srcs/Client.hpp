@@ -31,7 +31,8 @@ class Client
         ~Client();
 
         Client &operator=(const Client &copy);
-
+        bool operator==(const Client &secondClient) const;
+        bool operator!=(const Client &secondClient) const;
         //* ################# GETTERS #################
 
         std::string         getNickname() const;

@@ -46,6 +46,20 @@ Client &Client::operator=(const Client &copy) {
     return (*this);
 }
 
+bool Client::operator==(const Client &secondClient) const
+{
+    if (this->_nickname.compare(secondClient.getNickname()) == 0)
+        return (true);
+    return (false);
+}
+
+bool Client::operator!=(const Client &secondClient) const
+{
+    if (this->_nickname.compare(secondClient.getNickname()) == 0)
+        return (false);
+    return (true);
+}
+
 //* ################# GETTERS #################
 
 std::string Client::getNickname() const { return (this->_nickname); }

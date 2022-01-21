@@ -63,5 +63,6 @@ std::string makeChanNoPrivsNeeded(std::string CNick, std::string channel);
 std::string makeErrorUserOnChannel(std::string CNick, std::string CNickTarget, std::string channelName);
 std::string makeInviting(std::string CNick, std::string CNickTarget, std::string channel);
 std::string makeVersion(std::string CNick);
+std::string makeWhoReply();
 
 #endif

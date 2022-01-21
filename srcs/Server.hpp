@@ -43,8 +43,9 @@ class Server
         Client  *getClient(int indx) const;
         Client  *getClient(std::string name) const;
         Channel *getChannel(std::string name) const;
-        std::vector<std::string> getCapabilities() const;
-        std::vector<std::string> getParameter() const;
+        std::vector<std::string>    getCapabilities() const;
+        std::vector<std::string>    getParameter() const;
+        std::vector<Client *>       getClients() const;
         std::string returnDate() const;
         
         void    setPort(int newport);
@@ -59,6 +60,7 @@ class Server
         int     startCommunication(int fdNewClient, char *buffer, Client *client);
         int     receiveCommand(int fdClient, char *buffer);
 
+        int     haveChannelCommon(Client* firstClient, Client* secondClient);
         int     hasCapability(std::string name) const;
         int     hasCapabilities(std::vector<std::string> prefix) const;
         int     findClient(std::string nickname) const;

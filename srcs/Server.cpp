@@ -163,6 +163,11 @@ std::vector<std::string> Server::getParameter() const
     return (ret);
 }
 
+std::vector<Client *>       Server::getClients() const
+{
+    return (this->_clients);
+}
+
 Channel *Server::getChannel(std::string name) const
 {
     std::vector<Channel *>::const_iterator it;
@@ -297,6 +302,22 @@ int     Server::hasCapabilities(std::vector<std::string> prefix) const
         }
     }
     return (1);
+}
+
+int     Server::haveChannelCommon(Client *firstClient, Client *secondClient)
+{
+    std::vector<Channel *>::const_iterator  ft;
+    std::vector<Channel *>::const_iterator  st;
+
+    for (ft = firstClient->getFirstChannel(); ft != firstClient->getLastChannel(); ft++)
+    {
+        for (st = secondClient->getFirstChannel(); st != secondClient->getLastChannel(); st++)
+        {
+            if ((*ft)->getName().compare((*st)->getName()) == 0)
+                return (1);
+        }
+    }
+    return (0);
 }
 
 int     Server::findClient(std::string nickname) const

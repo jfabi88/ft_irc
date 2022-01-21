@@ -141,6 +141,13 @@ std::string makeVersion(std::string CNick)
     return (text);
 }
 
+std::string makeWhoReply()
+{
+    std::string text;
+
+    return (text);
+}
+
 std::string makeNamReply(Channel channel, std::string CNick)
 {
     std::string text;

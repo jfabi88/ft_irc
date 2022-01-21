@@ -249,33 +249,6 @@ int execKick(Message message, Client *client, Server *server)
 }
 /********************************/
 
-int execNick(Message message, Client *client, Server *server)
-{
-    std::string     nick;
-    std::string     cNick;
-    std::string     error;
-    std::string     banCharacters = "?";
-    size_t          i;
-
-    error = "";
-    nick = message.getLastParameter();
-    cNick = client->getNickname();
-    if (nick == "")
-        error = makeErrorNoNickNameGiven(cNick);
-    else if (server->findClient(nick) != -1)
-        error = makeErrorNickNameInUse(cNick, nick);
-    for (i = 0; i < nick.size(); i++)
-    {
-        if (banCharacters.find(nick[i]) != std::string::npos)
-            error = makeErrorErroneusNickName(cNick, nick);
-    }
-    if (error == "")
-        client->setNickname(nick);
-    else
-        send(client->getSocketFd(), error.c_str(), error.size() + 1, 0);
-    return (0);
-}
-
 //*******JOIN**********//
 
 static int ft_parse_channel_key(Message message, std::vector<std::string> *channels, std::vector<std::string> *key)
@@ -380,6 +353,33 @@ int execJoin(Message message, Client *client, Server *server)
     return (0);
 }
 //***************************//
+
+int execNick(Message message, Client *client, Server *server)
+{
+    std::string     nick;
+    std::string     cNick;
+    std::string     error;
+    std::string     banCharacters = "?";
+    size_t          i;
+
+    error = "";
+    nick = message.getLastParameter();
+    cNick = client->getNickname();
+    if (nick == "")
+        error = makeErrorNoNickNameGiven(cNick);
+    else if (server->findClient(nick) != -1)
+        error = makeErrorNickNameInUse(cNick, nick);
+    for (i = 0; i < nick.size(); i++)
+    {
+        if (banCharacters.find(nick[i]) != std::string::npos)
+            error = makeErrorErroneusNickName(cNick, nick);
+    }
+    if (error == "")
+        client->setNickname(nick);
+    else
+        send(client->getSocketFd(), error.c_str(), error.size() + 1, 0);
+    return (0);
+}
 
 //**************MOTD********//
 static std::string  makeRepliesMotD(std::string CNick, std::string Servername, std::string motd)
@@ -673,6 +673,77 @@ int execVersion(Message message, Client *client, Server *server)
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
+
+//*****************WHO***********************//
+
+static std::string execWhoNoParameter(Client *client, Server *server)
+{
+    std::string text;
+
+    std::vector<Client *> listClient = server->getClients();
+    for (std::vector<Client *>::iterator it = listClient.begin(); it < listClient.end(); it++)
+    {
+        if (*(client) != *(*it) && (*it)->hasMode('i') && server->haveChannelCommon(client, (*it)) == 0)
+            text.append(makeWhoReply());
+    }
+    return (text);
+}
+
+static std::string execWhoChannel(std::string channelName, Server *server, int op)
+{
+    std::string text;
+
+    Channel * channel = server->getChannel(channelName);
+    if (channel)
+    {
+        for (std::vector<t_PChannel>::const_iterator it = channel->getFirstClient(); it < channel->getLastClient(); it++)
+        {
+            if ((*it).client->hasMode('i') != 0)
+            {
+                if ((op == 1 && (*it).client->hasMode('i') == 1) || op == 0)
+                    text.append(makeWhoReply());
+            }
+        }
+    }
+    return (text);
+}
+
+static std::string execWhoNick(std::string nick, Server *server, int op)
+{
+    std::string text;
+
+    Client *whoClient = server->getClient(nick);
+    if (whoClient && whoClient->hasMode('i'))
+    {
+        if ((op == 1 && whoClient->hasMode('o')) || op == 0)
+            text.append(makeWhoReply());
+    }
+    return (text);
+}
+
+int execWho(Message message, Client *client, Server *server)
+{
+    std::string text;
+
+    if (message.getSize() == 0)
+        text.append(execWhoNoParameter(client, server));
+    else if (message.getSize() == 1)
+    {
+        if (message.getParametersIndex(0)[0] == '&' || message.getParametersIndex(0)[0] == '#')
+            text.append(execWhoChannel(message.getParametersIndex(0), server, 0));
+        else
+            text.append(execWhoNick(message.getParametersIndex(0), server, 0));
+    }
+    else if (message.getParametersIndex(1)[0] == 'o')
+    {
+        if (message.getParametersIndex(0)[0] == '&' || message.getParametersIndex(0)[0] == '#')
+            text.append(execWhoChannel(message.getParametersIndex(0), server, 1));
+        else
+            text.append(execWhoNick(message.getParametersIndex(0), server, 1));
+    }
+    return (0);
+}
+//****************************************//
 
 std::string listCommands[7] = {
     "AWAY",

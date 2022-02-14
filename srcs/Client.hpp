@@ -72,6 +72,7 @@ class Client
         int                 hasCapability(std::string name) const;
         int                 hasCapabilities(str_list prefix) const;
         int                 hasMode(char c) const;
+        int                 isOperator(Channel *channel) const;
     private:
 
         std::string         _nickname;

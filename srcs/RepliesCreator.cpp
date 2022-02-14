@@ -347,6 +347,14 @@ std::string makeErrorChannelIsFull(std::string CNick, std::string channelName)
     return (text);   
 }
 
+std::string makeErrorUnKnownMode(std::string CNick, char c)
+{
+    std::string text;
+
+    text = "472 " + CNick + " " + c + " :is unknown mode char to me" + DEL;
+    return (text);
+}
+
 std::string makeInviteOnlyChan(std::string CNick, std::string channelName)
 {
     std::string text;

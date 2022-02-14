@@ -381,6 +381,75 @@ int execNick(Message message, Client *client, Server *server)
     return (0);
 }
 
+//***********MODE************//
+
+static std::string  execChannelModeAdd(Channel *channel, Client *client, Message message, std::string modes)
+{
+    int flag = 0;
+    int i = 0;
+    int n = 0;
+
+    if (modes[0] == '+' || modes[0] == '-')
+    {
+        flag = modes[0] == '-';
+        i++;
+    }
+    for (i; i < modes.size() && i < 12; i++)
+    {
+        if (modes[i] == 'p' || modes[i] == 's' || modes[i] == 'i' || modes[i] == 't' || modes[i] == 'n'|| modes[i] == 'm')
+            channel->setMode(modes[i], flag);
+        else if (modes[i] == 'o'){}
+        else if (modes[i] == 'l'){}
+        else if (modes[i] == 'b'){}
+        else if (modes[i] == 'v'){}
+        else if (modes[i] == 'k'){}
+        else
+            return (makeErrorUnKnownMode(client->getNickname(), modes[i]));
+        n++;
+    }
+}
+
+static std::string  execChannelMode(Message message, Client *client, Server *server)
+{
+    std::string text;
+    std::string CNick;
+    Channel     *channel;
+
+    CNick = client->getNickname();
+    channel = server->getChannel(message.getParametersIndex(0));
+    if (channel == NULL)
+        return (makeErrorNoSuchChannel(CNick, message.getParametersIndex(0)));
+    if (!channel->isOnChannel(CNick))
+        return (makeErrorNotOnChannel(CNick, channel->getName()));
+    if (!channel->isOperator(CNick))
+        return (makeChanNoPrivsNeeded(CNick, channel->getName()));
+    if (message.getParametersIndex(1) == "")
+        return (makeErrorNeedMoreParams(CNick, "MODE"));
+    return (execChannelModeAdd(channel, client, message, message.getParametersIndex(1)));
+}
+
+static std::string execUserMode()
+{
+
+}
+
+int execMode(Message message, Client *client, Server *server)
+{
+    std::string name;
+    std::string text;
+
+    name = message.getParametersIndex(0);
+    if (name == "")
+        text = makeErrorNeedMoreParams(client->getNickname(), "MODE");
+    if (name[0] == '#')
+        text = execChannelMode();
+    else
+        text = execUserMode();
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+//***************************//
+
 //**************MOTD********//
 static std::string  makeRepliesMotD(std::string CNick, std::string Servername, std::string motd)
 {
@@ -741,6 +810,7 @@ int execWho(Message message, Client *client, Server *server)
         else
             text.append(execWhoNick(message.getParametersIndex(0), server, 1));
     }
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
 //****************************************//

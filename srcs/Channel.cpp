@@ -14,23 +14,14 @@
 #include "Client.hpp"
 
 Channel::Channel(std::string chName, std::string chKey, Client *chOperator) : \
-    _chName(chName), _chKey(chKey), _chOperator(chOperator) {
+    _chName(chName), _chKey(chKey) {
     if (checkChName(chName))
         throw Channel::WrongCharacter();
-
-    t_PChannel newClient;
-
-    //* Questa parte deve essere un attimo rivista
-    newClient.prefix = '~';
-    newClient.modeLetter[0] = '+';
-    newClient.modeLetter[1] = 'q';
-    newClient.client = chOperator;
-
-    this->_clientList.push_back(newClient);
     this->_symbol = '=';
     this->_clientLimit = 2147483647;
-    this->_chMode = B;  //jfabi: non ricordo. Forse c'è qualche errore
+    this->_chMode = 0;  //jfabi: non ricordo. Forse c'è qualche errore
     this->_clientNumber = 1;
+    this->_clients.push_back(std::pair<std::string, Client*>("o", chOperator));
     std::cout << "Channel created" << std::endl;
 }
 
@@ -46,10 +37,10 @@ std::string Channel::getTopic() const { return (this->_topic); }
 Client *Channel::getClient(int fd) const {
     usr_pos it;
 
-    for (it = this->_clientList.begin(); it != this->_clientList.end(); it++)
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
-        if ((*it).client->getSocketFd() == fd)
-            return (*it).client;
+        if ((*it).second->getSocketFd() == fd)
+            return (*it).second;
     }
     return (NULL);
 }
@@ -57,24 +48,36 @@ Client *Channel::getClient(int fd) const {
 Client *Channel::getClient(std::string name) const {
     usr_pos it;
 
-    for (it = this->_clientList.begin(); it != this->_clientList.end(); it++)
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
-        if (!(*it).client->getNickname().compare(name))
-            return (*it).client;
+        if (!(*it).second->getNickname().compare(name))
+            return (*it).second;
     }
     return (NULL);
 }
 
-Client *Channel::getOperator() const { return (this->_chOperator); }
-Channel::usr_pos Channel::getFirstClient() const { return (this->_clientList.begin()); }
-Channel::usr_pos Channel::getLastClient() const { return (this->_clientList.end()); }
+std::vector<Client *> Channel::getOperator() const 
+{
+    std::vector<Client *> ret;
+    Channel::usr_pair_list::const_iterator  it;
+    
+    for (it = this->_clients.begin(); it < this->_clients.end(); it++)
+    {
+        if ((*it).first.find('o', 0))
+            ret.push_back((*it).second);
+    }
+    return (ret);
+}
 
-t_PChannel  Channel::getT_PChannel(std::string name) const {
+Channel::usr_pos Channel::getFirstClient() const { return (this->_clients.begin()); }
+Channel::usr_pos Channel::getLastClient() const { return (this->_clients.end()); }
+
+Channel::usr_pair  Channel::getPairClient(std::string name) const {
     usr_pos it;
 
-    for (it = this->_clientList.begin(); it != this->_clientList.end(); it++)
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
-        if (!(*it).client->getNickname().compare(name))
+        if (!(*it).second->getNickname().compare(name))
             return (*it);
     }
     throw Channel::NoSuchChannel();
@@ -87,27 +90,21 @@ char	Channel::getSymbol() const { return (this->_symbol); }
 int Channel::addClient(Client *client, std::string password, char prefix, char letter) {
     if (this->_chKey.compare(password))
         return (1);
-    if (this->hasMode("+l") && this->_clientNumber >= this->_clientLimit)
+    if (this->hasMode('l') && this->_clientNumber >= this->_clientLimit)
         return (2);
-
-    t_PChannel newClient;
-    newClient.client = client;
-    newClient.prefix = prefix;
-    newClient.modeLetter[0] = '+';
-    newClient.modeLetter[1] = letter;
-    this->_clientList.push_back(newClient);
+    this->_clients.push_back(Channel::usr_pair( "" + letter, client));
     this->_clientNumber += 1;
     return (0);
 }
 
 int Channel::removeClient(std::string CNick) {
-    std::vector<t_PChannel>::iterator it;
+    Channel::usr_pair_list::iterator it;
 
-    for (it = this->_clientList.begin(); it != this->_clientList.end(); it++)
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
-        if (!(*it).client->getNickname().compare(CNick))
+        if (!(*it).second->getNickname().compare(CNick))
         {
-            this->_clientList.erase(it);
+            this->_clients.erase(it);
             this->_clientNumber -= 1;
             if (this->_clientNumber == 0)
                 return (-1);
@@ -118,13 +115,13 @@ int Channel::removeClient(std::string CNick) {
 }
 
 int Channel::removeClient(int fd) {
-    std::vector<t_PChannel>::iterator it;
+    Channel::usr_pair_list::iterator it;
 
-    for (it = this->_clientList.begin(); it != this->_clientList.end(); it++)
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
     {
-        if ((*it).client->getSocketFd() == fd)
+        if ((*it).second->getSocketFd() == fd)
         {
-            this->_clientList.erase(it);
+            this->_clients.erase(it);
 
             return (0);            
         }
@@ -137,16 +134,17 @@ int Channel::removeClient(int fd) {
 }
  */
 
-void Channel::setMode(std::string m, int flag) {
+int Channel::setMode(char m, int negative) {
     int bit;
 
     bit = this->ft_converter(m);
     if (bit <= 0)
-        return ;
-    if (flag  == 1)
+        return (0);
+    if (negative  == 1)
         this->_chMode = this->_chMode ^ bit;
     else
-        this->_chMode = this->_chMode || flag;
+        this->_chMode = this->_chMode || bit;
+    return (1);
 }
 
 void Channel::addBanned(std::string nickname, std::string username) {
@@ -162,12 +160,12 @@ void    Channel::setTopic(std::string newTopic) {
 }
 
 int Channel::sendToAll(std::string text) {
-    std::vector<t_PChannel>::iterator    it;
-    std::vector<t_PChannel>::iterator    end;
+    Channel::usr_pair_list::iterator    it;
+    Channel::usr_pair_list::iterator    end;
 
-    end = this->_clientList.end();
-    for (it = this->_clientList.begin(); it < end; it++)
-        send((*it).client->getSocketFd(), text.c_str(), text.size(), 0);
+    end = this->_clients.end();
+    for (it = this->_clients.begin(); it < end; it++)
+        send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
 
@@ -196,7 +194,39 @@ int Channel::isBanned(std::string nickname, std::string username) {
     return (0);
 }
 
-int Channel::hasMode(std::string m) {
+int Channel::isOnChannel(std::string nickname)
+{
+    try
+    {
+        usr_pair client;
+        client = this->getPairClient(nickname);
+        return (1);
+    }
+    catch(const std::exception& e)
+    {
+        return (0);
+    }   
+}
+
+int Channel::isOperator(std::string nickname)
+{
+    Channel::usr_pair_list::iterator    it;
+
+    try
+    {
+        usr_pair    client;
+        client = this->getPairClient(nickname);
+        if (client.first.find('o'))
+            return (1);
+        return (0);
+    }
+    catch(const std::exception& e)
+    {
+        return (0);
+    }
+}
+
+int Channel::hasMode(char m) {
     int bit;
 
     bit = this->ft_converter(m);
@@ -205,27 +235,27 @@ int Channel::hasMode(std::string m) {
 
 //* ################# PRIVATE #################
 
-int	Channel::ft_converter(std::string m)
+int	Channel::ft_converter(char c)
 {
-    if (!m.compare("+b"))
+    if (c == 'b')
         return B;
-    else if (!m.compare("+e"))
+    else if (c == 'e')
         return E;
-    else if (!m.compare("+l"))
+    else if (c == 'l')
         return L;
-    else if (!m.compare("+i"))
+    else if (c == 'i')
         return I;
-    else if (!m.compare("+I"))
+    else if (c == 'I')
         return II;
-    else if (!m.compare("+k"))
+    else if (c == 'k')
         return K;
-    else if (!m.compare("+m"))
+    else if (c == 'm')
         return M;
-    else if (!m.compare("+s"))
+    else if (c == 's')
         return S;
-    else if (!m.compare("t"))
+    else if (c == 't')
         return T;
-    else if (!m.compare("n"))
+    else if (c == 'n')
         return N;
     return 0;
 }

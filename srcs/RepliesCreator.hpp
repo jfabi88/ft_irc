@@ -39,6 +39,7 @@ std::string makeErrorBannedFromChan(std::string CNick, std::string channelName);
 std::string makeInviteOnlyChan(std::string CNick, std::string channelName);
 std::string makeBadChannelKey(std::string CNick, std::string channelName);
 std::string makeErrorChannelIsFull(std::string CNick, std::string channelName);
+std::string makeErrorUnKnownMode(std::string CNick, char c);
 std::string makeErrorNoSuchChannel(std::string CNick, std::string channelName);
 std::string makeErrorNotOnChannel(std::string CNick, std::string channelName);
 std::string makeCannotSendToChan(std::string CNick, std::string channelName);

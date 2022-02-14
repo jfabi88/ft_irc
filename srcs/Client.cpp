@@ -188,6 +188,20 @@ int Client::hasMode(char c) const
     return (0);
 }
 
+int Client::isOperator(Channel *channel) const
+{
+    std::vector<Client *> op;
+    std::vector<Client *>::const_iterator it;
+
+    op = channel->getOperator();
+    for (it = op.begin(); it < op.end(); it++)
+    {
+        if ((*it)->getNickname().compare(this->getNickname()) == 0)
+            return (1);
+    }
+    return (0);
+}
+
 //* ################# EXTERNAL FUNCTIONS #################
 
 std::ostream& operator<<(std::ostream& os, const Client &copy)

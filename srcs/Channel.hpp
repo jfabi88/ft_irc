@@ -52,42 +52,37 @@
 
 class Client;
 
-typedef struct PChannel
-{
-    char prefix;
-    char modeLetter[2];
-    Client *client;
-}				t_PChannel;
-
 class Channel
 {
     public:
         
-        typedef std::vector<std::string>                    usr_list;
-        typedef std::vector<t_PChannel>::const_iterator     usr_pos;
+        typedef std::vector<std::string>                                            usr_list;
+        typedef std::pair<std::string, Client *>                                    usr_pair;
+        typedef std::vector<std::pair<std::string, Client *> >                      usr_pair_list;
+        typedef std::vector<std::pair<std::string, Client *> >::const_iterator      usr_pos;
 
         Channel(std::string chName, std::string chKey, Client *chOperator);
         ~Channel();
 
         //* ################# GETTERS #################
 
-        std::string     getName() const;
-        std::string	    getTopic() const;
-        Client          *getClient(int fd) const;
-        Client          *getClient(std::string name) const;
-        Client          *getOperator() const;
-        usr_pos         getFirstClient() const;
-        usr_pos         getLastClient() const;
-        t_PChannel      getT_PChannel(std::string name) const;
-        char	        getSymbol() const; 
+        std::string             getName() const;
+        std::string	            getTopic() const;
+        Client                  *getClient(int fd) const;
+        Client                  *getClient(std::string name) const;
+        std::vector<Client *>   getOperator() const;
+        usr_pos                 getFirstClient() const;
+        usr_pos                 getLastClient() const;
+        usr_pair                getPairClient(std::string name) const;
+        char	                getSymbol() const; 
         
         //* ################# OPERATIONS #################
 
         int		addClient(Client *client, std::string password, char prefix, char letter);
         int		removeClient(std::string CNick);
         int		removeClient(int fd);
+        int     setMode(char m, int flag);
         void	setOperator(Client *client);
-        void	setMode(std::string m, int flag);
         void	addBanned(std::string CNick, std::string cUser);
         void	setSymbol(char c);
         void	setTopic(std::string topic);
@@ -97,19 +92,20 @@ class Channel
         //* ################# CHECKS #################
 
         int		isBanned(std::string CNick, std::string CUser);
-        int		hasMode(std::string m);
+        int     isOnChannel(std::string nickname);
+        int     isOperator(std::string nickname);
+        int		hasMode(char m);
 
     private:
-        std::string _chName;
-        std::string _chKey;
-        std::string	_topic;
-        std::vector<t_PChannel> _clientList; //? Questa è la lista di client connessi a quel canale
-        Client      *_chOperator;
-        usr_list    _bannedClients; 
-        int	        _chMode;
-        int	        _clientLimit;
-        int	        _clientNumber;
-        char        _symbol; //? Questo symbol è necessario per le numeric replies
+        std::string     _chName;
+        std::string     _chKey;
+        std::string     _topic;
+        usr_pair_list   _clients;
+        usr_list        _bannedClients; 
+        int             _chMode;
+        int	            _clientLimit;
+        int	            _clientNumber;
+        char            _symbol; //? Questo symbol è necessario per le numeric replies
 
         class NoSuchChannel : public std::exception
         {
@@ -123,7 +119,7 @@ class Channel
                 const char* what() const throw();
         };
 
-        int	ft_converter(std::string m);
+        int	ft_converter(char c);
         int	checkChName(std::string name);
 };
 

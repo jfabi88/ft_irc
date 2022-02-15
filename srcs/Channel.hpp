@@ -41,6 +41,12 @@
     Voice "+" "+v"
 */
 
+# define Q 1
+# define A 2
+# define O 4
+# define H 8
+# define V 16
+
 //* ::smenna
 //? Mi sono permesso di effettuare alcune modifiche all'interfaccia, più precisamente
 //? 1. Ho aggiunto un copy constructor/overload 
@@ -56,10 +62,10 @@ class Channel
 {
     public:
         
-        typedef std::vector<std::string>                                            usr_list;
-        typedef std::pair<std::string, Client *>                                    usr_pair;
-        typedef std::vector<std::pair<std::string, Client *> >                      usr_pair_list;
-        typedef std::vector<std::pair<std::string, Client *> >::const_iterator      usr_pos;
+        typedef std::vector<std::string>                                    usr_list;
+        typedef std::pair<int, Client *>                                    usr_pair;
+        typedef std::vector<std::pair<int, Client *> >                      usr_pair_list;
+        typedef std::vector<std::pair<int, Client *> >::const_iterator      usr_pos;
 
         Channel(std::string chName, std::string chKey, Client *chOperator);
         ~Channel();
@@ -82,7 +88,10 @@ class Channel
         int		removeClient(std::string CNick);
         int		removeClient(int fd);
         int     setMode(char m, int flag);
-        void	setOperator(Client *client);
+        void    setKey(std::string key, int flag);
+        void	setOperator(std::string client, int flag);
+        void    setModeratorPermission(std::string client, int flag);
+        void    setBanMask(std::string mask, int flag);
         void	addBanned(std::string CNick, std::string cUser);
         void	setSymbol(char c);
         void	setTopic(std::string topic);
@@ -93,13 +102,15 @@ class Channel
 
         int		isBanned(std::string CNick, std::string CUser);
         int     isOnChannel(std::string nickname);
-        int     isOperator(std::string nickname);
+        int     clientHasMode(std::string CNick, char c);
         int		hasMode(char m);
 
     private:
         std::string     _chName;
         std::string     _chKey;
         std::string     _topic;
+        std::string     _banMask;
+        std::string     _password;
         usr_pair_list   _clients;
         usr_list        _bannedClients; 
         int             _chMode;
@@ -120,6 +131,7 @@ class Channel
         };
 
         int	ft_converter(char c);
+        int	ft_client_converter(char c);
         int	checkChName(std::string name);
 };
 

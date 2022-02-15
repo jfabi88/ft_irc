@@ -13,6 +13,7 @@
 NAME		=	message_test
 
 SRCS		=	Message.cpp\
+				utils.cpp \
                 main.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)

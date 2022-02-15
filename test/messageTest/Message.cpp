@@ -12,118 +12,62 @@
 
 #include "Message.hpp"
 
-/**CONSTRUCTOR**/
-
-Message::Message()
-{
-    this->prefix = "";
-    this->command = "";
-    this->text = "";
+Message::Message() : \
+    _prefix(""), _command(""), _text(""), _lastParameter(""), _parameters(0) {
+        std::cout << "Message Default Constructor called (empty message)" << std::endl;
 }
 
-Message::Message(const Message &copy)
-{
-    std::vector<std::string>::iterator it;
-
-    this->prefix = copy.getPrefix();
-    this->command = copy.getCommand();
-    this->text = copy.getText();
-    this->setMessage(text);
+Message::Message(const Message &copy) : \
+    _prefix(copy.getPrefix()), _command(copy.getCommand()), _text(copy.getText()) {
+        this->setMessage(_text);
+        std::cout << "Message Copy Constructor called" << std::endl;
 }
 
-Message::Message(std::string text)
-{
-    this->setMessage(text);
-    this->text = text;
+Message::Message(std::string _text) {
+    this->setMessage(_text);
+    this->_text = _text;
+    std::cout << "Message Constructor called" << std::endl;
 }
 
-Message::~Message()
-{
+Message::~Message() {
+    std::cout << "Message destructor called" << std::endl;
 }
 
-/**GET-SET**/
+//* ################# GETTERS #################
 
-std::string Message::getPrefix() const
+std::string Message::getPrefix() const  { return (this->_prefix);  }
+std::string Message::getCommand() const { return (this->_command); }
+
+std::string Message::getParametersIndex(size_t i) const
 {
-    return (this->prefix);
+    std::cout << "Parameters size: " << this->_parameters.size() << std::endl;
+    return (i >= this->_parameters.size()) ? ("") : (this->_parameters[i]); 
 }
 
-std::string Message::getCommand() const
-{
-    return (this->command);
-}
-
-std::string Message::getParametersIndex(int i) const
-{
-    int size;
-
-    size = this->parameters.size();
-    std::cout << size << std::endl;
-    if (i >= size)
-        return ("");
-    return (this->parameters[i]);
-}
-
+//* ::smenna
+//? Queste due sono strane, la seconda dovrebbe almeno teoricamente essere il setter della prima
+std::string Message::getLastParameters() const { return (this->_lastParameter); }
 std::string Message::getLastParameter() const
 {
     std::vector<std::string>::const_iterator  it;
 
-    it = this->parameters.begin();
-    if (it == this->parameters.end())
+    it = this->_parameters.begin();
+    if (it == this->_parameters.end())
         return ("");
     else
     {
-        while (it + 1 < this->parameters.end())
+        while (it + 1 < this->_parameters.end())
             it++;
     }
     return (*(it));
 }
 
-std::vector<std::string> Message::getParameters() const
-{
-    return (this->parameters);
-}
+std::vector<std::string> Message::getParameters() const             { return (this->_parameters); }
+std::vector<std::string> Message::getLastParameterMatrix() const    { return (ft_split(this->getLastParameters(), ' ')); }
+std::string Message::getText() const                                { return (this->_text); }
+int Message::getSize() const                                        { return (this->_parameters.size()); }
 
-std::vector<std::string> ft_split(std::string text, char delimiter)
-{
-    std::vector<std::string>    ret;
-    int i;
-    int lastPosition;
-
-    i = 0;
-    lastPosition = -1;
-    while (i < text.size() && text[i] == delimiter)
-        i++;
-    if (i < text.size())
-        lastPosition = text.find(delimiter, i);
-    while (lastPosition != -1)
-    {
-        ret.push_back(text.substr(i, lastPosition - i));
-        i = lastPosition;
-        while (i < text.size() && text[i] == delimiter)
-            i++;
-        if (i < text.size())
-            lastPosition = text.find(delimiter, i);
-    }
-    if (lastPosition == -1)
-        ret.push_back(text.substr(i, text.size() - i));
-    return (ret);
-}
-
-std::vector<std::string> Message::getLastParameterMatrix() const
-{
-    return (ft_split(this->getLastParameter(), ' '));
-}
-
-std::string Message::getText() const
-{
-    return (this->text);
-}
-
-int Message::getSize() const
-{
-    return (this->parameters.size());
-}
+//* ################# SETTERS #################
 
 void Message::setMessage(std::string text)
 {
@@ -132,70 +76,57 @@ void Message::setMessage(std::string text)
     int add = 0;
     std::string tmp;
 
-    this->prefix = "";
-    this->text = text;
-    this->parameters.clear();
+    this->_prefix = "";
+    this->_text = text;
+    this->_lastParameter = "";
+    this->_parameters.clear();
     if (text == "")
         return ;
     if (text[0] == ':')
-        last_pos = this->ft_set_element(text, 0, &(this->prefix));
-    last_pos = this->ft_set_element(text, last_pos, &(this->command));
+        last_pos = _ft_set_element(text, 0, &(this->_prefix));
+    last_pos = _ft_set_element(text, last_pos, &(this->_command));
     end = text.find(" ", last_pos);
     while (end >= 0 && text[last_pos] != ':')
     {
-        last_pos = this->ft_set_element(text, last_pos, &(tmp));
-        this->parameters.push_back(tmp);
+        std::cout << "Qua " << std::endl;
+        last_pos = _ft_set_element(text, last_pos, &(tmp));
+        this->_parameters.push_back(tmp);
         end = text.find(" ", last_pos);
     }
     end = text.find(DEL, last_pos);
     if (end >= 0)
     {
+        std::cout << "Qua alla fine " << end << text[end] << std::endl;
+        std::cout << text.substr(last_pos + add, end - (last_pos + add)) << std::endl;
         add = (text[last_pos] == ':');
-        this->parameters.push_back(text.substr(last_pos + add, end - (last_pos + add)));
+        if (add)
+            _lastParameter = text.substr(last_pos + add, end - (last_pos));
+        this->_parameters.push_back(text.substr(last_pos + add, end - (last_pos)));
     }
 }
 
-/**UTILS**/
-
-int Message::ft_set_element(std::string text, int start, std::string *element)
-{
-    int next_pos;
-
-    next_pos = text.find(" ", start);
-    if (next_pos != -1)
-    {
-        *element = text.substr(start, next_pos - start);
-        while (text[next_pos] == ' ')
-            next_pos++;
-    }
-    else
-    {
-        std::cout << text << std::endl;
-        next_pos = text.find(DEL, start);
-        *element = text.substr(start, next_pos);
-    }
-    return (next_pos);
-}
-
-/**EXTERNAL-FUNCTIONS**/
+//* ################# EXTERNAL FUNCTIONS #################
 
 std::ostream& operator<<(std::ostream& os, const Message &copy)
 {
-    std::vector<std::string>::iterator it;
+    std::vector<std::string>::const_iterator it;
 
-    os << "Prefix: " << copy.getPrefix() << "\n";
-    os << "Command: " << copy.getCommand() << "\n";
-    os << "Parameters: ";
+    os << "_prefix: " << copy.getPrefix() << "\n";
+    os << "_command: " << copy.getCommand() << "\n";
+    os << "_parameters: ";
     it = copy.getParameters().begin();
+    os << copy.getParameters().begin() - copy.getParameters().end() <<"\n";
     if (it < copy.getParameters().end())
     {
-        std::cout << *it; 
+        os << "\n";
+        os << *it; 
         it++;
     }
     while (it < copy.getParameters().end())
     {
-        std::cout << ", " << *it; 
+        os << ", " << *it; 
         it++;
     }
+    os << "\n";
     return (os);
 }

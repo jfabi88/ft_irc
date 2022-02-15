@@ -129,6 +129,14 @@ void Client::removeChannel(std::string channelName)
     }   
 }
 
+void Client::setMode(char c, int flag)
+{
+    if (flag)
+        this->_mode = this->_mode ^ ft_converter(c);
+    else
+        this->_mode = this->_mode | ft_converter(c);
+}
+
 void Client::setAway(bool status, std::string message) {
     this->_isAway = status;
     this->_awayMessage = message;
@@ -180,12 +188,10 @@ int     Client::hasCapabilities(std::vector<std::string> prefix) const
 
 int Client::hasMode(char c) const
 {
-    std::string text;
+    int n;
 
-    text = this->_mode;
-    if (text.find(c) != std::string::npos)
-        return (1);
-    return (0);
+    n = this->ft_converter(c);
+    return (this->_mode & n);
 }
 
 int Client::isOperator(Channel *channel) const
@@ -200,6 +206,18 @@ int Client::isOperator(Channel *channel) const
             return (1);
     }
     return (0);
+}
+
+int Client::ft_converter(char c) const
+{
+    if (c == 'i')
+        return UI;
+    else if (c == 's')
+        return US;
+    else if (c == 'w')
+        return UW;
+    else
+        return 0;
 }
 
 //* ################# EXTERNAL FUNCTIONS #################

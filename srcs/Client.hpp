@@ -16,6 +16,10 @@
 # include <iostream>
 # include <vector>
 
+# define UI 1
+# define US 2
+# define UW 4
+
 class Channel;
 
 class Client
@@ -61,6 +65,7 @@ class Client
         void                addChannel(Channel *newChannel);
         void                removeChannel(std::string channelName);
         void                setCapabilities(str_list newVector);
+        void                setMode(char c, int flag);
         void                setAway(bool flag, std::string message);
         void                setRegistered(bool flag);
         void                setSocketFd(int fd);
@@ -80,15 +85,17 @@ class Client
         std::string         _username;
         std::string         _realname;
         std::string         _awayMessage;
-        std::string         _mode;
         ch_list             _subChannels;
         str_list            _capabilities;
         int                 _subChannelsNum;
         int                 _socket;
         int                 _access;
         int                 _recFlag;
+        int                 _mode;
         bool                _isAway;
         bool                _isRegistered;
+
+        int ft_converter(char c) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const Client &copy);

@@ -65,5 +65,7 @@ std::string makeErrorUserOnChannel(std::string CNick, std::string CNickTarget, s
 std::string makeInviting(std::string CNick, std::string CNickTarget, std::string channel);
 std::string makeVersion(std::string CNick);
 std::string makeWhoReply();
+std::string makeErrorUModeUnknownFlag(std::string CNick);
+std::string makeErrorUsersDontmatch(std::string CNick);
 
 #endif

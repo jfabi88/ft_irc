@@ -39,6 +39,7 @@ int execSPing(Message message, Client *client);
 int execPrivmsg(Message message, Client *client, Server *server);
 int execQuit(Message message, Client *client, Server *server);
 int execTime(Message message, Client *client, Server *server);
+int execTopic(Message message, Client *client, Server *server);
 int execUser(Message message, Client *client);
 int execVersion(Message message, Client *client, Server *server);
 

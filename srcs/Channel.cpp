@@ -21,7 +21,7 @@ Channel::Channel(std::string chName, std::string chKey, Client *chOperator) : \
     this->_clientLimit = 2147483647;
     this->_chMode = 0;  //jfabi: non ricordo. Forse c'è qualche errore
     this->_clientNumber = 1;
-    this->_clients.push_back(std::pair<std::string, Client*>("o", chOperator));
+    this->_clients.push_back(std::pair<int, Client*>(O, chOperator));
     std::cout << "Channel created" << std::endl;
 }
 
@@ -63,7 +63,7 @@ std::vector<Client *> Channel::getOperator() const
     
     for (it = this->_clients.begin(); it < this->_clients.end(); it++)
     {
-        if ((*it).first.find('o', 0))
+        if ((*it).first & O)
             ret.push_back((*it).second);
     }
     return (ret);
@@ -92,7 +92,7 @@ int Channel::addClient(Client *client, std::string password, char prefix, char l
         return (1);
     if (this->hasMode('l') && this->_clientNumber >= this->_clientLimit)
         return (2);
-    this->_clients.push_back(Channel::usr_pair( "" + letter, client));
+    this->_clients.push_back(Channel::usr_pair(ft_client_converter(letter), client));
     this->_clientNumber += 1;
     return (0);
 }
@@ -129,10 +129,45 @@ int Channel::removeClient(int fd) {
     return (1);
 }
 
-//! Ora come ora, non esiste una funzione che setti quel client come operator
-/* void Channel::setOperator(Client *client) {
+void Channel::setKey(std::string key, int flag)
+{
+    if (flag)
+        this->_password = "";
+    else
+        this->_password = key;
 }
- */
+
+void Channel::setOperator(std::string client, int flag)
+{
+    usr_pair_list::iterator it;
+
+    for (it = this->_clients.begin(); it < this->_clients.end(); it++)
+    {
+        if ((*it).second->getNickname() == client)
+        {
+            if (flag)
+                (*it).first = (*it).first ^ O;
+            else
+                (*it).first = (*it).first || O;
+        }
+    }
+}
+
+void Channel::setModeratorPermission(std::string client, int flag)
+{
+    usr_pair_list::iterator it;
+
+    for (it = this->_clients.begin(); it < this->_clients.end(); it++)
+    {
+        if ((*it).second->getNickname() == client)
+        {
+            if (flag)
+                (*it).first = (*it).first ^ V;
+            else
+                (*it).first = (*it).first || V;
+        }
+    }
+}
 
 int Channel::setMode(char m, int negative) {
     int bit;
@@ -147,6 +182,14 @@ int Channel::setMode(char m, int negative) {
     return (1);
 }
 
+void Channel::setBanMask(std::string mask, int flag)
+{
+    if (flag)
+        this->_banMask = "";
+    else
+        this->_banMask = mask;
+}
+
 void Channel::addBanned(std::string nickname, std::string username) {
     this->_bannedClients.push_back(nickname + "!" + username);
 }
@@ -156,7 +199,10 @@ void	Channel::setSymbol(char c) {
 }
 
 void    Channel::setTopic(std::string newTopic) {
-    this->_topic = newTopic;
+    if (newTopic == "\"\"")
+        this->_topic = "";
+    else
+        this->_topic = newTopic;
 }
 
 int Channel::sendToAll(std::string text) {
@@ -207,16 +253,15 @@ int Channel::isOnChannel(std::string nickname)
         return (0);
     }   
 }
-
-int Channel::isOperator(std::string nickname)
+int Channel::clientHasMode(std::string CNick, char c)
 {
-    Channel::usr_pair_list::iterator    it;
+    usr_pair_list::iterator    it;
 
     try
     {
         usr_pair    client;
-        client = this->getPairClient(nickname);
-        if (client.first.find('o'))
+        client = this->getPairClient(CNick);
+        if (client.first & ft_client_converter(c))
             return (1);
         return (0);
     }
@@ -257,6 +302,21 @@ int	Channel::ft_converter(char c)
         return T;
     else if (c == 'n')
         return N;
+    return 0;
+}
+
+int	Channel::ft_client_converter(char c)
+{
+    if (c == 'q')
+        return Q;
+    else if (c == 'a')
+        return A;
+    else if (c == 'o')
+        return O;
+    else if (c == 'h')
+        return H;
+    else if (c == 'v')
+        return V;
     return 0;
 }
 

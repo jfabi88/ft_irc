@@ -153,15 +153,11 @@ std::string makeNamReply(Channel channel, std::string CNick)
     std::string text;
 
     text = "353 " + CNick + " " + channel.getSymbol() + " " + channel.getName() + " :";
-    std::vector<t_PChannel>::const_iterator it;
+    std::vector<std::pair<int, Client *> >::const_iterator it;
     for (it = channel.getFirstClient(); it < channel.getLastClient() ;it++)
     {
-        if (((*it).prefix) != 0)
-        {
-            text += (*it).prefix;
-            text.append(" ");
-        }
-        text += (*it).client->getNickname() + " ";
+        if (!(*it).first & UI)
+            text += (*it).second->getNickname() + " ";
     }
     text += DEL;
     return (text);
@@ -392,5 +388,21 @@ std::string makeChanNoPrivsNeeded(std::string CNick, std::string channel)
     std::string text;
 
     text = "482 " + CNick + " " + channel + " :You're not channel operator" + DEL;
+    return (text);
+}
+
+std::string makeErrorUModeUnknownFlag(std::string CNick)
+{
+    std::string text;
+
+    text = "501 " + CNick + " :Unknown MODE flag" + DEL;
+    return (text);
+}
+
+std::string makeErrorUsersDontmatch(std::string CNick)
+{
+    std::string text;
+
+    text = "502 " + CNick + " :Cant change mode for other users" + DEL;
     return (text);
 }

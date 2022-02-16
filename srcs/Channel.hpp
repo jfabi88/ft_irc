@@ -75,6 +75,7 @@ class Channel
         int                     getNClient() const;
         std::string             getName() const;
         std::string	            getTopic() const;
+        std::string             getModes() const;
         Client                  *getClient(int fd) const;
         Client                  *getClient(std::string name) const;
         std::vector<Client *>   getOperator() const;
@@ -84,7 +85,7 @@ class Channel
         
         //* ################# OPERATIONS #################
 
-        int		addClient(Client *client, std::string password, char prefix, char letter);
+        int		addClient(Client *client, std::string password, char letter);
         int		removeClient(std::string CNick);
         int		removeClient(int fd);
         int     setMode(char m, int flag);

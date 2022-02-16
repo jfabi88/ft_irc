@@ -23,6 +23,7 @@ std::string makeWelcome(std::string CNickname, std::string CUsername, std::strin
 std::string makeYourHost(std::string Servname, std::string SVersion, std::string CNickname);
 std::string makeCreated(std::string SDate, std::string CNick);
 std::string makeISupport(std::string CNick, std::vector<std::string> vector);
+std::string makeRplUModeis(Client *client);
 
 std::string makeAdminMe(std::string CNick);
 std::string makeAdminLoc1(std::string CNick);

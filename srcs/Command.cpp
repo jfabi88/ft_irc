@@ -54,7 +54,7 @@ int execAway(Message message, Client *client)
 }
 
 /***************CAP**********************/
-static int execList(Client *client, Server *server)
+static int execCapList(Client *client, Server *server)
 {
     std::string text;
     std::vector<std::string>    capabilities;
@@ -134,11 +134,11 @@ int execCap(Message message, Client *client, Server *server)
     else
         return (0);
     if (subcommand == "LIST")
-        return (execList(client, server));
+        return (execCapList(client, server));
     else if (subcommand == "REQ")
         return (execReq(message, client, server));
     else if (subcommand == "LS")
-        return (execList(client, server));
+        return (execCapList(client, server));
     else if (subcommand == "END")
         return (2);
     return (1);
@@ -167,7 +167,7 @@ int execInvite(Message message, Client *client, Server *server)
             text  = makeErrorNoSuchChannel(cNick, channelName);
         else if (!channel->getClient(cNick))
             text = makeErrorNotOnChannel(cNick, channelName);
-        else if (channel->hasMode('i') && channel->clientHasMode(cNick, 'o'))
+        else if (channel->hasMode('i') && !channel->clientHasMode(cNick, 'o'))
             text = makeChanNoPrivsNeeded(cNick, channelName);
         else if (channel->getClient(cTargetNick))
             text = makeErrorUserOnChannel(cNick, cTargetNick, channelName);
@@ -283,7 +283,7 @@ static std::string ft_success_join(Channel channel, Client client)
     text = ":" + client.getNickname() + " JOIN " + channel.getName() + DEL;
     if (channel.getTopic() != "")
         text.append(makeTopic(channel.getName(), channel.getTopic(), client.getNickname()));
-    text.append(makeNamReply(channel, client.getNickname()));
+    text.append(makeNamReply(channel, client.getNickname(), 0));
     text.append(makeEndOfNames(channel.getName(), client.getNickname()));
     return (text);
 }
@@ -316,7 +316,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
             return (makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
         else if (newChannel->hasMode('i'))
             return (makeInviteOnlyChan(client->getNickname(), newChannel->getName()));
-        num = newChannel->addClient(client, key, 0, 0);
+        num = newChannel->addClient(client, key, 0);
         if (num == 1)
             return (makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
         else if (num == 2)
@@ -442,23 +442,24 @@ static std::string  execChannelModeAdd(Channel *channel, Client *client, Message
         flag = (m[0] == '-');
         i++;
     }
-    for (i; i < m.size() && i < 12; i++)
+    for (int u = i; u < (int)(m.size()) && u < 12; u++)
     {
-        if (m[i] == 'p' || m[i] == 's' || m[i] == 'i' || m[i] == 't' || m[i] == 'n'|| m[i] == 'm')
-            channel->setMode(m[i], flag);
-        else if (m[i] == 'o' || m[i] == 'l' || m[i] == 'b' || m[i] == 'v'|| m[i] == 'k')
+        if (m[u] == 'p' || m[u] == 's' || m[u] == 'i' || m[u] == 't' || m[u] == 'n'|| m[u] == 'm')
+            channel->setMode(m[u], flag);
+        else if (m[u] == 'o' || m[u] == 'l' || m[u] == 'b' || m[u] == 'v'|| m[u] == 'k')
         {
-            if (message.getParametersIndex(n) == "" && (!flag || m[i] == 'o' || m[i] == 'v'))
+            if (message.getParametersIndex(n) == "" && (!flag || m[u] == 'o' || m[u] == 'v'))
                 return (makeErrorNeedMoreParams(client->getNickname(), "MODE"));
-            text = execSpecialFlag(channel, message.getParametersIndex(n), flag, m[i]);
+            text = execSpecialFlag(channel, message.getParametersIndex(n), flag, m[u]);
             if (text != "")
                 return (text);
-            if (!flag || m[i] == 'o' || m[i] == 'v')
+            if (!flag || m[u] == 'o' || m[u] == 'v')
                 n++;
         }
         else
             return (makeErrorUnKnownMode(client->getNickname(), m[i]));
     }
+    return (text);
 }
 
 static std::string  execChannelMode(Message message, Client *client, Server *server)
@@ -492,19 +493,20 @@ static std::string execUserMode(Message message, Client *client)
         return (makeErrorUsersDontmatch(client->getNickname()));
     mode = message.getParametersIndex(1);
     if (mode == "")
-        return (makeErrorNeedMoreParams(client->getNickname(), "MODE"));
+        return (makeRplUModeis(client));
     if (mode[0] == '+' || mode[0] == '-')
     {
         flag = mode[0] == '-';
         i++;
     }
-    for (i; i < mode.size(); i++)
+    for (int u = i; u < (int)(mode.size()); u++)
     {
-        if (mode[i] == 'o' || mode[i] == 'i' || mode[i] == 's' || mode[i] == 'w')
-            client->setMode(mode[i], flag);
-        else
+        if (mode[u] != 'o' && mode[u] != 'i' && mode[u] != 's' && mode[u] == 'w')
             return (makeErrorUModeUnknownFlag(client->getNickname()));
     }
+    for (int u = i; u < (int)(mode.size()); u++)
+        client->setMode(mode[u], flag);
+    return ("MODE " + mode + DEL);
 }
 
 int execMode(Message message, Client *client, Server *server)
@@ -952,14 +954,27 @@ int execWho(Message message, Client *client, Server *server)
 }
 //****************************************//
 
-std::string listCommands[7] = {
+std::string listCommands[20] = {
+    "ADMIN",
     "AWAY",
+    "INFO",
     "INVITE",
     "JOIN",
     "KICK",
+    "LIST",
+    "MODE",
+    "MOTD",
+    "NAMES",
+    "NICK",
     "NOTICE",
+    "PART",
+    "PASS",
     "PRIVMSG",
-    "QUIT"
+    "QUIT",
+    "TIME",
+    "TOPIC",
+    "USER",
+    "VERSION"
 };
 
 int execCommand(Message message, Client *client, Server *server)
@@ -972,19 +987,45 @@ int execCommand(Message message, Client *client, Server *server)
     switch (i)
     {
         case 0:
-            return (execAway(message, client)); //AWAY
+            return (execAdmin(message, client, server));
         case 1:
-            return (execInvite(message, client, server));           //INVITE
+            return (execAway(message, client));
         case 2:
-            return (execJoin(message, client, server));              //JOIN
+            return (execInfo(client));
         case 3:
-            return (execKick(message, client, server));             //KICK
+            return (execInvite(message, client, server));
         case 4:
-            return (execNotice(message, client, server));            //NOTICE
+            return (execJoin(message, client, server));
         case 5:
-            return (execPrivmsg(message, client, server));         //PRIVMSG
+            return (execKick(message, client, server));
         case 6:
-            return (execQuit(message, client, server));            //QUIT
+            return (execList(message, client, server));
+        case 7:
+            return (execMode(message, client, server));
+        case 8:
+            return (execMotd(message, client, server));
+        case 9:
+            return (execNames(message, client, server));
+        case 10:
+            return (execNick(message, client, server));
+        case 11:
+            return (execNotice(message, client, server));
+        case 12:
+            return (execPart(message, client, server));
+        case 13:
+            return (execPass(message, client, server));
+        case 14:
+            return (execPrivmsg(message, client, server));
+        case 15:
+            return (execQuit(message, client, server));
+        case 16:
+            return (execTime(message, client, server));
+        case 17:
+            return (execTopic(message, client, server));
+        case 18:
+            return (execUser(message, client));
+        case 19:
+            return (execVersion(message, client, server));
         default:
             return (0);
     }

@@ -56,6 +56,15 @@ Client *Channel::getClient(std::string name) const {
     return (NULL);
 }
 
+std::string Channel::getModes() const
+{
+    std::string modes;
+    std::string arg;
+
+    //if (this->_chMode & B)
+        //da cambiare e aggiungere un vect di banned
+}
+
 std::vector<Client *> Channel::getOperator() const 
 {
     std::vector<Client *> ret;
@@ -85,7 +94,7 @@ Channel::usr_pair  Channel::getPairClient(std::string name) const {
 
 //* ################# OPERATIONS #################
 
-int Channel::addClient(Client *client, std::string password, char prefix, char letter) {
+int Channel::addClient(Client *client, std::string password, char letter) {
     if (this->_chKey.compare(password))
         return (1);
     if (this->hasMode('l') && this->_clientNumber >= this->_clientLimit)
@@ -146,7 +155,7 @@ void Channel::setOperator(std::string client, int flag)
             if (flag)
                 (*it).first = (*it).first ^ O;
             else
-                (*it).first = (*it).first || O;
+                (*it).first = (*it).first | O;
         }
     }
 }
@@ -162,7 +171,7 @@ void Channel::setModeratorPermission(std::string client, int flag)
             if (flag)
                 (*it).first = (*it).first ^ V;
             else
-                (*it).first = (*it).first || V;
+                (*it).first = (*it).first | V;
         }
     }
 }

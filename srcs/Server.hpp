@@ -47,7 +47,6 @@ class Server
         std::vector<Channel *>::const_iterator  getLastChannel() const;
         std::vector<std::string>                getCapabilities() const;
         std::vector<std::string>                getParameter() const;
-        std::vector<Client *>                   getClients() const;
         std::string                             returnDate() const;
         
         void    setPort(int newport);

@@ -43,6 +43,7 @@ class Client
         std::string         getPassword() const;
         std::string         getUsername() const;
         std::string         getRealname() const;
+        std::string         getMode() const;
         Channel             *getChannel(int indx) const;
         Channel             *getChannel(std::string name) const;
         ch_iter             getFirstChannel() const;

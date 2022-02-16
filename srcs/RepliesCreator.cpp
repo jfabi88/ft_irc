@@ -61,6 +61,14 @@ std::string makeISupport(std::string CNick, std::vector<std::string> parameter)
     return (text);
 }
 
+std::string makeRplUModeis(Client *client)
+{
+    std::string text;
+
+    text = "221 " + client->getNickname() + client->getMode() + DEL;
+    return (text);
+}
+
 std::string makeAdminMe(std::string CNick)
 {
     std::string text;
@@ -132,6 +140,14 @@ std::string makeRplListEnd(std::string cNick)
     std::string text;
 
     text = "323 " + cNick + " :End of /List" + DEL;
+    return (text);
+}
+
+std::string makeRplChannelModeis(std::string cNick, Channel *channel)
+{
+    std::string text;
+
+
     return (text);
 }
 

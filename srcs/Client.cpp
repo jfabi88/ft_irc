@@ -100,6 +100,19 @@ Client::ch_iter Client::getLastChannel() const              { return (this->_sub
 std::vector<std::string> Client::getCapabilities() const    { return (this->_capabilities); }
 std::string Client::getAwayMessage() const                  { return (this->_awayMessage); }
 
+std::string Client::getMode() const
+{
+    std::string text = "";
+
+    if (this->_mode & UI)
+        text += 'i';
+    if (this->_mode & US)
+        text += 's';
+    if (this->_mode & UW)
+        text += 'w';
+    return (text);
+}
+
 bool Client::getAwayStatus() const                          { return (this->_isAway); }
 bool Client::getRegisteredStatus() const                    { return (this->_isRegistered); }
 int Client::getSocketFd() const                             { return (this->_socket); }

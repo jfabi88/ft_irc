@@ -180,6 +180,9 @@ Channel *Server::getChannel(std::string name) const
     return (NULL);
 }
 
+std::vector<Channel *>::const_iterator  Server::getFirstChannel() const { return (this->_channels.begin()); }
+std::vector<Channel *>::const_iterator  Server::getLastChannel() const { return (this->_channels.end()); }
+
 std::string Server::returnDate() const
 {
     time_t          now;

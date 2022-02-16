@@ -117,6 +117,32 @@ std::string makeNowAway(std::string Client)
     return (text);
 }
 
+std::string makeRplList(std::string cNick, Channel channel)
+{
+    std::string text;
+
+    std::stringstream n;
+    n << channel.getNClient();
+    text = "322 " + channel.getName() + " " + n.str() + " :" + channel .getTopic() + DEL;
+    return (text);
+}
+
+std::string makeRplListEnd(std::string cNick)
+{
+    std::string text;
+
+    text = "323 " + cNick + " :End of /List" + DEL;
+    return (text);
+}
+
+std::string makeNoTopic(std::string channelName, std::string CNick)
+{
+    std::string text;
+
+    text = "331 " + CNick + " " + channelName + " :No topic is set" + DEL;
+    return (text);
+}
+
 std::string makeTopic(std::string channelName, std::string topic, std::string CNick)
 {
     std::string text;
@@ -148,16 +174,31 @@ std::string makeWhoReply()
     return (text);
 }
 
-std::string makeNamReply(Channel channel, std::string CNick)
+std::string makeNamReply(Channel channel, std::string CNick, int flag)
 {
     std::string text;
+    int         i;
+    char        symbol;
 
-    text = "353 " + CNick + " " + channel.getSymbol() + " " + channel.getName() + " :";
+    symbol = '=';
+    i = 1;
+    if (channel.hasMode('s'))
+        symbol = '@';
+    text = "353 " + CNick + " " + symbol + " " + channel.getName() + " :";
     std::vector<std::pair<int, Client *> >::const_iterator it;
     for (it = channel.getFirstClient(); it < channel.getLastClient() ;it++)
     {
-        if (!(*it).first & UI)
-            text += (*it).second->getNickname() + " ";
+        if ((!(*it).first & UI) || flag == 1)
+        {
+            if (text.size() + (*it).second->getNickname().size() + DELSIZE > (512 * i))
+            {
+                text += DEL;
+                text += "353 " + CNick + " " + symbol + " " + channel.getName() + " :" + (*it).second->getNickname() + " ";
+                i++;
+            }
+            else
+                text += (*it).second->getNickname() + " ";
+        }
     }
     text += DEL;
     return (text);

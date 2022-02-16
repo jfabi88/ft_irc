@@ -72,6 +72,7 @@ class Channel
 
         //* ################# GETTERS #################
 
+        int                     getNClient() const;
         std::string             getName() const;
         std::string	            getTopic() const;
         Client                  *getClient(int fd) const;
@@ -80,7 +81,6 @@ class Channel
         usr_pos                 getFirstClient() const;
         usr_pos                 getLastClient() const;
         usr_pair                getPairClient(std::string name) const;
-        char	                getSymbol() const; 
         
         //* ################# OPERATIONS #################
 
@@ -93,7 +93,6 @@ class Channel
         void    setModeratorPermission(std::string client, int flag);
         void    setBanMask(std::string mask, int flag);
         void	addBanned(std::string CNick, std::string cUser);
-        void	setSymbol(char c);
         void	setTopic(std::string topic);
         int		sendToAll(std::string text);
         void	removeBanned(std::string CNick, std::string cUser);
@@ -116,7 +115,6 @@ class Channel
         int             _chMode;
         int	            _clientLimit;
         int	            _clientNumber;
-        char            _symbol; //? Questo symbol è necessario per le numeric replies
 
         class NoSuchChannel : public std::exception
         {

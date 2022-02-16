@@ -354,6 +354,32 @@ int execJoin(Message message, Client *client, Server *server)
 }
 //***************************//
 
+int execList(Message message, Client *client, Server *server)
+{
+    std::string text;
+
+    if (message.getParametersIndex(0) == "")
+    {
+        std::vector<Channel *>::const_iterator it;
+        for (it = server->getFirstChannel(); it < server->getLastChannel(); it++)
+        {
+            if (!(*it)->hasMode('s') || (*it)->isOnChannel(client->getNickname()))
+                text += makeRplList(client->getNickname(), *(*it));
+        }
+    }
+    else
+    {
+        std::vector<std::string>::iterator  it;
+        for (it = message.getParameters().begin(); it < message.getParameters().end(); it++)
+        {
+            if (server->getChannel(*it))
+                text += makeRplList(client->getNickname(), *server->getChannel(*it));
+        }
+    }
+    text += makeRplListEnd(client->getNickname());
+    return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
+}
+
 int execNick(Message message, Client *client, Server *server)
 {
     std::string     nick;
@@ -541,6 +567,28 @@ int execMotd(Message message, Client *client, Server *server)
     return (0);
 }
 //************************************//
+
+int execNames(Message message, Client *client, Server *server)
+{
+    std::string text;
+    std::string channelName;
+    Channel     *channel;
+
+    channel = server->getChannel(channelName);
+    channelName = message.getParametersIndex(0);
+    if (channelName == "")
+        text = makeEndOfNames("*", client->getNickname());
+    else if (!channel)
+        text = makeEndOfNames(channelName, client->getNickname());
+    else if (channel->hasMode('s') && !channel->isOnChannel(client->getNickname()))
+        text = makeEndOfNames(channelName, client->getNickname());
+    else
+    {
+        text = makeNamReply(*channel, client->getNickname(), channel->isOnChannel(client->getNickname()));
+        text += makeEndOfNames(channelName, client->getNickname());
+    }
+    return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
+}
 
 int execNotice(Message message, Client *client, Server *server)
 {
@@ -753,9 +801,25 @@ int execTopic(Message message, Client *client, Server *server)
             text = makeChanNoPrivsNeeded(cNick, channel->getName());
         else
         {
-            channel->setTopic(message.getParametersIndex(1));
+            if (message.getIsLastParameter())
+            {
+                channel->setTopic(message.getParametersIndex(1));
+                text = "TOPIC " + channel->getName() + " :" + channel->getTopic() + DEL;
+                std::vector<std::pair<int, Client *> >::const_iterator it;
+                for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
+                {
+                    if (send((*it).second->getSocketFd(), text.c_str(), text.size(), 0) == -1)
+                        return (-1);
+                }
+                return (0);
+            }
+            else if (channel->getTopic() != "")
+                text = makeTopic(channel->getName(), channel->getTopic(), client->getNickname());
+            else
+                text = makeNoTopic(channel->getName(), client->getNickname());
         }
     }
+    return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
 }
 
 int execTime(Message message, Client *client, Server *server)

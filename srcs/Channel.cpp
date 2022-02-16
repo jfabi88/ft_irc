@@ -17,7 +17,6 @@ Channel::Channel(std::string chName, std::string chKey, Client *chOperator) : \
     _chName(chName), _chKey(chKey) {
     if (checkChName(chName))
         throw Channel::WrongCharacter();
-    this->_symbol = '=';
     this->_clientLimit = 2147483647;
     this->_chMode = 0;  //jfabi: non ricordo. Forse c'è qualche errore
     this->_clientNumber = 1;
@@ -31,6 +30,7 @@ Channel::~Channel() {
 
 //* ################# GETTERS #################
 
+int Channel::getNClient() const { return (this->_clientNumber); }
 std::string Channel::getName() const { return (this->_chName); }
 std::string Channel::getTopic() const { return (this->_topic); }
 
@@ -82,8 +82,6 @@ Channel::usr_pair  Channel::getPairClient(std::string name) const {
     }
     throw Channel::NoSuchChannel();
 }
-
-char	Channel::getSymbol() const { return (this->_symbol); }
 
 //* ################# OPERATIONS #################
 
@@ -194,12 +192,8 @@ void Channel::addBanned(std::string nickname, std::string username) {
     this->_bannedClients.push_back(nickname + "!" + username);
 }
 
-void	Channel::setSymbol(char c) {
-    this->_symbol = c;
-}
-
 void    Channel::setTopic(std::string newTopic) {
-    if (newTopic == "\"\"")
+    if (newTopic == "")
         this->_topic = "";
     else
         this->_topic = newTopic;

@@ -13,7 +13,7 @@
 #include "Message.hpp"
 
 Message::Message() : \
-    _prefix(""), _command(""), _text(""), _lastParameter("") {
+    _prefix(""), _command(""), _text(""), _lastParameter(""), _isLastParameter(false) {
         std::cout << "Message Default Constructor called (empty message)" << std::endl;
 }
 
@@ -43,6 +43,8 @@ std::string Message::getParametersIndex(size_t i) const
     std::cout << "Parameters size: " << this->_parameters.size() << std::endl;
     return (i >= this->_parameters.size()) ? ("") : (this->_parameters[i]); 
 }
+
+bool Message::getIsLastParameter() const { return (this->_isLastParameter); }
 
 //* ::smenna
 //? Queste due sono strane, la seconda dovrebbe almeno teoricamente essere il setter della prima
@@ -80,6 +82,7 @@ void Message::setMessage(std::string _text)
     this->_text = _text;
     this->_lastParameter = "";
     this->_parameters.clear();
+    this->_isLastParameter = false;
     if (_text == "")
         return ;
     if (_text[0] == ':')
@@ -97,7 +100,10 @@ void Message::setMessage(std::string _text)
     {
         add = (_text[last_pos] == ':');
         if (add)
+        {
             _lastParameter = _text.substr(last_pos + add, end - (last_pos + add));
+            _isLastParameter = true;
+        }
         this->_parameters.push_back(_text.substr(last_pos + add, end - (last_pos + add)));
     }
 }

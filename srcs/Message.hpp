@@ -38,6 +38,7 @@ class Message
         str_list        getLastParameterMatrix() const;
         std::string     getText() const;
         int             getSize() const;
+        bool            getIsLastParameter() const;
 
         //* ################# SETTERS #################
 
@@ -50,6 +51,7 @@ class Message
         std::string _text;
         std::string _lastParameter;
         str_list    _parameters;
+        bool        _isLastParameter;
 };
 
 std::ostream& operator<<(std::ostream& os, const Message &copy);

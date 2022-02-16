@@ -33,20 +33,22 @@ class Server
         Server();
         Server(int port, int fd, std::string password);
 
-        int     getPort() const;
-        int     getSocket() const;
-        std::string getServername() const;
-        std::string getVersion() const;
-        std::string getDate() const;
-        std::string getMotD() const;
-        std::vector<Client*> getClients() const;
-        Client  *getClient(int indx) const;
-        Client  *getClient(std::string name) const;
-        Channel *getChannel(std::string name) const;
-        std::vector<std::string>    getCapabilities() const;
-        std::vector<std::string>    getParameter() const;
-        std::vector<Client *>       getClients() const;
-        std::string returnDate() const;
+        int                                     getPort() const;
+        int                                     getSocket() const;
+        std::string                             getServername() const;
+        std::string                             getVersion() const;
+        std::string                             getDate() const;
+        std::string                             getMotD() const;
+        std::vector<Client*>                    getClients() const;
+        Client                                  *getClient(int indx) const;
+        Client                                  *getClient(std::string name) const;
+        Channel                                 *getChannel(std::string name) const;
+        std::vector<Channel *>::const_iterator  getFirstChannel() const;
+        std::vector<Channel *>::const_iterator  getLastChannel() const;
+        std::vector<std::string>                getCapabilities() const;
+        std::vector<std::string>                getParameter() const;
+        std::vector<Client *>                   getClients() const;
+        std::string                             returnDate() const;
         
         void    setPort(int newport);
         void    setSocket(int newfd);

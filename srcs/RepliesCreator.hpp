@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include "utils.hpp"
 #include "Channel.hpp"
 
@@ -48,6 +49,8 @@ std::string makeUnAway(std::string Client);
 std::string makeMotD(std::string CNick, std::string motd);
 std::string makeEndOfInfo(std::string CNick);
 std::string makeNowAway(std::string Client);
+std::string makeRplList(std::string cNick, Channel channel);
+std::string makeRplListEnd(std::string cNick);
 std::string makeMotDStart(std::string CNick, std::string ServeName, std::string motd);
 std::string makeEndOfMotD(std::string CNick);
 std::string makeTime(std::string CNick, std::string servername, std::string date);
@@ -56,8 +59,9 @@ std::string makeNoSuchServer(std::string CNick, std::string SName);
 std::string makeTooManyChannels(std::string CNick, std::string ChannelName);
 
 std::string makeErrorMotD(std::string CNick);
+std::string makeNoTopic(std::string channelName, std::string CNick);
 std::string makeTopic(std::string channelName, std::string topic, std::string CNick);
-std::string makeNamReply(Channel channel, std::string CNick);
+std::string makeNamReply(Channel channel, std::string CNick, int flag);
 std::string makeEndOfNames(std::string channelName, std::string CNick);
 std::string makeInfo(std::string CNick);
 std::string makeChanNoPrivsNeeded(std::string CNick, std::string channel);

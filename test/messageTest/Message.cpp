@@ -88,7 +88,6 @@ void Message::setMessage(std::string text)
     end = text.find(" ", last_pos);
     while (end >= 0 && text[last_pos] != ':')
     {
-        std::cout << "Qua " << std::endl;
         last_pos = _ft_set_element(text, last_pos, &(tmp));
         this->_parameters.push_back(tmp);
         end = text.find(" ", last_pos);
@@ -96,7 +95,6 @@ void Message::setMessage(std::string text)
     end = text.find(DEL, last_pos);
     if (end >= 0)
     {
-        std::cout << "Qua alla fine " << end << text[end] << std::endl;
         std::cout << text.substr(last_pos + add, end - (last_pos + add)) << std::endl;
         add = (text[last_pos] == ':');
         if (add)
@@ -115,10 +113,8 @@ std::ostream& operator<<(std::ostream& os, const Message &copy)
     os << "_command: " << copy.getCommand() << "\n";
     os << "_parameters: ";
     it = copy.getParameters().begin();
-    os << copy.getParameters().begin() - copy.getParameters().end() <<"\n";
     if (it < copy.getParameters().end())
     {
-        os << "\n";
         os << *it; 
         it++;
     }
@@ -127,6 +123,5 @@ std::ostream& operator<<(std::ostream& os, const Message &copy)
         os << ", " << *it; 
         it++;
     }
-    os << "\n";
     return (os);
 }

@@ -251,28 +251,33 @@ int execKick(Message message, Client *client, Server *server)
 
 //*******JOIN**********//
 
-static int ft_parse_channel_key(Message message, std::vector<std::string> *channels, std::vector<std::string> *key)
+static int ft_parse_channel_key(Message message, std::vector<std::string> channels, std::vector<std::string> key)
 {
     std::vector<std::string>::iterator it;
     std::vector<std::string>::const_iterator tmp;
-    int size;
+    int size = 0;
     int i;
 
     it = message.getParameters().begin();
-    tmp = message.getLastParameterMatrix().begin();
-    size = message.getLastParameterMatrix().size();
+    //tmp = message.getLastParameterMatrix().begin();
+    //size = message.getLastParameterMatrix().size();
+    std::cout << "la size " << size << std::endl;
+    std::cout << "La last matrix " << *tmp << std::endl;
+    std::cout << message << std::endl;
     i = 0;
     while (it < message.getParameters().end())
     {
-        (*channels).push_back(*it);
-        if (i < size)
+        std::cout << "Dentro ft_parse_channel_key. Elemento: " << *it << std::endl;
+        channels.push_back(*it);
+        if (i < size - 1)
         {
-            (*key).push_back(*tmp);
+            key.push_back(*tmp);
             tmp++;
         }
         it++;
         i++;
     }
+    std::cout << "Join finito: " << std::endl;
     return (0);
 }
 
@@ -332,7 +337,7 @@ int execJoin(Message message, Client *client, Server *server)
     std::vector<std::string> listChannel;
     std::vector<std::string> listKey;
 
-    if (ft_parse_channel_key(message, &listChannel, &listKey))
+    if (ft_parse_channel_key(message, listChannel, listKey))
     {
         text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
@@ -984,7 +989,7 @@ int execCommand(Message message, Client *client, Server *server)
     size_t i = 0;
     std::string command = message.getCommand();
 
-    while (i < listCommands->size() && listCommands[i].compare(command))
+    while (i < sizeof(listCommands) / sizeof(std::string) && listCommands[i].compare(command))
         i++;
     switch (i)
     {

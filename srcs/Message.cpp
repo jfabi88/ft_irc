@@ -18,8 +18,9 @@ Message::Message() : \
 }
 
 Message::Message(const Message &copy) : \
-    _prefix(copy.getPrefix()), _command(copy.getCommand()), _text(copy.getText()) {
+    _prefix(""), _command(""), _text(copy.getText()), _lastParameter(""), _isLastParameter(false) {
         this->setMessage(_text);
+        std::cout << *this << std::endl;
         std::cout << "Message Copy Constructor called" << std::endl;
 }
 
@@ -81,7 +82,7 @@ void Message::setMessage(std::string _text)
     this->_prefix = "";
     this->_text = _text;
     this->_lastParameter = "";
-    this->_parameters.clear();
+    //this->_parameters.clear();
     this->_isLastParameter = false;
     if (_text == "")
         return ;
@@ -96,7 +97,8 @@ void Message::setMessage(std::string _text)
         end = _text.find(" ", last_pos);
     }
     end = _text.find(DEL, last_pos);
-    if (end >= 0)
+    std::cout << "end e last sono: " << end << " " << last_pos << std::endl;
+    if (end != last_pos)
     {
         add = (_text[last_pos] == ':');
         if (add)
@@ -120,12 +122,12 @@ std::ostream& operator<<(std::ostream& os, const Message &copy)
     it = copy.getParameters().begin();
     if (it < copy.getParameters().end())
     {
-        std::cout << *it; 
+        os << *it; 
         it++;
     }
     while (it < copy.getParameters().end())
     {
-        std::cout << ", " << *it; 
+        os << ", " << *it; 
         it++;
     }
     return (os);

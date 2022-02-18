@@ -34,4 +34,11 @@ int main(void)
     std::cout << "\n" << std::endl;
     std::cout << "TEST ft_split" << std::endl;
     std::cout << "Last parameter: " << firstMessage.getLastParameter() << std::endl;
+    firstTest = "";
+    firstTest.append("JOIN #channel");
+    firstTest.append(DEL);
+    firstMessage.setMessage(firstTest);
+    std::cout << "Il messaggio é: " << firstTest << std::endl;
+    std::cout << firstMessage << std::endl;
+    std::cout << "---------------------"<< std::endl;
 }

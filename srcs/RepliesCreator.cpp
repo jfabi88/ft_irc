@@ -204,7 +204,7 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
     std::vector<std::pair<int, Client *> >::const_iterator it;
     for (it = channel.getFirstClient(); it < channel.getLastClient() ;it++)
     {
-        if ((!(*it).first & UI) || flag == 1)
+        if (!((*it).first & UI) || flag == 1)
         {
             if ((int)text.size() + (int)(*it).second->getNickname().size() + DELSIZE > (512 * i))
             {

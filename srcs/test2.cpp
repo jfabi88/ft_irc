@@ -132,11 +132,12 @@ int main(int argc, char *argv[])
                                 get_in_addr((struct sockaddr*)&remoteaddr),
                                 remoteIP, INET6_ADDRSTRLEN),
                             newfd);
-                        std::cout << "Ciao ciao" << std::endl;
+                        std::cout << "Il nuovo client é creato" << std::endl;
                         Client  *client = new Client();
+                        std::cout << "Il client ha un fd pari a: " << newfd << std::endl;
                         client->setSocketFd(newfd);
                         irc.setClient(client);
-                        std::cout << "Ciao ciao ciao" << std::endl;
+                        std::cout << "Il nuovo client é stato aggiunto" << std::endl;
                     }
                 } else {
                     // handle data from a client
@@ -152,11 +153,22 @@ int main(int argc, char *argv[])
                         FD_CLR(i, &master); // remove from master set
                     } else {
                         Client *client = irc.getClient(i);
+                        std::cout << "Aggiungo un client con fd pari a:" << i << std::endl;
                         std::cout << "Il client: " << client << std::endl;
                         if (client && client->getRegisteredStatus())
+                        {
+                            std::cout << "Dobbiamo eseguire un comando" << std::endl;
                             irc.receiveCommand(i, buf);
-                        else
+                        }
+                        else if (client)
                             irc.startCommunication(i, buf, client);
+                        else
+                        {
+                            Client  *client = new Client();
+                            client->setSocketFd(i);  
+                            irc.setClient(client);
+                            irc.startCommunication(i, buf, client);
+                        }
                         //std::cout << "Ciao a tutti" << std::endl;
                         //send(i, buf, nbytes, 0);
                         // we got some data from a client

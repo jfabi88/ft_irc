@@ -40,6 +40,7 @@ class Server
         std::string                             getDate() const;
         std::string                             getMotD() const;
         std::vector<Client*>                    getClients() const;
+        std::vector<Client *>::const_iterator   getItClients(std::string cNick) const;
         Client                                  *getClient(int indx) const;
         Client                                  *getClient(std::string name) const;
         Channel                                 *getChannel(std::string name) const;

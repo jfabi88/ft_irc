@@ -98,7 +98,7 @@ std::string Channel::getModes() const
     if (this->_chMode & L)
     {
         mode += 'l';
-        param += " " + this->_clientLimit;
+        param += " " + std::to_string(this->_clientLimit);
     }
     if (this->_chMode & S)
         mode += 's';
@@ -349,6 +349,7 @@ int	Channel::ft_client_converter(char c)
 int Channel::checkChName(std::string name)
 {
     //? Controlliamo che il nome del canale sia corretto
+    std::cout << "Il name é: " << name << std::endl;
     if (name == "" || (name[0] != '#' && name[0] != '&'))
         return 1;
     if (name.find_first_of(NOCHAR) != std::string::npos) //! QUESTO HA UN PROBLEMA CON IL BELL CHARACTER!

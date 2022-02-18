@@ -14,7 +14,7 @@
 # define CHANNEL_HPP
 
 //? Questi sono i caratteri che non possono essere contenuti nel nome del canale
-# define NOCHAR ", ˆG"
+# define NOCHAR ", "
 
 # include <iostream>
 # include <vector>

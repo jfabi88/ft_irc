@@ -56,15 +56,6 @@ Client *Channel::getClient(std::string name) const {
     return (NULL);
 }
 
-std::string Channel::getModes() const
-{
-    std::string modes;
-    std::string arg;
-
-    //if (this->_chMode & B)
-        //da cambiare e aggiungere un vect di banned
-}
-
 std::vector<Client *> Channel::getOperator() const 
 {
     std::vector<Client *> ret;
@@ -90,6 +81,38 @@ Channel::usr_pair  Channel::getPairClient(std::string name) const {
             return (*it);
     }
     throw Channel::NoSuchChannel();
+}
+
+std::string Channel::getModes() const
+{
+    std::string mode;
+    std::string param;
+    std::vector<std::string>::const_iterator it;
+
+    if (this->_chMode & B)
+    {
+        mode += 'b';
+        for (it = this->_banMask.begin(); it < this->_banMask.end(); it++)
+            param += " " + (*it);
+    }
+    if (this->_chMode & L)
+    {
+        mode += 'l';
+        param += " " + this->_clientLimit;
+    }
+    if (this->_chMode & S)
+        mode += 's';
+    if (this->_chMode & I)
+        mode += 'i';
+    if (this->_chMode & T)
+        mode += 't';
+    if (this->_chMode & N)
+        mode += 'n';
+    if (this->_chMode & M)
+        mode += 'm';
+    if (this->_chMode & K)
+        mode += 'k';
+    return (mode + param);
 }
 
 //* ################# OPERATIONS #################

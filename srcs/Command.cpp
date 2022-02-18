@@ -488,6 +488,7 @@ static std::string execUserMode(Message message, Client *client)
     int         i;
     int         flag;
 
+    i = 0;
     name = message.getParametersIndex(0);
     if (client->getNickname().compare(name))
         return (makeErrorUsersDontmatch(client->getNickname()));

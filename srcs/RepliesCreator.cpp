@@ -131,7 +131,7 @@ std::string makeRplList(std::string cNick, Channel channel)
 
     std::stringstream n;
     n << channel.getNClient();
-    text = "322 " + channel.getName() + " " + n.str() + " :" + channel .getTopic() + DEL;
+    text = "322 " + cNick, channel.getName() + " " + n.str() + " :" + channel .getTopic() + DEL;
     return (text);
 }
 
@@ -147,7 +147,7 @@ std::string makeRplChannelModeis(std::string cNick, Channel *channel)
 {
     std::string text;
 
-
+    text = "324 " + cNick + " " + channel->getName() + channel->getModes() + DEL;
     return (text);
 }
 
@@ -206,7 +206,7 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
     {
         if ((!(*it).first & UI) || flag == 1)
         {
-            if (text.size() + (*it).second->getNickname().size() + DELSIZE > (512 * i))
+            if ((int)text.size() + (int)(*it).second->getNickname().size() + DELSIZE > (512 * i))
             {
                 text += DEL;
                 text += "353 " + CNick + " " + symbol + " " + channel.getName() + " :" + (*it).second->getNickname() + " ";

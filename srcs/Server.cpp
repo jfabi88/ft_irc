@@ -163,11 +163,6 @@ std::vector<std::string> Server::getParameter() const
     return (ret);
 }
 
-std::vector<Client *>       Server::getClients() const
-{
-    return (this->_clients);
-}
-
 Channel *Server::getChannel(std::string name) const
 {
     std::vector<Channel *>::const_iterator it;

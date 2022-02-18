@@ -189,16 +189,26 @@ int Channel::setMode(char m, int negative) {
     return (1);
 }
 
-void Channel::setBanMask(std::string mask, int flag)
+int Channel::setBanMask(std::string mask, int flag)
 {
-    if (flag)
-        this->_banMask = "";
-    else
-        this->_banMask = mask;
-}
+    size_t  n;
 
-void Channel::addBanned(std::string nickname, std::string username) {
-    this->_bannedClients.push_back(nickname + "!" + username);
+    if (flag)
+        this->_banMask.clear();
+    else
+    {
+        n = 0;
+        n = mask.find('!', n);
+        if (n == std::string::npos)
+            return (1);
+        n = mask.find('@',n);
+        if (n == std::string::npos)
+            return (1);
+        if (mask[n + 1] == 0)
+            return (1);
+        this->_banMask.push_back(mask);
+    }
+    return (0);
 }
 
 void    Channel::setTopic(std::string newTopic) {
@@ -218,24 +228,14 @@ int Channel::sendToAll(std::string text) {
     return (0);
 }
 
-void Channel::removeBanned(std::string nickname, std::string username) {
-    std::vector<std::string>::iterator it;
-    std::string bannedUser = nickname + "!" + username;
-
-    for (it = this->_bannedClients.begin(); it < this->_bannedClients.end() ;it++)
-    {
-        if (!(*it).compare(bannedUser))
-            this->_bannedClients.erase(it);
-    }
-}
-
 //* ################# CHECKS #################
 
-int Channel::isBanned(std::string nickname, std::string username) {
+int Channel::isBanned(std::string nickname, std::string username, std::string realname)
+{
     std::vector<std::string>::iterator it;
-    std::string bannedUser = nickname + "!" + username;
+    std::string bannedUser = nickname + "!" + username + '@' + realname;
 
-    for (it = this->_bannedClients.begin(); it < this->_bannedClients.end() ;it++)
+    for (it = this->_banMask.begin(); it < this->_banMask.end() ;it++)
     {
         if (!(*it).compare(bannedUser))
             return (1);

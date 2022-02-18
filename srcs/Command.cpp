@@ -312,7 +312,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     else
     {
         int num;
-        if (newChannel->isBanned(client->getNickname(), client->getUsername()))
+        if (newChannel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
             return (makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
         else if (newChannel->hasMode('i'))
             return (makeInviteOnlyChan(client->getNickname(), newChannel->getName()));
@@ -699,19 +699,20 @@ static int execPrivmsgChannel(Message message, Client *client, Server *server, s
     std::string text;
     std::vector<std::pair<int, Client *> >::const_iterator it;
 
+    text = "";
     channel = server->getChannel(target);
     if (channel == NULL)
-    {
         text = makeCannotSendToChan(client->getNickname(), target);
-        send(client->getSocketFd(), text.c_str(), text.size(), 0);
-    }
-    else
+    else if (channel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
+        text = makeErrorBannedFromChan(client->getNickname(), channel->getName());
+    else if (channel->hasMode('m') && (!channel->clientHasMode(client->getNickname(), 'v') && !channel->clientHasMode(client->getNickname(), 'v')))
+        text = makeChanNoPrivsNeeded(client->getNickname(), channel->getName());
+    if (text != "")
+        return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
+    for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
     {
-        for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
-        {
-            text = ":" + client->getNickname() +  " PRIVMSG " +  target + " :" + message.getLastParameter() + DEL;
-            send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
-        }
+        text = ":" + client->getNickname() +  " PRIVMSG " +  target + " :" + message.getLastParameter() + DEL;
+        send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
     }
     return (0);
 }

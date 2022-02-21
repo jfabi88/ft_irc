@@ -100,8 +100,6 @@ int main(int argc, char *argv[])
     // main loop
     for(;;) {
         read_fds = master; // copy it
-        std::cout << "Il client: " << irc.getClient("pollo") << std::endl;
-        std::cout << "Prima del select" << std::endl;
         if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
             perror("select");
             exit(4);

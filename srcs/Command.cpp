@@ -35,18 +35,16 @@ int execAdmin(Message message, Client *client, Server *server)
 int execAway(Message message, Client *client)
 {
     std::string text;
-
-    if (message.getSize() < 1)
-        return (0);
-    if (client->getAwayStatus() && message.getParametersIndex(0) == "")
+ 
+    if (client->getAwayStatus() && message.getLastParameter() == "")
     {
-        client->setAway(false, message.getParametersIndex(0));
+        client->setAway(false, message.getLastParameter());
         text = makeUnAway(client->getUsername());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
-    else if (!client->getAwayStatus() && message.getParametersIndex(0) != "")
+    else if (!client->getAwayStatus() && message.getLastParameter() != "")
     {
-        client->setAway(true, message.getParametersIndex(0));
+        client->setAway(true, message.getLastParameter());
         text = makeNowAway(client->getUsername());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
     }
@@ -145,6 +143,16 @@ int execCap(Message message, Client *client, Server *server)
 }
 /****************************************************************/
 
+int execInfo(Client *client, Server *server)
+{
+    std::string text;
+
+    text = makeInfo(client->getNickname(), server->getDate());
+    text.append(makeEndOfInfo(client->getNickname()));
+    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    return (0);
+}
+
 int execInvite(Message message, Client *client, Server *server)
 {
     std::string     text;
@@ -152,6 +160,7 @@ int execInvite(Message message, Client *client, Server *server)
     std::string     cNick;
     std::string     cTargetNick;
     Channel         *channel;
+    Client          *clientTarget;
 
     cNick = client->getNickname();
     if (message.getSize() < 2)
@@ -161,7 +170,8 @@ int execInvite(Message message, Client *client, Server *server)
         cTargetNick = message.getParametersIndex(0);
         channelName = message.getParametersIndex(1);
         channel = server->getChannel(channelName);
-        if (server->getClient(cTargetNick) == NULL)
+        clientTarget = server->getClient(cTargetNick);
+        if (clientTarget == NULL)
             text = makeNoSuchNick(cTargetNick, 0);
         else if (channel == NULL)
             text  = makeErrorNoSuchChannel(cNick, channelName);
@@ -171,8 +181,12 @@ int execInvite(Message message, Client *client, Server *server)
             text = makeChanNoPrivsNeeded(cNick, channelName);
         else if (channel->getClient(cTargetNick))
             text = makeErrorUserOnChannel(cNick, cTargetNick, channelName);
+        else if (channel->hasMode('l') && channel->getNClient() >= channel->getLimit())
+            text = makeErrorChannelIsFull(client->getNickname(), channelName);
         else
         {
+            channel->addClient(clientTarget, 0);
+            clientTarget->addChannel(channel);
             text = cNick + " INVITE " + cTargetNick + " " + channelName + DEL;
             send(server->getClient(cTargetNick)->getSocketFd(), text.c_str(), text.size(), 0);
             text = makeInviting(cNick, cTargetNick, channelName);
@@ -182,32 +196,17 @@ int execInvite(Message message, Client *client, Server *server)
     return (0);
 }
 
-int execInfo(Client *client)
-{
-    std::string text;
-
-    text = makeInfo(client->getNickname());
-    text.append(makeEndOfInfo(client->getNickname()));
-    send(client->getSocketFd(), text.c_str(), text.size(), 0);
-    return (0);
-}
-
 /*********KICK**************/
 
-static int sendKick(std::string sender, std::string kicked, std::string reason, Channel *channel)
+static std::string sendKick(std::string sender, std::string kicked, std::string reason, Channel *channel)
 {
-    std::vector<std::pair<int, Client *> >::const_iterator it;
     std::string text;
-    std::vector<std::pair<int, Client *> >::const_iterator end;
 
     text = ":" + sender + " KICK " + channel->getName() + " " + kicked;
     if (reason != "")
         text += " :" + reason;
     text += DEL;
-    end = channel->getLastClient();
-    for (it = channel->getFirstClient(); it < end; it++)
-        send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
-    return (0);
+    return (text);
 }
 
 int execKick(Message message, Client *client, Server *server)
@@ -216,14 +215,16 @@ int execKick(Message message, Client *client, Server *server)
     std::string     channelName;
     std::string     cNick;
     std::string     cTargetNick;
+    std::vector<std::pair<int, Client *> > cOnChan;
 
     cNick = client->getNickname();
     if (message.getSize() < 2)
         text = makeErrorNeedMoreParams(cNick, message.getCommand());
     else
     {
-        Channel *channel = server->getChannel(channelName);
         channelName = message.getParametersIndex(0);
+        cTargetNick = message.getParametersIndex(1);
+        Channel *channel = server->getChannel(channelName);
         if (!server->getClient(cTargetNick))
             text = makeNoSuchNick(cTargetNick, 0);
         else if(!channel)
@@ -232,7 +233,7 @@ int execKick(Message message, Client *client, Server *server)
             text = makeErrorNotOnChannel(cNick, channelName);
         else if (!channel->getClient(cTargetNick))
             text = makeErrorNotOnChannel(cTargetNick, channelName);
-        else if (channel->clientHasMode(cNick, 'o'))
+        else if (!channel->clientHasMode(cNick, 'o'))
             text = makeChanNoPrivsNeeded(cNick, channelName);
         else
         {
@@ -240,11 +241,17 @@ int execKick(Message message, Client *client, Server *server)
             channel->removeClient(cTargetNick);
             clientTarget->removeChannel(channelName);
             if (message.getSize() == 3)
-                sendKick(cNick, cTargetNick, message.getLastParameter(), channel);
+                text = sendKick(cNick, cTargetNick, message.getLastParameter(), channel);
             else
-                sendKick(cNick, cTargetNick, "", channel);
+                text = sendKick(cNick, cTargetNick, "", channel);
+            cOnChan = channel->getClients();
+            for (std::vector<std::pair<int, Client *> >::iterator it = cOnChan.begin(); it < cOnChan.end(); it++)
+                send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
+            text = "";
         }
     }
+    if (text != "")
+        send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
 /********************************/
@@ -296,7 +303,6 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
 {
     Channel *newChannel;
 
-    std::cout << "Siamo dentro exec join" << std::endl;
     if (client->getChannelSub() >= CHANLIMIT)
         return (makeTooManyChannels(client->getNickname(), channelName));
     newChannel = server->getChannel(channelName);
@@ -316,16 +322,16 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     }
     else
     {
-        int num;
         if (newChannel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
             return (makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
+        else if (newChannel->isOnChannel(client->getNickname()))
+            return (makeErrorUserOnChannel(client->getNickname(), client->getNickname(), newChannel->getName()));
         else if (newChannel->hasMode('i'))
             return (makeInviteOnlyChan(client->getNickname(), newChannel->getName()));
-        num = newChannel->addClient(client, key, 0);
-        if (num == 1)
-            return (makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
-        else if (num == 2)
+        else if (newChannel->hasMode('l') && newChannel->getNClient() >= newChannel->getLimit())
             return (makeErrorChannelIsFull(client->getNickname(), newChannel->getName()));
+        if (newChannel->addClient(client, key, 0))
+            return (makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
         return (ft_success_join(*newChannel, *client));
     }
     return ("");
@@ -347,12 +353,9 @@ int execJoin(Message message, Client *client, Server *server)
         std::vector<std::string>::iterator it;
         std::vector<std::string>::iterator keyIt;
 
-        std::cout << "Stiamo prima key begin" << std::endl;
         keyIt = listKey.begin();
-        std::cout << "Stiamo dopo key begin" << std::endl;
         for (it = listChannel.begin(); it < listChannel.end(); it++)
         {
-            std::cout << "Stiamo for" << std::endl;
             if (keyIt != listKey.end())
             {
                 text = ft_exec_join(*it, *keyIt, client, server);
@@ -373,8 +376,10 @@ int execList(Message message, Client *client, Server *server)
 
     if (message.getParametersIndex(0) == "")
     {
-        std::vector<Channel *>::const_iterator it;
-        for (it = server->getFirstChannel(); it < server->getLastChannel(); it++)
+        std::vector<Channel *>  channels;
+        channels = server->getChannels();
+        text += makeRplListStart(client->getNickname());
+        for (std::vector<Channel *>::const_iterator it = channels.begin(); it < channels.end(); it++)
         {
             if (!(*it)->hasMode('s') || (*it)->isOnChannel(client->getNickname()))
                 text += makeRplList(client->getNickname(), *(*it));
@@ -382,8 +387,9 @@ int execList(Message message, Client *client, Server *server)
     }
     else
     {
-        std::vector<std::string>::iterator  it;
-        for (it = message.getParameters().begin(); it < message.getParameters().end(); it++)
+        std::vector<std::string>    parameters;
+        parameters = message.getParameters();
+        for (std::vector<std::string>::iterator it = parameters.begin(); it < parameters.end(); it++)
         {
             if (server->getChannel(*it))
                 text += makeRplList(client->getNickname(), *server->getChannel(*it));
@@ -391,33 +397,6 @@ int execList(Message message, Client *client, Server *server)
     }
     text += makeRplListEnd(client->getNickname());
     return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
-}
-
-int execNick(Message message, Client *client, Server *server)
-{
-    std::string     nick;
-    std::string     cNick;
-    std::string     error;
-    std::string     banCharacters = "?";
-    size_t          i;
-
-    error = "";
-    nick = message.getParametersIndex(0);
-    cNick = client->getNickname();
-    if (nick == "")
-        error = makeErrorNoNickNameGiven(cNick);
-    else if (server->findClient(nick) != -1)
-        error = makeErrorNickNameInUse(cNick, nick);
-    for (i = 0; i < nick.size(); i++)
-    {
-        if (banCharacters.find(nick[i]) != std::string::npos)
-            error = makeErrorErroneusNickName(cNick, nick);
-    }
-    if (error == "")
-        client->setNickname(nick);
-    else
-        send(client->getSocketFd(), error.c_str(), error.size() + 1, 0);
-    return (0);
 }
 
 //***********MODE************//
@@ -604,6 +583,33 @@ int execNames(Message message, Client *client, Server *server)
         text += makeEndOfNames(channelName, client->getNickname());
     }
     return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
+}
+
+int execNick(Message message, Client *client, Server *server)
+{
+    std::string     nick;
+    std::string     cNick;
+    std::string     error;
+    std::string     banCharacters = "?";
+    size_t          i;
+
+    error = "";
+    nick = message.getParametersIndex(0);
+    cNick = client->getNickname();
+    if (nick == "")
+        error = makeErrorNoNickNameGiven(cNick);
+    else if (server->findClient(nick) != -1)
+        error = makeErrorNickNameInUse(cNick, nick);
+    for (i = 0; i < nick.size(); i++)
+    {
+        if (banCharacters.find(nick[i]) != std::string::npos)
+            error = makeErrorErroneusNickName(cNick, nick);
+    }
+    if (error == "")
+        client->setNickname(nick);
+    else
+        send(client->getSocketFd(), error.c_str(), error.size() + 1, 0);
+    return (0);
 }
 
 int execNotice(Message message, Client *client, Server *server)
@@ -1006,7 +1012,7 @@ int execCommand(Message message, Client *client, Server *server)
         case 1:
             return (execAway(message, client));
         case 2:
-            return (execInfo(client));
+            return (execInfo(client, server));
         case 3:
             return (execInvite(message, client, server));
         case 4:

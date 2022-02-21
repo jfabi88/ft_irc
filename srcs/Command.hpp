@@ -24,7 +24,7 @@ int execCommand(Message message, Client *client, Server *server);
 int execAdmin(Message message, Client *client, Server *server);
 int execAway(Message message, Client *client); 
 int execCap(Message message, Client *client, Server *server);
-int execInfo(Client *client);
+int execInfo(Client *client, Server *server);
 int execInvite(Message message, Client *client, Server *server);
 int execJoin(Message message, Client *client, Server *server);
 int execKick(Message message, Client *client, Server *server);

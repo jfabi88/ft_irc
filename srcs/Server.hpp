@@ -45,6 +45,7 @@ class Server
         Client                                  *getClient(int indx) const;
         Client                                  *getClient(std::string name) const;
         Channel                                 *getChannel(std::string name) const;
+        std::vector<Channel *>                  getChannels();
         std::vector<Channel *>::const_iterator  getFirstChannel() const;
         std::vector<Channel *>::const_iterator  getLastChannel() const;
         std::vector<std::string>                getCapabilities();

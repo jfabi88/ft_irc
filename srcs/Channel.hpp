@@ -74,11 +74,13 @@ class Channel
         //* ################# GETTERS #################
 
         int                     getNClient() const;
+        int                     getLimit() const;
         std::string             getName() const;
         std::string	            getTopic() const;
         std::string             getModes() const;
         Client                  *getClient(int fd) const;
         Client                  *getClient(std::string name) const;
+        usr_pair_list           getClients();
         std::vector<Client *>   getOperator();
         usr_pos                 getFirstClient() const;
         usr_pos                 getLastClient() const;
@@ -87,6 +89,7 @@ class Channel
         //* ################# OPERATIONS #################
 
         int		addClient(Client *client, std::string password, char letter);
+        int     addClient(Client *client, char letter);
         int		removeClient(std::string CNick);
         int		removeClient(int fd);
         int     setMode(char m, int flag);

@@ -125,13 +125,21 @@ std::string makeNowAway(std::string Client)
     return (text);
 }
 
+std::string makeRplListStart(std::string cNick)
+{
+    std::string text;
+
+    text  = "321 " + cNick + " Channel Users :Topic" + DEL;
+    return (text);
+}
+
 std::string makeRplList(std::string cNick, Channel channel)
 {
     std::string text;
 
     std::stringstream n;
     n << channel.getNClient();
-    text = "322 " + cNick, channel.getName() + " " + n.str() + " :" + channel.getTopic() + DEL;
+    text = "322 " + cNick + " " + channel.getName() + " " + n.str() + " :" + channel.getTopic() + DEL;
     return (text);
 }
 
@@ -201,7 +209,7 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
     if (channel.hasMode('s'))
         symbol = '@';
     text = "353 " + CNick + " " + symbol + " " + channel.getName() + " :";
-    std::vector<std::pair<int, Client *> >::const_iterator it;
+    std::vector<std::pair<int, Client *> >  clients;
     for (it = channel.getFirstClient(); it < channel.getLastClient() ;it++)
     {
         if (!((*it).first & UI) || flag == 1)
@@ -228,11 +236,12 @@ std::string makeEndOfNames(std::string channelName, std::string CNick)
     return (text);
 }
 
-std::string makeInfo(std::string CNick)
+std::string makeInfo(std::string CNick, std::string dateRun)
 {
     std::string text;
 
-    text = "371 " + CNick + ":server IRCIONE 1.0. Jacopo Fabi: jacopo.fabi8@gmail.com " + DEL;
+    text = "371 " + CNick + " :server IRCIONE 1.0.0 Jacopo Fabi: jacopo.fabi8@gmail.com " + DEL;
+    text += "371 " + CNick + " :this server was started " + dateRun + DEL;
     return (text);
 }
 
@@ -248,7 +257,7 @@ std::string makeEndOfInfo(std::string CNick)
 {
     std::string text;
 
-    text = "374 " + CNick + ":End of INFO list" + DEL;
+    text = "374 " + CNick + " :End of INFO list" + DEL;
     return (text);
 }
 
@@ -356,7 +365,7 @@ std::string makeErrorNotOnChannel(std::string CNick, std::string channelName)
 {
     std::string text;
 
-    text = "441 " + CNick + " " + channelName  + " :You're not on that channel" + DEL;
+    text = "441 " + CNick + " " + channelName  + " :It's not on that channel" + DEL;
     return (text);
 }
 

@@ -31,6 +31,7 @@ Channel::~Channel() {
 //* ################# GETTERS #################
 
 int Channel::getNClient() const { return (this->_clientNumber); }
+int Channel::getLimit() const { return (this->_clientLimit); }
 std::string Channel::getName() const { return (this->_chName); }
 std::string Channel::getTopic() const { return (this->_topic); }
 
@@ -55,6 +56,8 @@ Client *Channel::getClient(std::string name) const {
     }
     return (NULL);
 }
+
+std::vector<std::pair<int, Client *> >   Channel::getClients() { return (this->_clients); }
 
 std::vector<Client *> Channel::getOperator()
 {
@@ -119,11 +122,16 @@ std::string Channel::getModes() const
 
 //* ################# OPERATIONS #################
 
+int Channel::addClient(Client *client, char letter)
+{
+    this->_clients.push_back(Channel::usr_pair(ft_client_converter(letter), client));
+    this->_clientNumber += 1;
+    return (0);
+}
+
 int Channel::addClient(Client *client, std::string password, char letter) {
     if (this->_chKey.compare(password))
         return (1);
-    if (this->hasMode('l') && this->_clientNumber >= this->_clientLimit)
-        return (2);
     this->_clients.push_back(Channel::usr_pair(ft_client_converter(letter), client));
     this->_clientNumber += 1;
     return (0);

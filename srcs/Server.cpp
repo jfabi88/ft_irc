@@ -72,7 +72,7 @@ std::string Server::getMotD() const
     return (this->_motd);
 }
 
-std::vector<Client *> Server::getClients() const
+std::vector<Client *> Server::getClients()
 {
     return (this->_clients);
 }
@@ -85,6 +85,16 @@ std::vector<Client *>::const_iterator   Server::getItClients(std::string cNick) 
     while ((*it)->getNickname().compare(cNick))
         it++;
     return (it);
+}
+
+std::vector<Client *>::iterator         Server::getItNcClients(std::string cNick)
+{
+    std::vector<Client *>::iterator   it;
+
+    it = this->_clients.begin();
+    while ((*it)->getNickname().compare(cNick))
+        it++;
+    return (it);   
 }
 
 Client  *Server::getClient(int fd) const
@@ -119,12 +129,12 @@ Client  *Server::getClient(std::string name) const
     return (NULL);
 }
 
-std::vector<std::string> Server::getCapabilities() const
+std::vector<std::string> Server::getCapabilities()
 {
     return (this->_capabilities);
 }
 
-std::vector<std::string> Server::getParameter() const
+std::vector<std::string> Server::getParameter()
 {
     std::vector<std::string> ret;
     std::string text;
@@ -363,7 +373,7 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
         {
             std::string text = makePasswdMisMatch(client->getNickname());
             send(fdNewClient, text.c_str(), text.size(), 0);
-            this->_clients.erase(this->getItClients(client->getNickname()));
+            this->_clients.erase(this->getItNcClients(client->getNickname()));
             delete client;
             return (0);
         }

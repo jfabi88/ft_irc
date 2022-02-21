@@ -17,11 +17,15 @@ Message::Message() : \
         std::cout << "Message Default Constructor called (empty message)" << std::endl;
 }
 
-Message::Message(const Message &copy) : \
-    _prefix(""), _command(""), _text(copy.getText()), _lastParameter(""), _isLastParameter(false) {
-        this->setMessage(_text);
-        std::cout << *this << std::endl;
-        std::cout << "Message Copy Constructor called" << std::endl;
+Message::Message(const Message &copy) : _parameters(copy.getParametersBegin(), copy.getParametersEnd())
+{
+    this->_prefix = copy.getPrefix();
+    this->_command = copy.getCommand();
+    this->_text = copy.getText();
+    this->_lastParameter = copy.getLastParameter();
+    this->_isLastParameter = copy.getIsLastParameter();
+    std::cout << *this << std::endl;
+    std::cout << "Message Copy Constructor called" << std::endl;
 }
 
 Message::Message(std::string _text) {
@@ -39,9 +43,7 @@ Message::~Message() {
 std::string Message::getPrefix() const  { return (this->_prefix);  }
 std::string Message::getCommand() const { return (this->_command); }
 
-std::string Message::getParametersIndex(size_t i) const
-{
-    std::cout << "Parameters size: " << this->_parameters.size() << std::endl;
+std::string Message::getParametersIndex(size_t i) const {
     return (i >= this->_parameters.size()) ? ("") : (this->_parameters[i]); 
 }
 
@@ -49,24 +51,19 @@ bool Message::getIsLastParameter() const { return (this->_isLastParameter); }
 
 //* ::smenna
 //? Queste due sono strane, la seconda dovrebbe almeno teoricamente essere il setter della prima
-std::string Message::getLastParameters() const { return (this->_lastParameter); }
-std::string Message::getLastParameter() const
-{
-    std::vector<std::string>::const_iterator  it;
+std::string Message::getLastParameter() const { return (this->_lastParameter); }
 
-    it = this->_parameters.begin();
-    if (it == this->_parameters.end())
-        return ("");
-    else
-    {
-        while (it + 1 < this->_parameters.end())
-            it++;
-    }
-    return (*(it));
+std::vector<std::string> Message::getParameters()                   { return (this->_parameters); }
+std::vector<std::string> Message::getLastParameterMatrix()
+{
+    std::vector<std::string>    ret;
+
+    ret = ft_split(this->getLastParameter(), ' ');
+    return (ret);
 }
 
-std::vector<std::string> Message::getParameters() const             { return (this->_parameters); }
-std::vector<std::string> Message::getLastParameterMatrix() const    { return (ft_split(this->getLastParameters(), ' ')); }
+std::vector<std::string>::const_iterator    Message::getParametersBegin() const { return (this->_parameters.begin()); };
+std::vector<std::string>::const_iterator    Message::getParametersEnd() const { return (this->_parameters.end()); };
 std::string Message::getText() const                                { return (this->_text); }
 int Message::getSize() const                                        { return (this->_parameters.size()); }
 
@@ -82,7 +79,7 @@ void Message::setMessage(std::string _text)
     this->_prefix = "";
     this->_text = _text;
     this->_lastParameter = "";
-    //this->_parameters.clear();
+    this->_parameters.clear();
     this->_isLastParameter = false;
     if (_text == "")
         return ;
@@ -97,12 +94,12 @@ void Message::setMessage(std::string _text)
         end = _text.find(" ", last_pos);
     }
     end = _text.find(DEL, last_pos);
-    std::cout << "end e last sono: " << end << " " << last_pos << std::endl;
     if (end != last_pos)
     {
         add = (_text[last_pos] == ':');
         if (add)
         {
+            std::cout << "Qui abbiamo settato last parameter" << std::endl;
             _lastParameter = _text.substr(last_pos + add, end - (last_pos + add));
             _isLastParameter = true;
         }
@@ -114,21 +111,24 @@ void Message::setMessage(std::string _text)
 
 std::ostream& operator<<(std::ostream& os, const Message &copy)
 {
-    std::vector<std::string>::iterator it;
+    std::vector<std::string>::const_iterator  it;
 
     os << "_prefix: " << copy.getPrefix() << "\n";
     os << "_command: " << copy.getCommand() << "\n";
     os << "_parameters: ";
-    it = copy.getParameters().begin();
-    if (it < copy.getParameters().end())
+    it = copy.getParametersBegin();
+    if (it < copy.getParametersEnd())
     {
         os << *it; 
         it++;
     }
-    while (it < copy.getParameters().end())
+    while (it < copy.getParametersEnd())
     {
         os << ", " << *it; 
         it++;
     }
+    os << "\n";
+    os << "_lastparameter: " << copy.getLastParameter() << "\n";
+    os << "Is the _last parameter setted? " << copy.getIsLastParameter() << "\n";
     return (os);
 }

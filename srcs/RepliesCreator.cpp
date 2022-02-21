@@ -131,7 +131,7 @@ std::string makeRplList(std::string cNick, Channel channel)
 
     std::stringstream n;
     n << channel.getNClient();
-    text = "322 " + cNick, channel.getName() + " " + n.str() + " :" + channel .getTopic() + DEL;
+    text = "322 " + cNick, channel.getName() + " " + n.str() + " :" + channel.getTopic() + DEL;
     return (text);
 }
 

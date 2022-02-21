@@ -39,15 +39,16 @@ class Server
         std::string                             getVersion() const;
         std::string                             getDate() const;
         std::string                             getMotD() const;
-        std::vector<Client*>                    getClients() const;
+        std::vector<Client*>                    getClients();
         std::vector<Client *>::const_iterator   getItClients(std::string cNick) const;
+        std::vector<Client *>::iterator         getItNcClients(std::string cNick);
         Client                                  *getClient(int indx) const;
         Client                                  *getClient(std::string name) const;
         Channel                                 *getChannel(std::string name) const;
         std::vector<Channel *>::const_iterator  getFirstChannel() const;
         std::vector<Channel *>::const_iterator  getLastChannel() const;
-        std::vector<std::string>                getCapabilities() const;
-        std::vector<std::string>                getParameter() const;
+        std::vector<std::string>                getCapabilities();
+        std::vector<std::string>                getParameter();
         std::string                             returnDate() const;
         
         void    setPort(int newport);

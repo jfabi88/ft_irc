@@ -29,16 +29,18 @@ class Message
 
         //* ################# GETTERS #################
 
-        std::string     getPrefix() const;
-        std::string     getCommand() const;
-        std::string     getParametersIndex(size_t indx) const;
-        std::string     getLastParameters() const;
-        std::string     getLastParameter() const;
-        str_list        getParameters() const;
-        str_list        getLastParameterMatrix() const;
-        std::string     getText() const;
-        int             getSize() const;
-        bool            getIsLastParameter() const;
+        std::string                 getPrefix() const;
+        std::string                 getCommand() const;
+        std::string                 getParametersIndex(size_t indx) const;
+        std::string                 getLastParameter() const;
+        //std::string                 getLastParameter() const;
+        str_list                    getParameters();
+        str_list                    getLastParameterMatrix();
+        str_list::const_iterator    getParametersBegin() const;
+        str_list::const_iterator    getParametersEnd() const;
+        std::string                 getText() const;
+        int                         getSize() const;
+        bool                        getIsLastParameter() const;
 
         //* ################# SETTERS #################
 

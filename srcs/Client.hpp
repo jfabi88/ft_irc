@@ -48,7 +48,7 @@ class Client
         Channel             *getChannel(std::string name) const;
         ch_iter             getFirstChannel() const;
         ch_iter             getLastChannel() const;
-        str_list            getCapabilities() const;
+        str_list            getCapabilities();
         std::string         getAwayMessage() const;
         bool                getAwayStatus() const;
         bool                getRegisteredStatus() const;

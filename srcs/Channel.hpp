@@ -19,6 +19,7 @@
 # include <iostream>
 # include <vector>
 # include <sys/socket.h>
+# include <sstream>
 
 //Mode "ntsmkIileb//
 
@@ -78,7 +79,7 @@ class Channel
         std::string             getModes() const;
         Client                  *getClient(int fd) const;
         Client                  *getClient(std::string name) const;
-        std::vector<Client *>   getOperator() const;
+        std::vector<Client *>   getOperator();
         usr_pos                 getFirstClient() const;
         usr_pos                 getLastClient() const;
         usr_pair                getPairClient(std::string name) const;

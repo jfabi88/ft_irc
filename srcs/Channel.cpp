@@ -56,7 +56,7 @@ Client *Channel::getClient(std::string name) const {
     return (NULL);
 }
 
-std::vector<Client *> Channel::getOperator() const 
+std::vector<Client *> Channel::getOperator()
 {
     std::vector<Client *> ret;
     Channel::usr_pair_list::const_iterator  it;
@@ -98,7 +98,9 @@ std::string Channel::getModes() const
     if (this->_chMode & L)
     {
         mode += 'l';
-        param += " " + std::to_string(this->_clientLimit);
+        std::stringstream os;
+        os << this->_clientLimit;
+        param += " " + os.str();
     }
     if (this->_chMode & S)
         mode += 's';

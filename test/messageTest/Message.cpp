@@ -48,7 +48,7 @@ bool Message::getIsLastParameter() const { return (this->_isLastParameter); }
 
 //* ::smenna
 //? Queste due sono strane, la seconda dovrebbe almeno teoricamente essere il setter della prima
-std::string Message::getLastParameters() const { return (this->_lastParameter); }
+std::string Message::getLastParameter() const { return (this->_lastParameter); }
 std::string Message::getLastParameter() const
 {
     std::vector<std::string>::const_iterator  it;
@@ -65,7 +65,7 @@ std::string Message::getLastParameter() const
 }
 
 std::vector<std::string> Message::getParameters() const             { return (this->_parameters); }
-std::vector<std::string> Message::getLastParameterMatrix() const    { return (ft_split(this->getLastParameters(), ' ')); }
+std::vector<std::string> Message::getLastParameterMatrix() const    { return (ft_split(this->getLastParameter(), ' ')); }
 std::string Message::getText() const                                { return (this->_text); }
 int Message::getSize() const                                        { return (this->_parameters.size()); }
 

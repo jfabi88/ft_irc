@@ -251,27 +251,26 @@ int execKick(Message message, Client *client, Server *server)
 
 //*******JOIN**********//
 
-static int ft_parse_channel_key(Message message, std::vector<std::string> channels, std::vector<std::string> key)
+static int ft_parse_channel_key(Message message, std::vector<std::string> *channels, std::vector<std::string> *key)
 {
-    std::vector<std::string>::iterator it;
-    std::vector<std::string>::const_iterator tmp;
+    std::vector<std::string>            v;
+    std::vector<std::string>::const_iterator  it;
+    std::vector<std::string>::iterator  tmp;
     int size = 0;
     int i;
 
-    it = message.getParameters().begin();
-    //tmp = message.getLastParameterMatrix().begin();
-    //size = message.getLastParameterMatrix().size();
-    std::cout << "la size " << size << std::endl;
-    std::cout << "La last matrix " << *tmp << std::endl;
-    std::cout << message << std::endl;
+    v = message.getLastParameterMatrix();
+    it = message.getParametersBegin();
+    tmp = v.begin();
+    size = v.size();
     i = 0;
-    while (it < message.getParameters().end())
+    while (it < message.getParametersEnd())
     {
         std::cout << "Dentro ft_parse_channel_key. Elemento: " << *it << std::endl;
-        channels.push_back(*it);
-        if (i < size - 1)
+        channels->push_back(*it);
+        if (i < size)
         {
-            key.push_back(*tmp);
+            key->push_back(*tmp);
             tmp++;
         }
         it++;
@@ -297,6 +296,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
 {
     Channel *newChannel;
 
+    std::cout << "Siamo dentro exec join" << std::endl;
     if (client->getChannelSub() >= CHANLIMIT)
         return (makeTooManyChannels(client->getNickname(), channelName));
     newChannel = server->getChannel(channelName);
@@ -337,7 +337,7 @@ int execJoin(Message message, Client *client, Server *server)
     std::vector<std::string> listChannel;
     std::vector<std::string> listKey;
 
-    if (ft_parse_channel_key(message, listChannel, listKey))
+    if (ft_parse_channel_key(message, &listChannel, &listKey))
     {
         text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
@@ -347,12 +347,20 @@ int execJoin(Message message, Client *client, Server *server)
         std::vector<std::string>::iterator it;
         std::vector<std::string>::iterator keyIt;
 
+        std::cout << "Stiamo prima key begin" << std::endl;
         keyIt = listKey.begin();
+        std::cout << "Stiamo dopo key begin" << std::endl;
         for (it = listChannel.begin(); it < listChannel.end(); it++)
         {
-            text = ft_exec_join(*it, *keyIt, client, server);
+            std::cout << "Stiamo for" << std::endl;
+            if (keyIt != listKey.end())
+            {
+                text = ft_exec_join(*it, *keyIt, client, server);
+                keyIt++;
+            }
+            else
+                text = ft_exec_join(*it, "", client, server);
             send(client->getSocketFd(), text.c_str(), text.size(), 0);
-            keyIt++;
         }
     }
     return (0);
@@ -394,7 +402,7 @@ int execNick(Message message, Client *client, Server *server)
     size_t          i;
 
     error = "";
-    nick = message.getLastParameter();
+    nick = message.getParametersIndex(0);
     cNick = client->getNickname();
     if (nick == "")
         error = makeErrorNoNickNameGiven(cNick);

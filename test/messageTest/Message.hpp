@@ -32,7 +32,7 @@ class Message
         std::string     getPrefix() const;
         std::string     getCommand() const;
         std::string     getParametersIndex(size_t indx) const;
-        std::string     getLastParameters() const;
+        std::string     getLastParameter() const;
         std::string     getLastParameter() const;
         str_list        getParameters() const;
         str_list        getLastParameterMatrix() const;

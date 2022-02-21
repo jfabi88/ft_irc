@@ -97,7 +97,7 @@ Channel *Client::getChannel(std::string name) const {
 Client::ch_iter Client::getFirstChannel() const             { return (this->_subChannels.begin()); }
 Client::ch_iter Client::getLastChannel() const              { return (this->_subChannels.end());   }
 
-std::vector<std::string> Client::getCapabilities() const    { return (this->_capabilities); }
+std::vector<std::string> Client::getCapabilities()          { return (this->_capabilities); }
 std::string Client::getAwayMessage() const                  { return (this->_awayMessage); }
 
 std::string Client::getMode() const

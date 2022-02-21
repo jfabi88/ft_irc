@@ -38,15 +38,15 @@ std::vector<std::string> ft_split(std::string _text, char delimiter)
 {
     std::vector<std::string>    ret;
     size_t                      i;
-    int                         lastPosition;
+    size_t                      lastPosition;
 
     i = 0;
-    lastPosition = -1;
+    lastPosition = std::string::npos;
     while (i < _text.size() && _text[i] == delimiter)
         i++;
     if (i < _text.size())
         lastPosition = _text.find(delimiter, i);
-    while (lastPosition != -1)
+    while (lastPosition != std::string::npos)
     {
         ret.push_back(_text.substr(i, lastPosition - i));
         i = lastPosition;
@@ -55,7 +55,7 @@ std::vector<std::string> ft_split(std::string _text, char delimiter)
         if (i < _text.size())
             lastPosition = _text.find(delimiter, i);
     }
-    if (lastPosition == -1)
+    if (lastPosition == std::string::npos && i != _text.size())
         ret.push_back(_text.substr(i, _text.size() - i));
     return (ret);
 }

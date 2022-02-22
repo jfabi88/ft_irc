@@ -210,7 +210,8 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
         symbol = '@';
     text = "353 " + CNick + " " + symbol + " " + channel.getName() + " :";
     std::vector<std::pair<int, Client *> >  clients;
-    for (it = channel.getFirstClient(); it < channel.getLastClient() ;it++)
+    clients = channel.getClients();
+    for (std::vector<std::pair<int, Client *> >::iterator it = clients.begin(); it < clients.end() ;it++)
     {
         if (!((*it).first & UI) || flag == 1)
         {
@@ -283,6 +284,14 @@ std::string makeTime(std::string CNick, std::string servername, std::string date
 
 
     text = "391 " + CNick + " " + servername + " :" + date + DEL;
+    return (text);
+}
+
+std::string makeErrorUnKnownError(std::string CNick, std::string command, std::string info)
+{
+    std::string text;
+
+    text = "400 " + CNick + " " + command + " :" + info + DEL;
     return (text);
 }
 

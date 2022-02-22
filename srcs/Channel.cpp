@@ -261,6 +261,8 @@ int Channel::sendToAll(std::string text) {
     return (0);
 }
 
+void Channel::setLimit(int limit) { this->_clientLimit = limit; };
+
 //* ################# CHECKS #################
 
 int Channel::isBanned(std::string nickname, std::string username, std::string realname)

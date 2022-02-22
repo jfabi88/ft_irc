@@ -56,6 +56,7 @@ std::string makeRplListEnd(std::string cNick);
 std::string makeMotDStart(std::string CNick, std::string ServeName, std::string motd);
 std::string makeEndOfMotD(std::string CNick);
 std::string makeTime(std::string CNick, std::string servername, std::string date);
+std::string makeErrorUnKnownError(std::string CNick, std::string command, std::string info);
 std::string makeNoSuchNick(std::string CNick, int flag);
 std::string makeNoSuchServer(std::string CNick, std::string SName);
 std::string makeTooManyChannels(std::string CNick, std::string ChannelName);

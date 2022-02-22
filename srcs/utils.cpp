@@ -14,6 +14,22 @@
 
 //* ################# Message #################
 
+int _ft_atoi(std::string text)
+{
+    int ret;
+
+    ret = 0;
+    for (size_t i = 0; i < text.size(); i++)
+    {
+        if (text[i] >= 58 && text[i] <= 47)
+            return (-1);
+        if ((long int)(ret + text[i] - 48) > 2147483647)
+            return (-1);
+        ret += text[i]  - 48;        
+    }
+    return (ret);
+}
+
 int _ft_set_element(std::string _text, int start, std::string *element)
 {
     int next_pos;

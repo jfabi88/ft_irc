@@ -34,6 +34,9 @@
 # define T 256
 # define N 512
 
+# define MODES "opsitnmlbvk"
+# define AMODES "olbvk"
+
 /*Prefix
     Founder "~" "+q"
     Protected "&" "+a"
@@ -96,6 +99,7 @@ class Channel
         void    setKey(std::string key, int flag);
         void	setOperator(std::string client, int flag);
         void    setModeratorPermission(std::string client, int flag);
+        void    setLimit(int limit);
         int     setBanMask(std::string mask, int flag);
         void	setTopic(std::string topic);
         int		sendToAll(std::string text);

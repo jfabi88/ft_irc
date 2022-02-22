@@ -401,28 +401,21 @@ int execList(Message message, Client *client, Server *server)
 
 //***********MODE************//
 
-static std::string  execSpecialFlag(Channel *channel, std::string param, int flag, char c)
+static void  execSpecialFlag(Channel *channel, std::string param, int flag, char c)
 {
     if (c == 'o')
-    {
-        if (!channel->isOnChannel(param))
-            return (makeErrorNotOnChannel(param, channel->getName()));
         channel->setOperator(param, flag);
-    }
     else if (c == 'b')
         channel->setBanMask(param, flag);
     else if (c == 'k')
         channel->setKey(param, flag);
     else if (c == 'v')
-    {
-        if (!channel->isOnChannel(param))
-            return (makeErrorNotOnChannel(param, channel->getName()));
         channel->setModeratorPermission(param, flag);
-    }
-    return ("");
+    else if (c == 'l')
+        channel->setLimit(_ft_atoi(param));
 }
 
-static std::string  execChannelModeAdd(Channel *channel, Client *client, Message message, std::string m)
+static void execChannelModeAdd(Channel *channel, Message message, std::string m)
 {
     int flag = 0;
     int i = 0;
@@ -438,20 +431,48 @@ static std::string  execChannelModeAdd(Channel *channel, Client *client, Message
     {
         if (m[u] == 'p' || m[u] == 's' || m[u] == 'i' || m[u] == 't' || m[u] == 'n'|| m[u] == 'm')
             channel->setMode(m[u], flag);
-        else if (m[u] == 'o' || m[u] == 'l' || m[u] == 'b' || m[u] == 'v'|| m[u] == 'k')
+        else
         {
-            if (message.getParametersIndex(n) == "" && (!flag || m[u] == 'o' || m[u] == 'v'))
-                return (makeErrorNeedMoreParams(client->getNickname(), "MODE"));
-            text = execSpecialFlag(channel, message.getParametersIndex(n), flag, m[u]);
-            if (text != "")
-                return (text);
+            execSpecialFlag(channel, message.getParametersIndex(n), flag, m[u]);
             if (!flag || m[u] == 'o' || m[u] == 'v')
                 n++;
         }
-        else
-            return (makeErrorUnKnownMode(client->getNickname(), m[i]));
     }
-    return (text);
+}
+
+static std::string  ft_check_mode(Message message, Client client, Channel channel)
+{
+    int i;
+    int n;
+    std::string modes;
+    std::string aOptions;
+    std::string options;
+
+    i = 0;
+    n = 2;
+    modes = message.getParametersIndex(1);
+    options = MODES;
+    aOptions = AMODES;
+    if (modes[i] == '+' || modes[i] == '-')
+        i++;
+    for (size_t c = i; c < modes.length(); c++)
+    {
+        if (options.find(modes[c]) == std::string::npos)
+            return (makeErrorUModeUnknownFlag(client.getNickname()));
+        if (aOptions.find(modes[c]))
+        {
+            if (modes[0] == '+' && message.getParametersIndex(n) == "")
+                return (makeErrorNeedMoreParams(client.getNickname(), "MODE"));
+            if (modes[0] == '+' && _ft_atoi(message.getParametersIndex(n)) == -1)
+                return (makeErrorUnKnownError(client.getNickname(), "MODE", "limit format is wrong"));
+            if ((modes[c] == 'o' || modes[c] == 'v') && message.getParametersIndex(n) == "")
+                return (makeErrorNeedMoreParams(client.getNickname(), "MODE"));
+            if ((modes[c] == 'o' || modes[c] == 'v') && !channel.isOnChannel(message.getParametersIndex(n)))
+                return (makeErrorNotOnChannel(message.getParametersIndex(n), channel.getName()));
+            n++;
+        }
+    }
+    return ("");
 }
 
 static std::string  execChannelMode(Message message, Client *client, Server *server)
@@ -470,7 +491,15 @@ static std::string  execChannelMode(Message message, Client *client, Server *ser
         return (makeChanNoPrivsNeeded(CNick, channel->getName()));
     if (message.getParametersIndex(1) == "")
         return (makeErrorNeedMoreParams(CNick, "MODE"));
-    return (execChannelModeAdd(channel, client, message, message.getParametersIndex(1)));
+    text = ft_check_mode(message, *client, *channel);
+    if (text != "")
+        return (text);
+    execChannelModeAdd(channel, message, message.getParametersIndex(1));
+    text  = "MODE " + client->getNickname() + " " + message.getParametersIndex(1);
+    for (int n = 2; n < message.getSize() ;n++)
+        text += " " + message.getParametersIndex(n);
+    text += DEL;
+    return (text);
 }
 
 static std::string execUserMode(Message message, Client *client)

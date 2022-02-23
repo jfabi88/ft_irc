@@ -322,6 +322,8 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     }
     else
     {
+        std::cout << "Il nuovo canale ha: " << newChannel->getNClient() << " Il limite: " << newChannel->getLimit() << std::endl;
+        std::cout << "Il canale ha il mode l: " << newChannel->hasMode('l') << std::endl;
         if (newChannel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
             return (makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
         else if (newChannel->isOnChannel(client->getNickname()))
@@ -413,6 +415,8 @@ static void  execSpecialFlag(Channel *channel, std::string param, int flag, char
         channel->setModeratorPermission(param, flag);
     else if (c == 'l')
         channel->setLimit(_ft_atoi(param));
+    channel->setMode(c, flag);
+    std::cout << "Il mode di channel: " << channel->getModes() << std::endl;
 }
 
 static void execChannelModeAdd(Channel *channel, Message message, std::string m)
@@ -453,17 +457,19 @@ static std::string  ft_check_mode(Message message, Client client, Channel channe
     modes = message.getParametersIndex(1);
     options = MODES;
     aOptions = AMODES;
+    std::cout << "Siamo dentro mode" << std::endl;
     if (modes[i] == '+' || modes[i] == '-')
         i++;
     for (size_t c = i; c < modes.length(); c++)
     {
         if (options.find(modes[c]) == std::string::npos)
             return (makeErrorUModeUnknownFlag(client.getNickname()));
-        if (aOptions.find(modes[c]))
+        if (aOptions.find(modes[c]) != std::string::npos)
         {
+            std::cout << "SIAMO nel ciclo FOR" << std::endl;
             if (modes[0] == '+' && message.getParametersIndex(n) == "")
                 return (makeErrorNeedMoreParams(client.getNickname(), "MODE"));
-            if (modes[0] == '+' && _ft_atoi(message.getParametersIndex(n)) == -1)
+            if (modes[0] == '+' && modes[c] == 'l' && _ft_atoi(message.getParametersIndex(n)) == -1)
                 return (makeErrorUnKnownError(client.getNickname(), "MODE", "limit format is wrong"));
             if ((modes[c] == 'o' || modes[c] == 'v') && message.getParametersIndex(n) == "")
                 return (makeErrorNeedMoreParams(client.getNickname(), "MODE"));
@@ -495,7 +501,7 @@ static std::string  execChannelMode(Message message, Client *client, Server *ser
     if (text != "")
         return (text);
     execChannelModeAdd(channel, message, message.getParametersIndex(1));
-    text  = "MODE " + client->getNickname() + " " + message.getParametersIndex(1);
+    text  = ":" + client->getNickname() + " MODE " + channel->getName() + " " + message.getParametersIndex(1);
     for (int n = 2; n < message.getSize() ;n++)
         text += " " + message.getParametersIndex(n);
     text += DEL;
@@ -598,8 +604,8 @@ int execNames(Message message, Client *client, Server *server)
     std::string channelName;
     Channel     *channel;
 
-    channel = server->getChannel(channelName);
     channelName = message.getParametersIndex(0);
+    channel = server->getChannel(channelName);
     if (channelName == "")
         text = makeEndOfNames("*", client->getNickname());
     else if (!channel)
@@ -641,15 +647,37 @@ int execNick(Message message, Client *client, Server *server)
     return (0);
 }
 
-int execNotice(Message message, Client *client, Server *server)
+//**********NOTICE*************************//
+
+static int execNoticeChannel(Message message, Client *client, Server *server, std::string target)
 {
-    std::string target;
+    Channel *channel;
+    std::string text;
+    std::vector<std::pair<int, Client *> >::const_iterator it;
+
+    text = "";
+    channel = server->getChannel(target);
+    if (channel == NULL)
+        return (0);
+    else if (channel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
+        return (0);
+    else if (channel->hasMode('m') && (!channel->clientHasMode(client->getNickname(), 'v') && !channel->clientHasMode(client->getNickname(), 'v')))
+        return (0);
+    if (text != "")
+        return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
+    for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
+    {
+        text = ":" + client->getNickname() +  " NOTICE " +  target + " :" + message.getLastParameter() + DEL;
+        send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    return (0);
+}
+
+static int execNoticeClient(Message message, Client *client, Server *server, std::string target)
+{
     Client      *clientTarget;
     std::string text;
 
-    if (message.getSize() < 2)
-        return (0);
-    target = message.getParametersIndex(0);
     clientTarget = server->getClient(target);
     if (clientTarget == NULL)
         return (0);
@@ -657,20 +685,43 @@ int execNotice(Message message, Client *client, Server *server)
         return (0);
     else
     {
-        text = ":" + client->getNickname() + " NOTICE " + clientTarget->getNickname() + " " + message.getLastParameter() + DEL;
+        text = ":" + client->getNickname() +  " NOTICE " + clientTarget->getNickname() + " :" + message.getLastParameter() + DEL;
         send(clientTarget->getSocketFd(), text.c_str(), text.size(), 0);
     }
-    return (0);   
+    return (0);
 }
+
+int execNotice(Message message, Client *client, Server *server)
+{
+    std::string target;
+    int         size;
+    int         i;
+
+    i = 0;
+    size = message.getSize();
+    if (size < 2)
+        return (0);
+    while (i < size - 1)
+    {
+        target = message.getParametersIndex(i);
+        if (target != "" && (target[0] == '#' || target[0] == '&'))
+            execNoticeChannel(message, client, server, target);
+        else
+            execNoticeClient(message, client, server, target);
+        i++;
+    }
+    return (0);
+}
+//*******************************************************************//
 
 int execPart(Message message, Client *client, Server *server)
 {
-    std::vector<std::string>::iterator it;
+    std::vector<std::string> parameters;
     std::string channelName;
     std::string toSend;
     Channel *channel;
 
-    for (it = message.getParameters().begin(); it <= message.getParameters().end(); it++)
+    for (std::vector<std::string>::iterator it = parameters.begin(); it <= parameters.end(); it++)
     {
         channelName = *it;
         channel = server->getChannel(channelName);
@@ -712,31 +763,15 @@ int execPass(Message message, Client *client, Server *server)
     return (0);
 }
 
-int execRPing(Message message, Client *client)
+int execPing(Message message, Client *client, Server *server)
 {
     std::string     text;
 
     if (message.getSize() < 1)
-        makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
+        text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
     else
-    {
-        text.append("PONG ");
-        text.append(message.getParametersIndex(0));
-        send(client->getSocketFd(), text.c_str(), text.size(), 0);
-        return (1);
-    }
-    return (0);
-}
-
-int execSPing(Message message, Client *client)
-{
-    std::string text;
-
-    if (message.getSize() < 1)
-        return (0);
-    text = "PONG " + message.getParametersIndex(0) + DEL;
+        text = "PONG " + server->getServername() + message.getParametersIndex(0);
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
-    std::cout << "ciaone" << std::endl; 
     return (0);
 }
 
@@ -847,13 +882,13 @@ int execTopic(Message message, Client *client, Server *server)
         channel = server->getChannel(message.getParametersIndex(0));
         if (channel == NULL)
             text = makeErrorNoSuchChannel(cNick, message.getParametersIndex(0));
-        else if (!channel->isOnChannel(cNick))
-            text = makeErrorNotOnChannel(cNick, channel->getName());
-        else if (channel->hasMode('t') && !channel->clientHasMode(cNick, 'o'))
-            text = makeChanNoPrivsNeeded(cNick, channel->getName());
-        else
+        if (message.getIsLastParameter())
         {
-            if (message.getIsLastParameter())
+            if (!channel->isOnChannel(cNick))
+                text = makeErrorNotOnChannel(cNick, channel->getName());
+            else if (channel->hasMode('t') && !channel->clientHasMode(cNick, 'o'))
+                text = makeChanNoPrivsNeeded(cNick, channel->getName());
+            else
             {
                 channel->setTopic(message.getParametersIndex(1));
                 text = "TOPIC " + channel->getName() + " :" + channel->getTopic() + DEL;
@@ -865,7 +900,10 @@ int execTopic(Message message, Client *client, Server *server)
                 }
                 return (0);
             }
-            else if (channel->getTopic() != "")
+        }
+        else
+        {
+            if (channel->getTopic() != "")
                 text = makeTopic(channel->getName(), channel->getTopic(), client->getNickname());
             else
                 text = makeNoTopic(channel->getName(), client->getNickname());
@@ -1004,7 +1042,7 @@ int execWho(Message message, Client *client, Server *server)
 }
 //****************************************//
 
-std::string listCommands[20] = {
+std::string listCommands[21] = {
     "ADMIN",
     "AWAY",
     "INFO",
@@ -1019,6 +1057,7 @@ std::string listCommands[20] = {
     "NOTICE",
     "PART",
     "PASS",
+    "PING",
     "PRIVMSG",
     "QUIT",
     "TIME",
@@ -1065,16 +1104,18 @@ int execCommand(Message message, Client *client, Server *server)
         case 13:
             return (execPass(message, client, server));
         case 14:
-            return (execPrivmsg(message, client, server));
+            return (execPing(message, client, server));
         case 15:
-            return (execQuit(message, client, server));
+            return (execPrivmsg(message, client, server));
         case 16:
-            return (execTime(message, client, server));
+            return (execQuit(message, client, server));
         case 17:
-            return (execTopic(message, client, server));
+            return (execTime(message, client, server));
         case 18:
-            return (execUser(message, client));
+            return (execTopic(message, client, server));
         case 19:
+            return (execUser(message, client));
+        case 20:
             return (execVersion(message, client, server));
         default:
             return (0);

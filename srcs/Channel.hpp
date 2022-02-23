@@ -45,11 +45,8 @@
     Voice "+" "+v"
 */
 
-# define Q 1
-# define A 2
-# define O 4
-# define H 8
-# define V 16
+# define O 1
+# define V 2
 
 //* ::smenna
 //? Mi sono permesso di effettuare alcune modifiche all'interfaccia, più precisamente
@@ -104,6 +101,7 @@ class Channel
         void	setTopic(std::string topic);
         int		sendToAll(std::string text);
 
+        std::string ltop(int c);
         //* ################# CHECKS #################
 
         int		isBanned(std::string CNick, std::string CUser, std::string CReal);

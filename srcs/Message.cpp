@@ -24,7 +24,6 @@ Message::Message(const Message &copy) : _parameters(copy.getParametersBegin(), c
     this->_text = copy.getText();
     this->_lastParameter = copy.getLastParameter();
     this->_isLastParameter = copy.getIsLastParameter();
-    std::cout << *this << std::endl;
     std::cout << "Message Copy Constructor called" << std::endl;
 }
 

@@ -92,6 +92,7 @@ std::string Channel::getModes() const
     std::string param;
     std::vector<std::string>::const_iterator it;
 
+    std::cout << "Il mode dentro get modes é: " << this->_chMode << std::endl;
     if (this->_chMode & B)
     {
         mode += 'b';
@@ -218,7 +219,7 @@ int Channel::setMode(char m, int negative) {
     if (negative  == 1)
         this->_chMode = this->_chMode ^ bit;
     else
-        this->_chMode = this->_chMode || bit;
+        this->_chMode = this->_chMode | bit;
     return (1);
 }
 
@@ -262,6 +263,15 @@ int Channel::sendToAll(std::string text) {
 }
 
 void Channel::setLimit(int limit) { this->_clientLimit = limit; };
+
+std::string Channel::ltop(int c)
+{
+    if (c & V)
+        return ("+");
+    else if (c & O)
+        return ("@");
+    return ("");
+};
 
 //* ################# CHECKS #################
 
@@ -345,14 +355,8 @@ int	Channel::ft_converter(char c)
 
 int	Channel::ft_client_converter(char c)
 {
-    if (c == 'q')
-        return Q;
-    else if (c == 'a')
-        return A;
-    else if (c == 'o')
+    if (c == 'o')
         return O;
-    else if (c == 'h')
-        return H;
     else if (c == 'v')
         return V;
     return 0;

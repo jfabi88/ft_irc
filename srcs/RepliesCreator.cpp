@@ -202,12 +202,12 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
 {
     std::string text;
     int         i;
-    char        symbol;
+    std::string symbol;
 
-    symbol = '=';
+    symbol = "\'=\'";
     i = 1;
     if (channel.hasMode('s'))
-        symbol = '@';
+        symbol = "\'@\'";
     text = "353 " + CNick + " " + symbol + " " + channel.getName() + " :";
     std::vector<std::pair<int, Client *> >  clients;
     clients = channel.getClients();
@@ -218,11 +218,11 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
             if ((int)text.size() + (int)(*it).second->getNickname().size() + DELSIZE > (512 * i))
             {
                 text += DEL;
-                text += "353 " + CNick + " " + symbol + " " + channel.getName() + " :" + (*it).second->getNickname() + " ";
+                text += "353 " + CNick + " " + symbol + " " + channel.getName() + " :" + channel.ltop((*it).first) + (*it).second->getNickname();
                 i++;
             }
             else
-                text += (*it).second->getNickname() + " ";
+                text += " " + channel.ltop((*it).first) + (*it).second->getNickname();
         }
     }
     text += DEL;

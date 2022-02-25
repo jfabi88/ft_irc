@@ -56,6 +56,7 @@ class Client
         int                 getChannelSub() const;
         int                 getAccess() const;
         int                 getRecFlag() const;
+        std::vector<Channel *>  getChannels();
 
         //* ################# SETTERS #################
 

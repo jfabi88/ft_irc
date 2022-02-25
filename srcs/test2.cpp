@@ -104,13 +104,10 @@ int main(int argc, char *argv[])
             perror("select");
             exit(4);
         }
-        std::cout << "Nel loop" << std::endl;
         // run through the existing connections looking for data to read
         for(i = 0; i <= fdmax; i++) {
-            std::cout << "Nel ciclo for" << std::endl;
             if (FD_ISSET(i, &read_fds)) { // we got one!!
                 if (i == listener) {
-                    std::cout << "Nel listener" << std::endl;
                     // handle new connections
                     addrlen = sizeof remoteaddr;
                     newfd = accept(listener,
@@ -130,12 +127,9 @@ int main(int argc, char *argv[])
                                 get_in_addr((struct sockaddr*)&remoteaddr),
                                 remoteIP, INET6_ADDRSTRLEN),
                             newfd);
-                        std::cout << "Il nuovo client é creato" << std::endl;
                         Client  *client = new Client();
-                        std::cout << "Il client ha un fd pari a: " << newfd << std::endl;
                         client->setSocketFd(newfd);
                         irc.setClient(client);
-                        std::cout << "Il nuovo client é stato aggiunto" << std::endl;
                     }
                 } else {
                     // handle data from a client
@@ -151,13 +145,8 @@ int main(int argc, char *argv[])
                         FD_CLR(i, &master); // remove from master set
                     } else {
                         Client *client = irc.getClient(i);
-                        std::cout << "Aggiungo un client con fd pari a:" << i << std::endl;
-                        std::cout << "Il client: " << client << std::endl;
                         if (client && client->getRegisteredStatus())
-                        {
-                            std::cout << "Dobbiamo eseguire un comando" << std::endl;
                             irc.receiveCommand(i, buf);
-                        }
                         else if (client)
                             irc.startCommunication(i, buf, client);
                         else

@@ -204,10 +204,10 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
     int         i;
     std::string symbol;
 
-    symbol = "\'=\'";
+    symbol = "\"=\"";
     i = 1;
     if (channel.hasMode('s'))
-        symbol = "\'@\'";
+        symbol = "\"@\"";
     text = "353 " + CNick + " " + symbol + " " + channel.getName() + " :";
     std::vector<std::pair<int, Client *> >  clients;
     clients = channel.getClients();

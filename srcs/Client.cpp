@@ -19,17 +19,17 @@
 Client::Client() : \
     _nickname(""), _password(""), _username(""), _realname(""), _subChannelsNum(0),
     _socket(-1), _access(0), _recFlag(0), _isAway(false), _isRegistered(false) {
-    std::cout << "Client constructor called" << std::endl;
+    //std::cout << "Client constructor called" << std::endl;
 }
 
 Client::Client(const Client &copy) : \
     _nickname(copy.getNickname()), _password(copy.getPassword()), _subChannelsNum(copy.getChannelSub()), 
     _socket(copy.getSocketFd()), _access(copy.getAccess()), _isAway(copy.getAwayStatus()) {
-    std::cout << "Client copy constructor called" << std::endl;
+    //std::cout << "Client copy constructor called" << std::endl;
 }
 
 Client::~Client() {
-    std::cout << "Client destructor called" << std::endl;
+    //std::cout << "Client destructor called" << std::endl;
 }
 
 Client &Client::operator=(const Client &copy) {
@@ -118,7 +118,8 @@ bool Client::getRegisteredStatus() const                    { return (this->_isR
 int Client::getSocketFd() const                             { return (this->_socket); }
 int Client::getChannelSub() const                           { return (this->_subChannelsNum); }
 int Client::getAccess() const                               { return (this->_access); }
-int Client::getRecFlag() const                              {return (this->_recFlag);}
+int Client::getRecFlag() const                              { return (this->_recFlag);}
+std::vector<Channel *>  Client::getChannels()               { return (this->_subChannels); };
 
 //* ################# SETTERS #################
 

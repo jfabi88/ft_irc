@@ -266,7 +266,8 @@ void    Server::removeChannel(std::string channelName)
         if (!((*it)->getName().compare(channelName)))
         {
             this->_channels.erase(it);
-            delete (*it);
+            this->_chanlen -= 1;
+            //delete (*it);
             return ;
         }
     }
@@ -281,7 +282,7 @@ void    Server::removeClient(std::string clientName)
         if (!((*it)->getNickname().compare(clientName)))
         {
             this->_clients.erase(it);
-            delete (*it);
+            //delete (*it);
             return ;
         }
     }    
@@ -398,7 +399,6 @@ int     Server::receiveCommand(int fdClient, char *buffer)
         message.setMessage(*it);
         execCommand(message, client, this);
     }
-    std::cout << "Messaggio eseguito" << std::endl;
     return (0);
 }
 
@@ -423,16 +423,13 @@ std::vector<std::string> Server::ft_take_messages(int fdClient, char *buffer)
     std::vector<std::string> array;
     std::string b;
 
-    std::cout << "prima di recv" << std::endl;
     b = "";
     if (buffer[0] == 0)
         recv(fdClient, buffer, 512, 0);   //jfabi: a che serve questa cosa?
-    std::cout << "dopo di recv. Il buffer: " << buffer << std::endl;
     this->ft_parse_data(&array, &b, buffer);
     ft_memset(buffer, 512);
     while (b != "")                        //jfabi: questo serve per il multilines, cosa che noi non dobbiamo gestire per forza
     {
-        std::cout << "Prima di recv" << std::endl;
         recv(fdClient, buffer, 512, 0);
         this->ft_parse_data(&array, &b, buffer);
         ft_memset(buffer, 512);  
@@ -500,7 +497,7 @@ int Server::ft_exec_communication_commands(int flag, std::string text, Client *c
             execPass(message, client, this);
             return (flag);
         case (3):
-            execSPing(message, client);
+            execPing(message, client, this);
             return (flag);
         case (4):                                    //USER
             num = execUser(message, client);

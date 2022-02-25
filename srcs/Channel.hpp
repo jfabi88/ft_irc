@@ -68,7 +68,7 @@ class Channel
         typedef std::vector<std::pair<int, Client *> >                      usr_pair_list;
         typedef std::vector<std::pair<int, Client *> >::const_iterator      usr_pos;
 
-        Channel(std::string chName, std::string chKey, Client *chOperator);
+        Channel(std::string chName);
         ~Channel();
 
         //* ################# GETTERS #################

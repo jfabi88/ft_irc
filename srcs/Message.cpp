@@ -14,7 +14,7 @@
 
 Message::Message() : \
     _prefix(""), _command(""), _text(""), _lastParameter(""), _isLastParameter(false) {
-        std::cout << "Message Default Constructor called (empty message)" << std::endl;
+        //std::cout << "Message Default Constructor called (empty message)" << std::endl;
 }
 
 Message::Message(const Message &copy) : _parameters(copy.getParametersBegin(), copy.getParametersEnd())
@@ -24,17 +24,17 @@ Message::Message(const Message &copy) : _parameters(copy.getParametersBegin(), c
     this->_text = copy.getText();
     this->_lastParameter = copy.getLastParameter();
     this->_isLastParameter = copy.getIsLastParameter();
-    std::cout << "Message Copy Constructor called" << std::endl;
+    //std::cout << "Message Copy Constructor called" << std::endl;
 }
 
 Message::Message(std::string _text) {
     this->setMessage(_text);
     this->_text = _text;
-    std::cout << "Message Constructor called" << std::endl;
+    //std::cout << "Message Constructor called" << std::endl;
 }
 
 Message::~Message() {
-    std::cout << "Message destructor called" << std::endl;
+    //std::cout << "Message destructor called" << std::endl;
 }
 
 //* ################# GETTERS #################
@@ -68,7 +68,7 @@ int Message::getSize() const                                        { return (th
 
 //* ################# SETTERS #################
 
-void Message::setMessage(std::string _text)
+void Message::setMessage(std::string text)
 {
     int last_pos = 0;
     int end;
@@ -76,33 +76,33 @@ void Message::setMessage(std::string _text)
     std::string tmp;
 
     this->_prefix = "";
-    this->_text = _text;
+    this->_text = text;
     this->_lastParameter = "";
     this->_parameters.clear();
     this->_isLastParameter = false;
-    if (_text == "")
+    std::cout << "Il testo é: " << text << std::endl;
+    if (text == "")
         return ;
-    if (_text[0] == ':')
-        last_pos = _ft_set_element(_text, 0, &(this->_prefix));
-    last_pos = _ft_set_element(_text, last_pos, &(this->_command));
-    end = _text.find(" ", last_pos);
-    while (end >= 0 && _text[last_pos] != ':')
+    if (text[0] == ':')
+        last_pos = _ft_set_element(text, 0, &(this->_prefix));
+    last_pos = _ft_set_element(text, last_pos, &(this->_command));
+    end = text.find(" ", last_pos);
+    while (end >= 0 && text[last_pos] != ':')
     {
-        last_pos = _ft_set_element(_text, last_pos, &(tmp));
+        last_pos = _ft_set_element(text, last_pos, &(tmp));
         this->_parameters.push_back(tmp);
-        end = _text.find(" ", last_pos);
+        end = text.find(" ", last_pos);
     }
-    end = _text.find(DEL, last_pos);
+    end = text.find(DEL, last_pos);
     if (end != last_pos)
     {
-        add = (_text[last_pos] == ':');
+        add = (text[last_pos] == ':');
         if (add)
         {
-            std::cout << "Qui abbiamo settato last parameter" << std::endl;
-            _lastParameter = _text.substr(last_pos + add, end - (last_pos + add));
+            _lastParameter = text.substr(last_pos + add, end - (last_pos + add));
             _isLastParameter = true;
         }
-        this->_parameters.push_back(_text.substr(last_pos + add, end - (last_pos + add)));
+        this->_parameters.push_back(text.substr(last_pos + add, end - (last_pos + add)));
     }
 }
 

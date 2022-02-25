@@ -13,19 +13,16 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 
-Channel::Channel(std::string chName, std::string chKey, Client *chOperator) : \
-    _chName(chName), _chKey(chKey) {
-    if (checkChName(chName))
-        throw Channel::WrongCharacter();
+Channel::Channel(std::string chName) : \
+    _chName(chName) {
     this->_clientLimit = 2147483647;
     this->_chMode = 0;  //jfabi: non ricordo. Forse c'è qualche errore
-    this->_clientNumber = 1;
-    this->_clients.push_back(std::pair<int, Client*>(O, chOperator));
-    std::cout << "Channel created" << std::endl;
+    this->_clientNumber = 0;
+    //std::cout << "Channel created" << std::endl;
 }
 
 Channel::~Channel() {
-    std::cout << "Channel deleted" << std::endl;
+    //std::cout << "Channel deleted" << std::endl;
 }
 
 //* ################# GETTERS #################
@@ -46,10 +43,11 @@ Client *Channel::getClient(int fd) const {
     return (NULL);
 }
 
-Client *Channel::getClient(std::string name) const {
+Client *Channel::getClient(std::string name) const
+{
     usr_pos it;
 
-    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+    for (it = this->_clients.begin(); it < this->_clients.end(); it++)
     {
         if (!(*it).second->getNickname().compare(name))
             return (*it).second;
@@ -138,10 +136,11 @@ int Channel::addClient(Client *client, std::string password, char letter) {
     return (0);
 }
 
-int Channel::removeClient(std::string CNick) {
+int Channel::removeClient(std::string CNick)
+{
     Channel::usr_pair_list::iterator it;
 
-    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+    for (it = this->_clients.begin(); it < this->_clients.end(); it++)
     {
         if (!(*it).second->getNickname().compare(CNick))
         {

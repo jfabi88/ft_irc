@@ -22,8 +22,8 @@
 
 //* ################# DEFINES #################
 
-# define DEL "\r\n"
-# define DELSIZE 2
+# define DEL "\n"
+# define DELSIZE 1
 # define USERLEN 16
 # define CHANLIMIT 2
 

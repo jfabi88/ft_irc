@@ -119,6 +119,16 @@ std::string Channel::getModes() const
     return (mode + param);
 }
 
+std::string Channel::getAllMessages() const
+{
+    std::string text;
+
+    text = "";
+    for (std::vector<std::string>::const_iterator it = this->_messages.begin(); it < this->_messages.end(); it++)
+        text.append((*it));
+    return (text);
+}
+
 //* ################# OPERATIONS #################
 
 int Channel::addClient(Client *client, char letter)
@@ -272,6 +282,8 @@ std::string Channel::ltop(int c)
     return ("");
 };
 
+void Channel::addMessage(std::string message) { this->_messages.push_back(message); }
+
 //* ################# CHECKS #################
 
 int Channel::isBanned(std::string nickname, std::string username, std::string realname)
@@ -316,6 +328,28 @@ int Channel::clientHasMode(std::string CNick, char c)
     {
         return (0);
     }
+}
+
+int Channel::checkBanMask(std::string banMask)
+{
+    int posE;
+    int posC;
+
+    if (banMask == "")
+        return (1);
+    if (banMask.find('!') == std::string::npos)
+        return (1);
+    posE = banMask.find('!');
+    if (banMask.find('!', posE) == std::string::npos)
+        return (1);
+    if (banMask.find('@') == std::string::npos)
+        return (1);
+    posC = banMask.find('@');
+    if (banMask.find('@', posE) == std::string::npos)
+        return (1);
+    if (posC > posE)
+        return (1);
+    return (0);
 }
 
 int Channel::hasMode(char m) {

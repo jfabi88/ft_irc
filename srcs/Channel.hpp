@@ -78,6 +78,7 @@ class Channel
         std::string             getName() const;
         std::string	            getTopic() const;
         std::string             getModes() const;
+        std::string             getAllMessages() const;
         Client                  *getClient(int fd) const;
         Client                  *getClient(std::string name) const;
         usr_pair_list           getClients();
@@ -97,6 +98,7 @@ class Channel
         void	setOperator(std::string client, int flag);
         void    setModeratorPermission(std::string client, int flag);
         void    setLimit(int limit);
+        void    addMessage(std::string message);
         int     setBanMask(std::string mask, int flag);
         void	setTopic(std::string topic);
         int		sendToAll(std::string text);
@@ -107,6 +109,7 @@ class Channel
         int		isBanned(std::string CNick, std::string CUser, std::string CReal);
         int     isOnChannel(std::string nickname);
         int     clientHasMode(std::string CNick, char c);
+        int     checkBanMask(std::string banMask);
         int		hasMode(char m);
 
     private:
@@ -119,6 +122,7 @@ class Channel
         int	                        _clientLimit;
         int	                        _clientNumber;
         std::vector<std::string>    _banMask;
+        std::vector<std::string>    _messages;
 
         class NoSuchChannel : public std::exception
         {

@@ -64,7 +64,7 @@ std::string makeTooManyChannels(std::string CNick, std::string ChannelName);
 std::string makeErrorMotD(std::string CNick);
 std::string makeNoTopic(std::string channelName, std::string CNick);
 std::string makeTopic(std::string channelName, std::string topic, std::string CNick);
-std::string makeNamReply(Channel channel, std::string CNick, int flag);
+std::string makeNamReply(Channel *channel, std::string CNick, int flag);
 std::string makeEndOfNames(std::string channelName, std::string CNick);
 std::string makeInfo(std::string CNick, std::string dataRun);
 std::string makeChanNoPrivsNeeded(std::string CNick, std::string channel);

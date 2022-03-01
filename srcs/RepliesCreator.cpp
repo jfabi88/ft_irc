@@ -198,7 +198,7 @@ std::string makeWhoReply()
     return (text);
 }
 
-std::string makeNamReply(Channel channel, std::string CNick, int flag)
+std::string makeNamReply(Channel *channel, std::string CNick, int flag)
 {
     std::string text;
     int         i;
@@ -206,11 +206,11 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
 
     symbol = "\"=\"";
     i = 1;
-    if (channel.hasMode('s'))
+    if (channel->hasMode('s'))
         symbol = "\"@\"";
-    text = "353 " + CNick + " " + symbol + " " + channel.getName() + " :";
+    text = "353 " + CNick + " " + symbol + " " + channel->getName() + " :";
     std::vector<std::pair<int, Client *> >  clients;
-    clients = channel.getClients();
+    clients = channel->getClients();
     for (std::vector<std::pair<int, Client *> >::iterator it = clients.begin(); it < clients.end() ;it++)
     {
         if (!((*it).first & UI) || flag == 1)
@@ -218,11 +218,11 @@ std::string makeNamReply(Channel channel, std::string CNick, int flag)
             if ((int)text.size() + (int)(*it).second->getNickname().size() + DELSIZE > (512 * i))
             {
                 text += DEL;
-                text += "353 " + CNick + " " + symbol + " " + channel.getName() + " :" + channel.ltop((*it).first) + (*it).second->getNickname();
+                text += "353 " + CNick + " " + symbol + " " + channel->getName() + " :" + channel->ltop((*it).first) + (*it).second->getNickname();
                 i++;
             }
             else
-                text += " " + channel.ltop((*it).first) + (*it).second->getNickname();
+                text += " " + channel->ltop((*it).first) + (*it).second->getNickname();
         }
     }
     text += DEL;

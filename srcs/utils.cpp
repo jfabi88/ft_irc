@@ -23,7 +23,7 @@ int _ft_atoi(std::string text)
     {
         if (text[i] >= 58 || text[i] <= 47)
             return (-1);
-        if ((long int)(ret + text[i] - 48) > 2147483647)
+        if (ret + text[i] - 48 > 2147483647)
             return (-1);
         ret += text[i]  - 48;        
     }

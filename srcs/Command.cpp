@@ -307,8 +307,9 @@ static std::string ft_success_join(Channel *channel, Client *client)
     text = ":" + client->getNickname() + " JOIN " + channel->getName() + DEL;
     if (channel->getTopic() != "")
         text.append(makeTopic(channel->getName(), channel->getTopic(), client->getNickname()));
-    text.append(makeNamReply(*channel, client->getNickname(), 0));
+    text.append(makeNamReply(channel, client->getNickname(), 0));
     text.append(makeEndOfNames(channel->getName(), client->getNickname()));
+    text.append(channel->getAllMessages());
     return (text);
 }
 
@@ -322,7 +323,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     if (newChannel == NULL)
     {
         newChannel = new Channel(channelName);
-        if (newChannel->addClient(client, key, O))
+        if (newChannel->addClient(client, key, 'o'))
         {
             delete (newChannel);
             return makeErrorBadChannelKey(client->getNickname(), channelName);
@@ -481,6 +482,8 @@ static std::string  ft_check_mode(Message message, Client client, Channel channe
             std::cout << "SIAMO nel ciclo FOR" << std::endl;
             if (modes[0] == '+' && message.getParametersIndex(n) == "")
                 return (makeErrorNeedMoreParams(client.getNickname(), "MODE"));
+            if (modes[c] == 'b' && channel.checkBanMask(message.getParametersIndex(n)));
+                return (makeErrorUnKnownError(client.getNickname(), "MODE", "ban mask format is wrong. Command INFO for more details"));
             if (modes[0] == '+' && modes[c] == 'l' && _ft_atoi(message.getParametersIndex(n)) == -1)
                 return (makeErrorUnKnownError(client.getNickname(), "MODE", "limit format is wrong"));
             if ((modes[c] == 'o' || modes[c] == 'v') && message.getParametersIndex(n) == "")
@@ -517,6 +520,7 @@ static std::string  execChannelMode(Message message, Client *client, Server *ser
     for (int n = 2; n < message.getSize() ;n++)
         text += " " + message.getParametersIndex(n);
     text += DEL;
+    channel->addMessage(text);
     return (text);
 }
 
@@ -557,7 +561,7 @@ int execMode(Message message, Client *client, Server *server)
     name = message.getParametersIndex(0);
     if (name == "")
         text = makeErrorNeedMoreParams(client->getNickname(), "MODE");
-    if (name[0] == '&')
+    if (name[0] == '#')
         text = execChannelMode(message, client, server);
     else
         text = execUserMode(message, client);
@@ -628,7 +632,7 @@ int execNames(Message message, Client *client, Server *server)
         text = makeEndOfNames(channelName, client->getNickname());
     else
     {
-        text = makeNamReply(*channel, client->getNickname(), channel->isOnChannel(client->getNickname()));
+        text = makeNamReply(channel, client->getNickname(), channel->isOnChannel(client->getNickname()));
         text += makeEndOfNames(channelName, client->getNickname());
     }
     std::cout << "Il testo inviato é: " << text << std::endl;
@@ -828,6 +832,7 @@ static int execPrivmsgChannel(Message message, Client *client, Server *server, s
         std::cout << "Il testo inviato é: " << text << std::endl;
         send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
     }
+    channel->addMessage(text);
     return (0);
 }
 

@@ -31,13 +31,9 @@ HEADERS_DIR =	./includes
 FILES =			Channel.cpp \
 				Command.cpp \
 				Client.cpp  \
-				Invite.cpp  \
-				Kick.cpp    \
 				Message.cpp \
-				Quit.cpp    \
 				RepliesCreator.cpp \
 				Server.cpp  \
-				test.cpp    \
 				test2.cpp	\
 				utils.cpp
 

@@ -361,12 +361,20 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
     int flag;
     std::vector<std::string> array;
 
+    std::cout << "SIAMO DENTRO START COMUNICATION" << std::endl;
     flag = client->getRecFlag();
     if (flag != 3 && flag != 7)
     {
         array = ft_take_messages(fdNewClient, buffer);
         for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
+        {
             flag = this->ft_exec_communication_commands(flag, *it, client);
+            if (flag == -1)
+            {
+                this->_clients.erase(this->getItNcClients(client->getNickname()));
+                return (0);
+            }
+        }
     }
     client->setRecFlag(flag);
     if (flag == 3 || flag == 7)
@@ -376,7 +384,7 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
             std::string text = makePasswdMisMatch(client->getNickname());
             send(fdNewClient, text.c_str(), text.size(), 0);
             this->_clients.erase(this->getItNcClients(client->getNickname()));
-            delete client;
+            //delete client;
             return (0);
         }
         client->setRegistered(true);
@@ -491,7 +499,8 @@ int Server::ft_exec_communication_commands(int flag, std::string text, Client *c
             }
             */
         case (1):                                   //NICK
-            execNick(message, client, this);
+            if (execNick(message, client, this))
+                return (-1);
             return (flag | 2);
         case (2):                                    //PASS
             execPass(message, client, this);
@@ -503,6 +512,8 @@ int Server::ft_exec_communication_commands(int flag, std::string text, Client *c
             num = execUser(message, client);
             if (num == 1)
                 return (flag | 1);
+            if (num == -1)
+                return (-1);
     }
     return (flag);
 }

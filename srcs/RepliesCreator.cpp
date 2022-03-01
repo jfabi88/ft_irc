@@ -129,7 +129,7 @@ std::string makeRplListStart(std::string cNick)
 {
     std::string text;
 
-    text  = "321 " + cNick + " Channel Users :Topic" + DEL;
+    text  = "321 " + cNick + " Channel :Users Topic" + DEL;
     return (text);
 }
 
@@ -213,7 +213,7 @@ std::string makeNamReply(Channel *channel, std::string CNick, int flag)
     clients = channel->getClients();
     for (std::vector<std::pair<int, Client *> >::iterator it = clients.begin(); it < clients.end() ;it++)
     {
-        if (!((*it).first & UI) || flag == 1)
+        if (!((*it).second->hasMode('i')) || flag == 1)
         {
             if ((int)text.size() + (int)(*it).second->getNickname().size() + DELSIZE > (512 * i))
             {

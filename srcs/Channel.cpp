@@ -139,9 +139,13 @@ int Channel::addClient(Client *client, char letter)
 }
 
 int Channel::addClient(Client *client, std::string password, char letter) {
+    Channel::usr_pair toAdd;
+
     if (this->_chKey.compare(password))
         return (1);
-    this->_clients.push_back(Channel::usr_pair(ft_client_converter(letter), client));
+    toAdd.first = ft_client_converter(letter);
+    toAdd.second = client;
+    this->_clients.push_back(toAdd);
     this->_clientNumber += 1;
     return (0);
 }

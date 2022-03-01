@@ -304,9 +304,11 @@ static std::string ft_success_join(Channel *channel, Client *client)
 {
     std::string     text;
 
+    std::cout << "Stiamo inviando il join" << std::endl;
     text = ":" + client->getNickname() + " JOIN " + channel->getName() + DEL;
     if (channel->getTopic() != "")
         text.append(makeTopic(channel->getName(), channel->getTopic(), client->getNickname()));
+    std::cout << "ABBIAMO APPESO" << std::endl;
     text.append(makeNamReply(channel, client->getNickname(), 0));
     text.append(makeEndOfNames(channel->getName(), client->getNickname()));
     text.append(channel->getAllMessages());
@@ -482,7 +484,7 @@ static std::string  ft_check_mode(Message message, Client client, Channel channe
             std::cout << "SIAMO nel ciclo FOR" << std::endl;
             if (modes[0] == '+' && message.getParametersIndex(n) == "")
                 return (makeErrorNeedMoreParams(client.getNickname(), "MODE"));
-            if (modes[c] == 'b' && channel.checkBanMask(message.getParametersIndex(n)));
+            if (modes[c] == 'b' && channel.checkBanMask(message.getParametersIndex(n)))
                 return (makeErrorUnKnownError(client.getNickname(), "MODE", "ban mask format is wrong. Command INFO for more details"));
             if (modes[0] == '+' && modes[c] == 'l' && _ft_atoi(message.getParametersIndex(n)) == -1)
                 return (makeErrorUnKnownError(client.getNickname(), "MODE", "limit format is wrong"));
@@ -550,7 +552,7 @@ static std::string execUserMode(Message message, Client *client)
     }
     for (int u = i; u < (int)(mode.size()); u++)
         client->setMode(mode[u], flag);
-    return ("MODE " + mode + DEL);
+    return (":" + client->getNickname() + " MODE " + client->getNickname() + " " + mode + DEL);
 }
 
 int execMode(Message message, Client *client, Server *server)
@@ -665,6 +667,7 @@ int execNick(Message message, Client *client, Server *server)
     {
         std::cout << "Il testo inviato é: " << error << std::endl;
         send(client->getSocketFd(), error.c_str(), error.size() + 1, 0);
+        return (1);
     }
     return (0);
 }
@@ -799,7 +802,7 @@ int execPing(Message message, Client *client, Server *server)
     if (message.getSize() < 1)
         text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
     else
-        text = "PONG " + server->getServername() + message.getParametersIndex(0);
+        text = "PONG " + server->getServername() + message.getParametersIndex(0) + DEL;
     std::cout << "Il testo inviato é: " << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
@@ -923,7 +926,7 @@ int execTopic(Message message, Client *client, Server *server)
         channel = server->getChannel(message.getParametersIndex(0));
         if (channel == NULL)
             text = makeErrorNoSuchChannel(cNick, message.getParametersIndex(0));
-        if (message.getIsLastParameter())
+        else if (message.getIsLastParameter())
         {
             if (!channel->isOnChannel(cNick))
                 text = makeErrorNotOnChannel(cNick, channel->getName());
@@ -932,10 +935,12 @@ int execTopic(Message message, Client *client, Server *server)
             else
             {
                 channel->setTopic(message.getParametersIndex(1));
-                text = "TOPIC " + channel->getName() + " :" + channel->getTopic() + DEL;
-                std::vector<std::pair<int, Client *> >::const_iterator it;
-                for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
+                text = ":" + client->getNickname() + " TOPIC " + channel->getName() + " :" + channel->getTopic() + DEL;
+                std::cout << "Il testo inviato é: " << text << std::endl;
+                std::vector<std::pair<int, Client *> > clients = channel->getClients();
+                for (std::vector<std::pair<int, Client *> >::iterator it = clients.begin(); it < clients.end(); it++)
                 {
+                    std::cout << "Messaggio inviato" << std::endl;
                     if (send((*it).second->getSocketFd(), text.c_str(), text.size(), 0) == -1)
                         return (-1);
                 }
@@ -993,7 +998,7 @@ int execUser(Message message, Client *client)
     }
     std::cout << "Il testo inviato é: " << error << std::endl;
     send(client->getSocketFd(), error.c_str(), error.size(), 0);
-    return (0);
+    return (-1);
 }
 
 int execVersion(Message message, Client *client, Server *server)

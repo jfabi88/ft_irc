@@ -57,6 +57,7 @@ std::vector<std::string> ft_split(std::string _text, char delimiter)
     size_t                      lastPosition;
 
     i = 0;
+    std::cout << "SIAMO dentro ft_split. Il valore di text é: " << _text << std::endl; 
     lastPosition = std::string::npos;
     while (i < _text.size() && _text[i] == delimiter)
         i++;

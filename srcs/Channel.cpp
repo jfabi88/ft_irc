@@ -13,8 +13,8 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 
-Channel::Channel(std::string chName) : \
-    _chName(chName) {
+Channel::Channel(std::string chName, std::string key) : \
+    _chName(chName), _chKey(key) {
     this->_clientLimit = 2147483647;
     this->_chMode = 0;  //jfabi: non ricordo. Forse c'è qualche errore
     this->_clientNumber = 0;
@@ -127,6 +127,18 @@ std::string Channel::getAllMessages() const
     for (std::vector<std::string>::const_iterator it = this->_messages.begin(); it < this->_messages.end(); it++)
         text.append((*it));
     return (text);
+}
+
+std::string Channel::getMaxPrefix(std::string client) const
+{
+    std::pair<int, Client *>    tmp;
+
+    tmp = this->getPairClient(client);
+    if (tmp.first & O)
+        return ("O");
+    if (tmp.first & V)
+        return ("V");
+    return ("");
 }
 
 //* ################# OPERATIONS #################

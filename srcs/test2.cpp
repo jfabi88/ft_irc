@@ -23,6 +23,7 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(int argc, char *argv[])
 {
+    std::string hostname;
     fd_set master;    // master file descriptor list
     fd_set read_fds;  // temp file descriptor list for select()
     int fdmax;        // maximum file descriptor number
@@ -121,14 +122,12 @@ int main(int argc, char *argv[])
                         if (newfd > fdmax) {    // keep track of the max
                             fdmax = newfd;
                         }
-                        printf("selectserver: new connection from %s on "
-                            "socket %d\n",
-                            inet_ntop(remoteaddr.ss_family,
-                                get_in_addr((struct sockaddr*)&remoteaddr),
-                                remoteIP, INET6_ADDRSTRLEN),
-                            newfd);
+                        hostname = inet_ntop(remoteaddr.ss_family,
+                            get_in_addr((struct sockaddr*)&remoteaddr),
+                            remoteIP, INET6_ADDRSTRLEN);
                         Client  *client = new Client();
                         client->setSocketFd(newfd);
+                        client->setHostname("void");
                         irc.setClient(client);
                     }
                 } else {

@@ -115,7 +115,7 @@ std::string Server::getDate() const
     return (this->_date);
 }
 
-Client  *Server::getClient(std::string name) const
+Client  *Server::getClient(std::string name)
 {
     std::vector<Client *>::const_iterator it;
 
@@ -183,7 +183,7 @@ std::vector<std::string> Server::getParameter()
     return (ret);
 }
 
-Channel *Server::getChannel(std::string name) const
+Channel *Server::getChannel(std::string name)
 {
     std::vector<Channel *>::const_iterator it;
 
@@ -370,13 +370,10 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
         {
             flag = this->ft_exec_communication_commands(flag, *it, client);
             if (flag == -1)
-            {
-                this->_clients.erase(this->getItNcClients(client->getNickname()));
                 return (0);
-            }
+            client->setRecFlag(flag);
         }
     }
-    client->setRecFlag(flag);
     if (flag == 3 || flag == 7)
     {
         if (this->_password != "" && !client->getAccess())

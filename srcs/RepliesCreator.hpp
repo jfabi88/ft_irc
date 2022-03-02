@@ -50,6 +50,7 @@ std::string makeUnAway(std::string Client);
 std::string makeMotD(std::string CNick, std::string motd);
 std::string makeEndOfInfo(std::string CNick);
 std::string makeNowAway(std::string Client);
+std::string makeEndOfWho(std::string CNick, std::string mask);
 std::string makeRplListStart(std::string cNick);
 std::string makeRplList(std::string cNick, Channel channel);
 std::string makeRplListEnd(std::string cNick);
@@ -71,7 +72,7 @@ std::string makeChanNoPrivsNeeded(std::string CNick, std::string channel);
 std::string makeErrorUserOnChannel(std::string CNick, std::string CNickTarget, std::string channelName);
 std::string makeInviting(std::string CNick, std::string CNickTarget, std::string channel);
 std::string makeVersion(std::string CNick);
-std::string makeWhoReply();
+std::string makeWhoReply(Client *client);
 std::string makeErrorUModeUnknownFlag(std::string CNick);
 std::string makeErrorUsersDontmatch(std::string CNick);
 

@@ -273,33 +273,6 @@ int execKick(Message message, Client *client, Server *server)
 
 //*******JOIN**********//
 
-static int ft_parse_channel_key(Message message, std::vector<std::string> *channels, std::vector<std::string> *key)
-{
-    std::vector<std::string>            v;
-    std::vector<std::string>::const_iterator  it;
-    std::vector<std::string>::iterator  tmp;
-    int size = 0;
-    int i;
-
-    v = message.getLastParameterMatrix();
-    it = message.getParametersBegin();
-    tmp = v.begin();
-    size = v.size();
-    i = 0;
-    while (it < message.getParametersEnd())
-    {
-        channels->push_back(*it);
-        if (i < size)
-        {
-            key->push_back(*tmp);
-            tmp++;
-        }
-        it++;
-        i++;
-    }
-    return (0);
-}
-
 static std::string ft_success_join(Channel *channel, Client *client)
 {
     std::string     text;
@@ -324,7 +297,8 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     newChannel = server->getChannel(channelName);
     if (newChannel == NULL)
     {
-        newChannel = new Channel(channelName);
+        newChannel = new Channel(channelName, key);
+        std::cout << "La password: " << key << std::endl;
         if (newChannel->addClient(client, key, 'o'))
         {
             delete (newChannel);
@@ -357,13 +331,18 @@ int execJoin(Message message, Client *client, Server *server)
     std::vector<std::string> listChannel;
     std::vector<std::string> listKey;
 
-    if (ft_parse_channel_key(message, &listChannel, &listKey))
+    std::cout << "LA SIZE E': " << message.getSize() << std::endl;
+    if (message.getSize() == 0)
     {
         text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
         std::cout << "Il testo inviato é: " << text << std::endl;
         send(client->getSocketFd(), text.c_str(), text.size(), 0);
-    }
-    else
+    }        
+    if (message.getSize() >= 1)
+        listChannel = ft_split(message.getParametersIndex(0), ',');
+    if (message.getSize() >= 2)
+        listKey = ft_split(message.getParametersIndex(1), ',');
+    if (message.getSize() >= 1)
     {
         std::vector<std::string>::iterator it;
         std::vector<std::string>::iterator keyIt;
@@ -371,7 +350,7 @@ int execJoin(Message message, Client *client, Server *server)
         keyIt = listKey.begin();
         for (it = listChannel.begin(); it < listChannel.end(); it++)
         {
-            if (keyIt != listKey.end())
+            if (keyIt < listKey.end())
             {
                 text = ft_exec_join(*it, *keyIt, client, server);
                 keyIt++;
@@ -802,7 +781,7 @@ int execPing(Message message, Client *client, Server *server)
     if (message.getSize() < 1)
         text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
     else
-        text = "PONG " + server->getServername() + message.getParametersIndex(0) + DEL;
+        text = "PONG " + server->getServername() + " " + message.getParametersIndex(0) + DEL;
     std::cout << "Il testo inviato é: " << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
@@ -982,7 +961,7 @@ int execUser(Message message, Client *client)
     std::string     error;
 
     cNick = client->getNickname();
-    if (message.getSize() < 4)
+    if (message.getSize() < 4 || !message.getIsLastParameter())
         error = makeErrorNeedMoreParams(cNick, "USER");
     else if (client->getUsername() != "")
         error = makeErrorAlreadyRegistered(cNick);
@@ -993,7 +972,7 @@ int execUser(Message message, Client *client)
             client->setUsername(username.substr(0, USERLEN));
         else
             client->setUsername(username);
-        client->setRealname(message.getParametersIndex(3));
+        client->setRealname(message.getLastParameter());
         return (1);
     }
     std::cout << "Il testo inviato é: " << error << std::endl;
@@ -1022,33 +1001,18 @@ int execVersion(Message message, Client *client, Server *server)
 
 //*****************WHO***********************//
 
-static std::string execWhoNoParameter(Client *client, Server *server)
-{
-    std::string text;
-
-    std::vector<Client *> listClient = server->getClients();
-    for (std::vector<Client *>::iterator it = listClient.begin(); it < listClient.end(); it++)
-    {
-        if (*(client) != *(*it) && (*it)->hasMode('i') && server->haveChannelCommon(client, (*it)) == 0)
-            text.append(makeWhoReply());
-    }
-    return (text);
-}
-
-static std::string execWhoChannel(std::string channelName, Server *server, int op)
+static std::string execWhoChannel(Client *client, std::string channelName, Server *server)
 {
     std::string text;
 
     Channel * channel = server->getChannel(channelName);
     if (channel)
     {
-        for (std::vector<std::pair<int, Client *> >::const_iterator it = channel->getFirstClient(); it < channel->getLastClient(); it++)
+        std::vector<std::pair<int, Client *> > list = channel->getClients();
+        for (std::vector<std::pair<int, Client *> >::iterator it = list.begin(); it < list.end(); it++)
         {
-            if ((*it).second->hasMode('i') != 0)
-            {
-                if ((op == 1 && (*it).second->hasMode('i') == 1) || op == 0)
-                    text.append(makeWhoReply());
-            }
+            if ((!(*it).second->hasMode('i') || server->haveChannelCommon((*it).second, client)))
+                text.append(makeWhoReply((*it).second));
         }
     }
     return (text);
@@ -1059,33 +1023,30 @@ static std::string execWhoNick(std::string nick, Server *server, int op)
     std::string text;
 
     Client *whoClient = server->getClient(nick);
-    if (whoClient && whoClient->hasMode('i'))
-    {
-        if ((op == 1 && whoClient->hasMode('o')) || op == 0)
-            text.append(makeWhoReply());
-    }
+    if (whoClient && (!whoClient->hasMode('i') || op))
+        text.append(makeWhoReply(server->getClient(nick)));
     return (text);
 }
 
 int execWho(Message message, Client *client, Server *server)
 {
     std::string text;
+    Client      *secondNick;
 
-    if (message.getSize() == 0)
-        text.append(execWhoNoParameter(client, server));
-    else if (message.getSize() == 1)
+    if (message.getSize() >= 1)
     {
         if (message.getParametersIndex(0)[0] == '&' || message.getParametersIndex(0)[0] == '#')
-            text.append(execWhoChannel(message.getParametersIndex(0), server, 0));
+        {
+            if (server->getChannel(message.getParametersIndex(0)))
+                text.append(execWhoChannel(client, message.getParametersIndex(0), server));
+        }
         else
-            text.append(execWhoNick(message.getParametersIndex(0), server, 0));
-    }
-    else if (message.getParametersIndex(1)[0] == 'o')
-    {
-        if (message.getParametersIndex(0)[0] == '&' || message.getParametersIndex(0)[0] == '#')
-            text.append(execWhoChannel(message.getParametersIndex(0), server, 1));
-        else
-            text.append(execWhoNick(message.getParametersIndex(0), server, 1));
+        {
+            secondNick = server->getClient(message.getParametersIndex(0));
+            if (secondNick)
+                text.append(execWhoNick(message.getParametersIndex(0), server, server->haveChannelCommon(client, secondNick)));
+        }
+        text.append(makeEndOfWho(client->getNickname(), message.getParametersIndex(0)));
     }
     std::cout << "Il testo inviato é: " << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
@@ -1093,7 +1054,7 @@ int execWho(Message message, Client *client, Server *server)
 }
 //****************************************//
 
-std::string listCommands[21] = {
+std::string listCommands[22] = {
     "ADMIN",
     "AWAY",
     "INFO",
@@ -1114,7 +1075,8 @@ std::string listCommands[21] = {
     "TIME",
     "TOPIC",
     "USER",
-    "VERSION"
+    "VERSION",
+    "WHO"
 };
 
 int execCommand(Message message, Client *client, Server *server)
@@ -1168,6 +1130,8 @@ int execCommand(Message message, Client *client, Server *server)
             return (execUser(message, client));
         case 20:
             return (execVersion(message, client, server));
+        case 21:
+            return (execWho(message, client, server));
         default:
             return (0);
     }

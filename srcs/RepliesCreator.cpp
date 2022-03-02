@@ -125,6 +125,14 @@ std::string makeNowAway(std::string Client)
     return (text);
 }
 
+std::string makeEndOfWho(std::string CNick, std::string mask)
+{
+    std::string text;
+
+    text = "315 " + CNick + " " + mask + " :End of WHO list" + DEL;
+    return (text);
+}
+
 std::string makeRplListStart(std::string cNick)
 {
     std::string text;
@@ -191,10 +199,28 @@ std::string makeVersion(std::string CNick)
     return (text);
 }
 
-std::string makeWhoReply()
+std::string makeWhoReply(Client *client)
 {
     std::string text;
+    std::string channel;
+    std::string away;
+    std::string flag;
+    std::vector<Channel *> list;
 
+    list = client->getChannels();
+    if (list.begin() < list.end())
+    {
+        channel = (*list.begin())->getName();
+        flag = (*list.begin())->getMaxPrefix(client->getNickname());
+    }
+    else
+        channel = "*";
+    if (client->getAwayStatus())
+        away = "G";
+    else
+        away = "H";
+    text = "352 " + client->getNickname() + " " + channel + " " + client->getUsername() + " " + client->getHostname() + " IRCIONE " + client->getNickname()  + " ";
+    text += away + flag + " :1 " + client->getRealname() + DEL;
     return (text);
 }
 

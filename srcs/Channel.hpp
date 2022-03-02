@@ -68,7 +68,7 @@ class Channel
         typedef std::vector<std::pair<int, Client *> >                      usr_pair_list;
         typedef std::vector<std::pair<int, Client *> >::const_iterator      usr_pos;
 
-        Channel(std::string chName);
+        Channel(std::string chName, std::string key);
         ~Channel();
 
         //* ################# GETTERS #################
@@ -79,6 +79,7 @@ class Channel
         std::string	            getTopic() const;
         std::string             getModes() const;
         std::string             getAllMessages() const;
+        std::string             getMaxPrefix(std::string client) const;
         Client                  *getClient(int fd) const;
         Client                  *getClient(std::string name) const;
         usr_pair_list           getClients();

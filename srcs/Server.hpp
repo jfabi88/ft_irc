@@ -43,8 +43,8 @@ class Server
         std::vector<Client *>::const_iterator   getItClients(std::string cNick) const;
         std::vector<Client *>::iterator         getItNcClients(std::string cNick);
         Client                                  *getClient(int indx) const;
-        Client                                  *getClient(std::string name) const;
-        Channel                                 *getChannel(std::string name) const;
+        Client                                  *getClient(std::string name);
+        Channel                                 *getChannel(std::string name);
         std::vector<Channel *>                  getChannels();
         std::vector<Channel *>::const_iterator  getFirstChannel() const;
         std::vector<Channel *>::const_iterator  getLastChannel() const;

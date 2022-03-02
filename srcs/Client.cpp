@@ -17,13 +17,13 @@
 //? Ho usato le initialization list per ridurre le linee di codice e rendere tutto più pulito
 
 Client::Client() : \
-    _nickname(""), _password(""), _username(""), _realname(""), _subChannelsNum(0),
+    _nickname(""), _password(""), _username(""), _realname(""), _hostname(""), _subChannelsNum(0),
     _socket(-1), _access(0), _recFlag(0), _isAway(false), _isRegistered(false) {
     //std::cout << "Client constructor called" << std::endl;
 }
 
 Client::Client(const Client &copy) : \
-    _nickname(copy.getNickname()), _password(copy.getPassword()), _subChannelsNum(copy.getChannelSub()), 
+    _nickname(copy.getNickname()), _password(copy.getPassword()), _hostname(copy.getHostname()), _subChannelsNum(copy.getChannelSub()), 
     _socket(copy.getSocketFd()), _access(copy.getAccess()), _isAway(copy.getAwayStatus()) {
     //std::cout << "Client copy constructor called" << std::endl;
 }
@@ -99,6 +99,7 @@ Client::ch_iter Client::getLastChannel() const              { return (this->_sub
 
 std::vector<std::string> Client::getCapabilities()          { return (this->_capabilities); }
 std::string Client::getAwayMessage() const                  { return (this->_awayMessage); }
+std::string Client::getHostname() const                     { return (this->_hostname); }
 
 std::string Client::getMode() const
 {
@@ -127,6 +128,7 @@ void Client::setNickname(std::string newName)     { this->_nickname = newName; }
 void Client::setPassword(std::string newPassword) { this->_password = newPassword; }
 void Client::setUsername(std::string newUsername) { this->_username = newUsername; }
 void Client::setRealname(std::string newRealname) { this->_realname = newRealname; }
+void Client::setHostname(std::string newHostname) { this->_hostname = newHostname; }
 void Client::addChannel(Channel *newChannel)      { this->_subChannels.push_back(newChannel); }
 
 void Client::removeChannel(std::string channelName)

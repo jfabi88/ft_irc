@@ -44,6 +44,7 @@ class Client
         std::string         getUsername() const;
         std::string         getRealname() const;
         std::string         getMode() const;
+        std::string         getHostname() const;
         Channel             *getChannel(int indx) const;
         Channel             *getChannel(std::string name) const;
         ch_iter             getFirstChannel() const;
@@ -64,6 +65,7 @@ class Client
         void                setPassword(std::string newpassword);
         void                setUsername(std::string newusername);
         void                setRealname(std::string newrealname);
+        void                setHostname(std::string newhostname);
         void                addChannel(Channel *newChannel);
         void                removeChannel(std::string channelName);
         void                setCapabilities(str_list newVector);
@@ -87,6 +89,7 @@ class Client
         std::string         _username;
         std::string         _realname;
         std::string         _awayMessage;
+        std::string         _hostname;
         ch_list             _subChannels;
         str_list            _capabilities;
         int                 _subChannelsNum;

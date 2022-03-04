@@ -24,7 +24,6 @@ std::string makeYourHost(std::string Servname, std::string SVersion, std::string
 std::string makeCreated(std::string SDate, std::string CNick);
 std::string makeISupport(std::string CNick, std::vector<std::string> vector);
 std::string makeRplUModeis(Client *client);
-
 std::string makeAdminMe(std::string CNick);
 std::string makeAdminLoc1(std::string CNick);
 std::string makeAdminLoc2(std::string CNick);
@@ -50,10 +49,11 @@ std::string makeUnAway(std::string Client);
 std::string makeMotD(std::string CNick, std::string motd);
 std::string makeEndOfInfo(std::string CNick);
 std::string makeNowAway(std::string Client);
-std::string makeEndOfWho(std::string CNick, std::string mask);
+std::string makeEndOfWho(std::string cNick, std::string mask);
 std::string makeRplListStart(std::string cNick);
 std::string makeRplList(std::string cNick, Channel channel);
 std::string makeRplListEnd(std::string cNick);
+std::string makeRplChannelModeis(std::string cNick, Channel *channel);
 std::string makeMotDStart(std::string CNick, std::string ServeName, std::string motd);
 std::string makeEndOfMotD(std::string CNick);
 std::string makeTime(std::string CNick, std::string servername, std::string date);
@@ -65,6 +65,7 @@ std::string makeTooManyChannels(std::string CNick, std::string ChannelName);
 std::string makeErrorMotD(std::string CNick);
 std::string makeNoTopic(std::string channelName, std::string CNick);
 std::string makeTopic(std::string channelName, std::string topic, std::string CNick);
+std::string makeTopicWhoTime(std::string cNick, Channel *channel);
 std::string makeNamReply(Channel *channel, std::string CNick, int flag);
 std::string makeEndOfNames(std::string channelName, std::string CNick);
 std::string makeInfo(std::string CNick, std::string dataRun);

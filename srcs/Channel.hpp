@@ -87,6 +87,8 @@ class Channel
         usr_pos                 getFirstClient() const;
         usr_pos                 getLastClient() const;
         usr_pair                getPairClient(std::string name) const;
+        std::string             getTopicSet() const;
+        std::string             getTopicTime() const;
         
         //* ################# OPERATIONS #################
 
@@ -103,6 +105,9 @@ class Channel
         int     setBanMask(std::string mask, int flag);
         void	setTopic(std::string topic);
         int		sendToAll(std::string text);
+        int     sendToAll(std::string text, Client *client);
+        void    setTopicSetter(std::string setter);
+        void    setTopicTime();
 
         std::string ltop(int c);
         //* ################# CHECKS #################
@@ -124,6 +129,8 @@ class Channel
         int	                        _clientNumber;
         std::vector<std::string>    _banMask;
         std::vector<std::string>    _messages;
+        std::string                 _topicSetter;
+        std::string                 _topicTime;
 
         class NoSuchChannel : public std::exception
         {

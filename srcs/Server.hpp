@@ -17,6 +17,8 @@
 #include <vector>
 #include <time.h>
 #include <string>
+#include <unistd.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -26,6 +28,8 @@
 #include "Command.hpp"
 #include "Message.hpp"
 #include "RepliesCreator.hpp"
+
+# define CHANMASK "&# ," 
 
 class Server
 {
@@ -72,6 +76,8 @@ class Server
         int     verifyPassword(std::string userPassword);
         void    printClients();
         void    removeClient(std::string clientName);
+
+        int     badChanMask(std::string channelname);
 
     private:
         int                 _port;

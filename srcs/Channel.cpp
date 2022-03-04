@@ -135,11 +135,14 @@ std::string Channel::getMaxPrefix(std::string client) const
 
     tmp = this->getPairClient(client);
     if (tmp.first & O)
-        return ("O");
+        return ("@");
     if (tmp.first & V)
-        return ("V");
+        return ("+");
     return ("");
 }
+
+std::string Channel::getTopicSet() const { return (this->_topicSetter); }
+std::string Channel::getTopicTime() const { return (this->_topicTime); }
 
 //* ################# OPERATIONS #################
 
@@ -188,7 +191,6 @@ int Channel::removeClient(int fd) {
         if ((*it).second->getSocketFd() == fd)
         {
             this->_clients.erase(it);
-
             return (0);            
         }
     }
@@ -287,6 +289,20 @@ int Channel::sendToAll(std::string text) {
     return (0);
 }
 
+int Channel::sendToAll(std::string text, Client *client)
+{
+    Channel::usr_pair_list::iterator    it;
+    Channel::usr_pair_list::iterator    end;
+
+    end = this->_clients.end();
+    for (it = this->_clients.begin(); it < end; it++)
+    {
+        if ((*it).second != client)
+            send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
+    }
+    return (0);
+}
+
 void Channel::setLimit(int limit) { this->_clientLimit = limit; };
 
 std::string Channel::ltop(int c)
@@ -297,6 +313,15 @@ std::string Channel::ltop(int c)
         return ("@");
     return ("");
 };
+
+void Channel::setTopicSetter(std::string setter) { this->_topicSetter = setter; }
+void Channel::setTopicTime()
+{
+    std::time_t result = std::time(nullptr);
+    std::stringstream os;
+    os << result;
+    this->_topicTime = os.str();
+}
 
 void Channel::addMessage(std::string message) { this->_messages.push_back(message); }
 
@@ -352,7 +377,7 @@ int Channel::checkBanMask(std::string banMask)
     int posC;
 
     if (banMask == "")
-        return (1);
+        return (0);
     if (banMask.find('!') == std::string::npos)
         return (1);
     posE = banMask.find('!');

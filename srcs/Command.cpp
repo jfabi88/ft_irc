@@ -247,18 +247,14 @@ int execKick(Message message, Client *client, Server *server)
         else
         {
             Client *clientTarget = server->getClient(cTargetNick);
-            channel->removeClient(cTargetNick);
-            clientTarget->removeChannel(channelName);
             if (message.getSize() == 3)
                 text = sendKick(cNick, cTargetNick, message.getLastParameter(), channel);
             else
                 text = sendKick(cNick, cTargetNick, "", channel);
-            cOnChan = channel->getClients();
-            for (std::vector<std::pair<int, Client *> >::iterator it = cOnChan.begin(); it < cOnChan.end(); it++)
-            {
-                std::cout << "Il testo inviato é: " << text << std::endl;
-                send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
-            }
+            channel->sendToAll(text);
+            channel->addMessage(text);
+            clientTarget->removeChannel(channelName);
+            channel->removeClient(cTargetNick);
             text = "";
         }
     }
@@ -279,8 +275,12 @@ static std::string ft_success_join(Channel *channel, Client *client)
 
     std::cout << "Stiamo inviando il join" << std::endl;
     text = ":" + client->getNickname() + " JOIN " + channel->getName() + DEL;
+    channel->sendToAll(text, client);
     if (channel->getTopic() != "")
+    {
         text.append(makeTopic(channel->getName(), channel->getTopic(), client->getNickname()));
+        text.append(makeTopicWhoTime(client->getNickname(), channel));
+    }
     std::cout << "ABBIAMO APPESO" << std::endl;
     text.append(makeNamReply(channel, client->getNickname(), 0));
     text.append(makeEndOfNames(channel->getName(), client->getNickname()));
@@ -350,7 +350,9 @@ int execJoin(Message message, Client *client, Server *server)
         keyIt = listKey.begin();
         for (it = listChannel.begin(); it < listChannel.end(); it++)
         {
-            if (keyIt < listKey.end())
+            if (server->badChanMask(*it))
+                text = makeErrorBadChanMask(*it);
+            else if (keyIt < listKey.end())
             {
                 text = ft_exec_join(*it, *keyIt, client, server);
                 keyIt++;
@@ -492,7 +494,7 @@ static std::string  execChannelMode(Message message, Client *client, Server *ser
     if (!channel->clientHasMode(CNick, 'o'))
         return (makeChanNoPrivsNeeded(CNick, channel->getName()));
     if (message.getParametersIndex(1) == "")
-        return (makeErrorNeedMoreParams(CNick, "MODE"));
+        return (makeRplChannelModeis(client->getNickname(), channel));
     text = ft_check_mode(message, *client, *channel);
     if (text != "")
         return (text);
@@ -502,6 +504,7 @@ static std::string  execChannelMode(Message message, Client *client, Server *ser
         text += " " + message.getParametersIndex(n);
     text += DEL;
     channel->addMessage(text);
+    channel->sendToAll(text, client);
     return (text);
 }
 
@@ -736,14 +739,19 @@ int execPart(Message message, Client *client, Server *server)
             toSend = makeErrorNoSuchChannel(client->getNickname(), channelName);
         else if (!channel->getClient(client->getNickname()))
             toSend = makeErrorNotOnChannel(client->getNickname(), channelName);
+        if (toSend != "")
+            send(client->getSocketFd(), toSend.c_str(), toSend.size(), 0);
         else
         {
+            toSend = ":" + client->getNickname() + " PART " + channelName + DEL;
             if (channel->removeClient(client->getNickname()) == -1)
                 server->removeChannel(channelName);
-            toSend = ":" + client->getNickname() + " PART " + channelName + DEL;
+            else
+            {
+                channel->sendToAll(toSend);
+                channel->addMessage(toSend);
+            }
         }
-        std::cout << "Il testo inviato é: " << toSend << std::endl;
-        send(client->getSocketFd(), toSend.c_str(), toSend.size(), 0);
     }
     return (0);
 }
@@ -801,18 +809,19 @@ static int execPrivmsgChannel(Message message, Client *client, Server *server, s
         text = makeCannotSendToChan(client->getNickname(), target);
     else if (channel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
         text = makeErrorBannedFromChan(client->getNickname(), channel->getName());
-    else if (channel->hasMode('m') && (!channel->clientHasMode(client->getNickname(), 'v') && !channel->clientHasMode(client->getNickname(), 'v')))
+    else if (channel->hasMode('m') && (!channel->clientHasMode(client->getNickname(), 'v') && !channel->clientHasMode(client->getNickname(), 'o')))
         text = makeChanNoPrivsNeeded(client->getNickname(), channel->getName());
     if (text != "")
     {
         std::cout << "Il testo inviato é: " << text << std::endl;
         return (send(client->getSocketFd(), text.c_str(), text.size(), 0));
     }
+    text = ":" + client->getNickname() +  " PRIVMSG " +  target + " :" + message.getLastParameter() + DEL;
     for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
     {
-        text = ":" + client->getNickname() +  " PRIVMSG " +  target + " :" + message.getLastParameter() + DEL;
         std::cout << "Il testo inviato é: " << text << std::endl;
-        send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
+        if ((*it).second != client)
+            send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
     }
     channel->addMessage(text);
     return (0);
@@ -870,10 +879,12 @@ int execPrivmsg(Message message, Client *client, Server *server)
 
 int execQuit(Message message, Client *client, Server *server)
 {
-    std::string text;
-    std::vector<Channel *> channels;
+    std::string             text;
+    std::vector<Channel *>  channels;
+    int                     fd;
 
     channels = client->getChannels();
+    fd = client->getSocketFd();
     text = ":" + client->getNickname() + " QUIT";
     if (message.getIsLastParameter())
         text += " :Quit:" + message.getLastParameter();
@@ -888,6 +899,8 @@ int execQuit(Message message, Client *client, Server *server)
     std::cout << "Il testo inviato é: " << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     server->removeClient(client->getNickname());
+    std::cout << "L'fd é: " << fd << std::endl;
+    //close (fd);
     return (0);
 }
 
@@ -914,6 +927,8 @@ int execTopic(Message message, Client *client, Server *server)
             else
             {
                 channel->setTopic(message.getParametersIndex(1));
+                channel->setTopicTime();
+                channel->setTopicSetter(client->getNickname());
                 text = ":" + client->getNickname() + " TOPIC " + channel->getName() + " :" + channel->getTopic() + DEL;
                 std::cout << "Il testo inviato é: " << text << std::endl;
                 std::vector<std::pair<int, Client *> > clients = channel->getClients();
@@ -1127,7 +1142,7 @@ int execCommand(Message message, Client *client, Server *server)
         case 18:
             return (execTopic(message, client, server));
         case 19:
-            return (execUser(message, client));
+            return (execUser(message, client)); 
         case 20:
             return (execVersion(message, client, server));
         case 21:

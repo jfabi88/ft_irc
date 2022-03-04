@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     char buf[512];    // buffer for client data
     int nbytes;
 
-    char remoteIP[INET6_ADDRSTRLEN];
+    char remoteIP[INET_ADDRSTRLEN];
 
     int yes=1;        // for setsockopt() SO_REUSEADDR, below
     int i, rv;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         buf[m] = 0;
     // get us a socket and bind it
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
     if ((rv = getaddrinfo(NULL, PORT, &hints, &ai)) != 0) {
@@ -124,10 +124,10 @@ int main(int argc, char *argv[])
                         }
                         hostname = inet_ntop(remoteaddr.ss_family,
                             get_in_addr((struct sockaddr*)&remoteaddr),
-                            remoteIP, INET6_ADDRSTRLEN);
+                            remoteIP, INET_ADDRSTRLEN);
                         Client  *client = new Client();
                         client->setSocketFd(newfd);
-                        client->setHostname("void");
+                        client->setHostname(hostname);
                         irc.setClient(client);
                     }
                 } else {

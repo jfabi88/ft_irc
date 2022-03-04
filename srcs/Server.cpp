@@ -415,6 +415,19 @@ void    Server::printClients()
         std::cout << "Nick: " << (*it)->getNickname() << std::endl;
 }
 
+int     Server::badChanMask(std::string channelname)
+{
+    std::string mask;
+
+    mask = CHANMASK;
+    for (size_t i = 0; i < mask.size(); i++)
+    {
+        if (channelname.find(mask[i], 1) != std::string::npos)
+            return (1);
+    }
+    return (0);
+}
+
 /**PRIVATE-FUNCTIONS**/
 
 void Server::ft_memset(char *buffer, int size)

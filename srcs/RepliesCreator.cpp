@@ -125,11 +125,11 @@ std::string makeNowAway(std::string Client)
     return (text);
 }
 
-std::string makeEndOfWho(std::string CNick, std::string mask)
+std::string makeEndOfWho(std::string cNick, std::string mask)
 {
     std::string text;
 
-    text = "315 " + CNick + " " + mask + " :End of WHO list" + DEL;
+    text = "315 " + cNick + " " + mask + " :End of WHO list" + DEL;
     return (text);
 }
 
@@ -183,6 +183,14 @@ std::string makeTopic(std::string channelName, std::string topic, std::string CN
     return (text);
 }
 
+std::string makeTopicWhoTime(std::string cNick, Channel *channel)
+{
+    std::string text;
+
+    text = "333 " + cNick + " " + channel->getName() + " " + channel->getTopicSet() + " " + channel->getTopicTime() + DEL;
+    return (text);
+}
+
 std::string makeInviting(std::string CNick, std::string CNickTarget, std::string channel)
 {
     std::string text;
@@ -207,6 +215,7 @@ std::string makeWhoReply(Client *client)
     std::string flag;
     std::vector<Channel *> list;
 
+    flag = "";
     list = client->getChannels();
     if (list.begin() < list.end())
     {
@@ -220,7 +229,7 @@ std::string makeWhoReply(Client *client)
     else
         away = "H";
     text = "352 " + client->getNickname() + " " + channel + " " + client->getUsername() + " " + client->getHostname() + " IRCIONE " + client->getNickname()  + " ";
-    text += away + flag + " :1 " + client->getRealname() + DEL;
+    text += away + flag + " :0 " + client->getRealname() + DEL;
     return (text);
 }
 

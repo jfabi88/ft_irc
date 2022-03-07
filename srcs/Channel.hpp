@@ -79,14 +79,14 @@ class Channel
         std::string	            getTopic() const;
         std::string             getModes() const;
         std::string             getAllMessages() const;
-        std::string             getMaxPrefix(std::string client) const;
+        std::string             getMaxPrefix(std::string client);
         Client                  *getClient(int fd) const;
         Client                  *getClient(std::string name) const;
         usr_pair_list           getClients();
         std::vector<Client *>   getOperator();
         usr_pos                 getFirstClient() const;
         usr_pos                 getLastClient() const;
-        usr_pair                getPairClient(std::string name) const;
+        usr_pair                getPairClient(std::string name);
         std::string             getTopicSet() const;
         std::string             getTopicTime() const;
         

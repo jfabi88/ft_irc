@@ -27,7 +27,6 @@ int _ft_set_element(std::string _text, int start, std::string *element)
     }
     else
     {
-        std::cout << _text << std::endl;
         next_pos = _text.find(DEL, start);
         *element = _text.substr(start, next_pos);
     }
@@ -42,8 +41,6 @@ std::vector<std::string> ft_split(std::string _text, char delimiter)
 
     i = 0;
     lastPosition = -1;
-    std::cout << "SIAMO DENTRO lo split" << std::endl;
-    std::cout << "La stringa dentro lo split è: " << _text << std::endl;
     while (i < _text.size() && _text[i] == delimiter)
         i++;
     if (i < _text.size())

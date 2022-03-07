@@ -39,7 +39,6 @@ Server::Server(int port, int fd, std::string password)
 {
     this->_port = port;
     this->_fd = fd;
-    std::cout << password << std::endl;
     this->_password = password;
     this->_date = this->returnDate();
     this->_servername = "IRC1ONE";
@@ -298,7 +297,6 @@ int Server::hasCapability(std::string name) const
     it = this->_capabilities.begin();
     if (it == this->_capabilities.end())
         return (0);
-    std::cout << "COME VA" << std::endl;
     tmp = name;
     if (name != "" && name[0] == '-')
         tmp = name.substr(1, name.size());
@@ -316,10 +314,7 @@ int     Server::hasCapabilities(std::vector<std::string> prefix) const
     for (it = prefix.begin(); it != prefix.end(); it++)
     {
         if (!this->hasCapability(*it))
-        {
-            std::cout << "AIO" << std::endl;
             return (0);
-        }
     }
     return (1);
 }
@@ -328,10 +323,14 @@ int     Server::haveChannelCommon(Client *firstClient, Client *secondClient)
 {
     std::vector<Channel *>::const_iterator  ft;
     std::vector<Channel *>::const_iterator  st;
+    std::vector<Channel *>  listone;
+    std::vector<Channel *>  listtwo;
 
-    for (ft = firstClient->getFirstChannel(); ft != firstClient->getLastChannel(); ft++)
+    listone = firstClient->getChannels();
+    listtwo = secondClient->getChannels();
+    for (ft = listone.begin(); ft < listone.end(); ft++)
     {
-        for (st = secondClient->getFirstChannel(); st != secondClient->getLastChannel(); st++)
+        for (st = listtwo.begin(); st < listtwo.end(); st++)
         {
             if ((*ft)->getName().compare((*st)->getName()) == 0)
                 return (1);
@@ -361,7 +360,6 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
     int flag;
     std::vector<std::string> array;
 
-    std::cout << "SIAMO DENTRO START COMUNICATION" << std::endl;
     flag = client->getRecFlag();
     if (flag != 3 && flag != 7)
     {
@@ -385,7 +383,6 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
             return (0);
         }
         client->setRegistered(true);
-        std::cout << *client << std::endl;
         ft_welcome(client);
     }
     return (0);
@@ -535,7 +532,6 @@ int Server::ft_welcome(Client *client)
     text = makeWelcome(client->getNickname(), client->getUsername(), this->getServername());
     text.append(makeYourHost(this->getServername(), this->getVersion(), client->getNickname()));
     text.append(makeCreated(this->getDate(), client->getNickname()));
-    std::cout << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     return(0);
 }

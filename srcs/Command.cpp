@@ -80,7 +80,6 @@ static int execNak(Message message, Client *client)
 {
     std::string text;
 
-    std::cout << "PIZZA" << std::endl;
     text = "CAP * NAK :";
     text.append(message.getLastParameter());
     text.append(DEL);
@@ -121,7 +120,6 @@ static int execReq(Message message, Client *client, Server *server)
     lastPrefix = message.getLastParameterMatrix();
     std::vector<std::string>::iterator it;
     it = lastPrefix.begin();
-    std::cout << *it << std::endl;
     if (!server->hasCapabilities(lastPrefix))
         execNak(message, client);
     else
@@ -273,7 +271,6 @@ static std::string ft_success_join(Channel *channel, Client *client)
 {
     std::string     text;
 
-    std::cout << "Stiamo inviando il join" << std::endl;
     text = ":" + client->getNickname() + " JOIN " + channel->getName() + DEL;
     channel->sendToAll(text, client);
     if (channel->getTopic() != "")
@@ -281,7 +278,6 @@ static std::string ft_success_join(Channel *channel, Client *client)
         text.append(makeTopic(channel->getName(), channel->getTopic(), client->getNickname()));
         text.append(makeTopicWhoTime(client->getNickname(), channel));
     }
-    std::cout << "ABBIAMO APPESO" << std::endl;
     text.append(makeNamReply(channel, client->getNickname(), 0));
     text.append(makeEndOfNames(channel->getName(), client->getNickname()));
     text.append(channel->getAllMessages());
@@ -298,7 +294,6 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     if (newChannel == NULL)
     {
         newChannel = new Channel(channelName, key);
-        std::cout << "La password: " << key << std::endl;
         if (newChannel->addClient(client, key, 'o'))
         {
             delete (newChannel);
@@ -331,7 +326,6 @@ int execJoin(Message message, Client *client, Server *server)
     std::vector<std::string> listChannel;
     std::vector<std::string> listKey;
 
-    std::cout << "LA SIZE E': " << message.getSize() << std::endl;
     if (message.getSize() == 0)
     {
         text = makeErrorNeedMoreParams(client->getNickname(), message.getCommand());
@@ -453,7 +447,6 @@ static std::string  ft_check_mode(Message message, Client client, Channel channe
     modes = message.getParametersIndex(1);
     options = MODES;
     aOptions = AMODES;
-    std::cout << "Siamo dentro mode" << std::endl;
     if (modes[i] == '+' || modes[i] == '-')
         i++;
     for (size_t c = i; c < modes.length(); c++)
@@ -462,7 +455,6 @@ static std::string  ft_check_mode(Message message, Client client, Channel channe
             return (makeErrorUModeUnknownFlag(client.getNickname()));
         if (aOptions.find(modes[c]) != std::string::npos)
         {
-            std::cout << "SIAMO nel ciclo FOR" << std::endl;
             if (modes[0] == '+' && message.getParametersIndex(n) == "")
                 return (makeErrorNeedMoreParams(client.getNickname(), "MODE"));
             if (modes[c] == 'b' && channel.checkBanMask(message.getParametersIndex(n)))
@@ -744,6 +736,7 @@ int execPart(Message message, Client *client, Server *server)
         else
         {
             toSend = ":" + client->getNickname() + " PART " + channelName + DEL;
+            client->removeChannel(channelName);
             if (channel->removeClient(client->getNickname()) == -1)
                 server->removeChannel(channelName);
             else
@@ -751,6 +744,7 @@ int execPart(Message message, Client *client, Server *server)
                 channel->sendToAll(toSend);
                 channel->addMessage(toSend);
             }
+            send(client->getSocketFd(), toSend.c_str(), toSend.size(), 0);
         }
     }
     return (0);
@@ -899,7 +893,6 @@ int execQuit(Message message, Client *client, Server *server)
     std::cout << "Il testo inviato é: " << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
     server->removeClient(client->getNickname());
-    std::cout << "L'fd é: " << fd << std::endl;
     //close (fd);
     return (0);
 }
@@ -934,7 +927,6 @@ int execTopic(Message message, Client *client, Server *server)
                 std::vector<std::pair<int, Client *> > clients = channel->getClients();
                 for (std::vector<std::pair<int, Client *> >::iterator it = clients.begin(); it < clients.end(); it++)
                 {
-                    std::cout << "Messaggio inviato" << std::endl;
                     if (send((*it).second->getSocketFd(), text.c_str(), text.size(), 0) == -1)
                         return (-1);
                 }

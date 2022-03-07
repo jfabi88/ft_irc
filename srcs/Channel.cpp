@@ -73,10 +73,10 @@ std::vector<Client *> Channel::getOperator()
 Channel::usr_pos Channel::getFirstClient() const { return (this->_clients.begin()); }
 Channel::usr_pos Channel::getLastClient() const { return (this->_clients.end()); }
 
-Channel::usr_pair  Channel::getPairClient(std::string name) const {
+Channel::usr_pair  Channel::getPairClient(std::string name) {
     usr_pos it;
 
-    for (it = this->_clients.begin(); it != this->_clients.end(); it++)
+    for (it = this->_clients.begin(); it < this->_clients.end(); it++)
     {
         if (!(*it).second->getNickname().compare(name))
             return (*it);
@@ -90,7 +90,6 @@ std::string Channel::getModes() const
     std::string param;
     std::vector<std::string>::const_iterator it;
 
-    std::cout << "Il mode dentro get modes é: " << this->_chMode << std::endl;
     if (this->_chMode & B)
     {
         mode += 'b';
@@ -129,7 +128,7 @@ std::string Channel::getAllMessages() const
     return (text);
 }
 
-std::string Channel::getMaxPrefix(std::string client) const
+std::string Channel::getMaxPrefix(std::string client)
 {
     std::pair<int, Client *>    tmp;
 
@@ -439,7 +438,6 @@ int	Channel::ft_client_converter(char c)
 int Channel::checkChName(std::string name)
 {
     //? Controlliamo che il nome del canale sia corretto
-    std::cout << "Il name é: " << name << std::endl;
     if (name == "" || (name[0] != '#' && name[0] != '&'))
         return 1;
     if (name.find_first_of(NOCHAR) != std::string::npos) //! QUESTO HA UN PROBLEMA CON IL BELL CHARACTER!

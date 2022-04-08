@@ -315,6 +315,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
             return (makeErrorChannelIsFull(client->getNickname(), newChannel->getName()));
         if (newChannel->addClient(client, key, 0))
             return (makeErrorBadChannelKey(client->getNickname(), newChannel->getName()));
+        client->addChannel(newChannel);
         return (ft_success_join(newChannel, client));
     }
     return ("");
@@ -883,12 +884,13 @@ int execQuit(Message message, Client *client, Server *server)
     if (message.getIsLastParameter())
         text += " :Quit:" + message.getLastParameter();
     text += DEL;
-    for (std::vector<Channel *>::iterator it = channels.begin(); it < channels.end(); it++)
+    for (std::vector<Channel *>::const_iterator it = channels.begin(); it < channels.end(); it++)
     {
+        std::cout << "Dentro il nostro amato quit" << std::endl;
         if ((*it)->removeClient(client->getSocketFd()) == -1)
             server->removeChannel((*it)->getName());
-        std::cout << "Il testo inviato é: " << text << std::endl;
-        (*it)->sendToAll(text);
+        else
+            (*it)->sendToAll(text, client);
     }
     std::cout << "Il testo inviato é: " << text << std::endl;
     send(client->getSocketFd(), text.c_str(), text.size(), 0);
@@ -968,7 +970,8 @@ int execUser(Message message, Client *client)
     std::string     error;
 
     cNick = client->getNickname();
-    if (message.getSize() < 4 || !message.getIsLastParameter())
+    std::cout << "La size é: " << message.getSize() << std::endl;
+    if (message.getSize() < 4) //|| !message.getIsLastParameter())
         error = makeErrorNeedMoreParams(cNick, "USER");
     else if (client->getUsername() != "")
         error = makeErrorAlreadyRegistered(cNick);

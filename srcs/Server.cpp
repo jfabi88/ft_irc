@@ -394,6 +394,7 @@ int     Server::receiveCommand(int fdClient, char *buffer)
     Message message;
     Client  *client;
 
+    std::cout << "Il messaggio ricevuto é: " << buffer << std::endl;
     client = this->getClient(fdClient);
     array = ft_take_messages(fdClient, buffer);
     for (std::vector<std::string>::iterator it = array.begin(); it != array.end(); it ++)

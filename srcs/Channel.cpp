@@ -279,23 +279,19 @@ void    Channel::setTopic(std::string newTopic) {
 }
 
 int Channel::sendToAll(std::string text) {
-    Channel::usr_pair_list::iterator    it;
-    Channel::usr_pair_list::iterator    end;
+    std::vector<std::pair<int, Client *> >::const_iterator it;
 
-    end = this->_clients.end();
-    for (it = this->_clients.begin(); it < end; it++)
+    for (it = this->getFirstClient(); it < this->getLastClient(); it++)
         send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
     return (0);
 }
 
-int Channel::sendToAll(std::string text, Client *client)
-{
-    Channel::usr_pair_list::iterator    it;
-    Channel::usr_pair_list::iterator    end;
+int Channel::sendToAll(std::string text, Client *client) {
+    std::vector<std::pair<int, Client *> >::const_iterator it;
 
-    end = this->_clients.end();
-    for (it = this->_clients.begin(); it < end; it++)
+    for (it = this->getFirstClient(); it < this->getLastClient(); it++)
     {
+        std::cout << "Il testo inviato é: " << text << std::endl;
         if ((*it).second != client)
             send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
     }

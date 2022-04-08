@@ -129,7 +129,7 @@ void Client::setPassword(std::string newPassword) { this->_password = newPasswor
 void Client::setUsername(std::string newUsername) { this->_username = newUsername; }
 void Client::setRealname(std::string newRealname) { this->_realname = newRealname; }
 void Client::setHostname(std::string newHostname) { this->_hostname = newHostname; }
-void Client::addChannel(Channel *newChannel)      { this->_subChannels.push_back(newChannel); }
+void Client::addChannel(Channel *newChannel)      { std::cout<< "AGGIUNTO IL CANALE" << std::endl; this->_subChannels.push_back(newChannel); }
 
 void Client::removeChannel(std::string channelName)
 {

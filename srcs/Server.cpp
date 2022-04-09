@@ -184,7 +184,7 @@ std::vector<std::string> Server::getParameter()
 
 Channel *Server::getChannel(std::string name)
 {
-    std::vector<Channel *>::const_iterator it;
+    std::vector<Channel *>::iterator it;
 
     for (it = this->_channels.begin(); it != this->_channels.end() ;it++)
     {
@@ -285,6 +285,30 @@ void    Server::removeClient(std::string clientName)
             return ;
         }
     }    
+}
+
+void    Server::quitClient(int fd)
+{
+    Message     message;
+    std::string text;
+    std::vector<Channel *>  channels;
+    Client      *client;
+
+    client = this->getClient(fd);
+    if (client == NULL)
+        return ;
+    text = ":" + client->getNickname() + "QUIT :connection closed";
+    text += DEL;
+    channels = client->getChannels();
+    for (std::vector<Channel *>::const_iterator it = channels.begin(); it < channels.end(); it++)
+    {
+        if ((*it)->removeClient(client->getSocketFd()) == 0)
+            this->removeChannel((*it)->getName());
+        else
+            (*it)->sendToAll(text, client);
+    }
+    this->removeClient(client->getNickname());
+    return ;
 }
 
 /**PUBLIC-FUNCTIONS**/

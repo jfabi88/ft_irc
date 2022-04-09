@@ -76,6 +76,7 @@ class Server
         int     verifyPassword(std::string userPassword);
         void    printClients();
         void    removeClient(std::string clientName);
+        void    quitClient(int fd);
 
         int     badChanMask(std::string channelname);
 

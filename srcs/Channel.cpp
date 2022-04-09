@@ -164,6 +164,29 @@ int Channel::addClient(Client *client, std::string password, char letter) {
     return (0);
 }
 
+int Channel::addInvitedClient(Client *client)
+{
+    if (!this->isInvited(client->getNickname()))
+        this->_invitedClients.push_back(client);
+    return (0);
+}
+
+int Channel::removeInvitedClient(Client *client)
+{
+    std::string cNick;
+
+    cNick = client->getNickname();
+    for (std::vector<Client *>::iterator it = _invitedClients.begin(); it < _invitedClients.end(); it++)
+    {
+        if (!(*it)->getNickname().compare(cNick))
+        {
+            _invitedClients.erase(it);
+            return (0);
+        }
+    }
+    return (1);
+}
+
 int Channel::removeClient(std::string CNick)
 {
     Channel::usr_pair_list::iterator it;
@@ -173,13 +196,11 @@ int Channel::removeClient(std::string CNick)
         if (!(*it).second->getNickname().compare(CNick))
         {
             this->_clients.erase(it);
-            this->_clientNumber -= 1;
-            if (this->_clientNumber == 0)
-                return (-1);
-            return (0);
+            this->_clientNumber = this->_clientNumber - 1;
+            return (this->_clientNumber);
         }
     }
-    return (1);
+    return (-1);
 }
 
 int Channel::removeClient(int fd) {
@@ -190,10 +211,11 @@ int Channel::removeClient(int fd) {
         if ((*it).second->getSocketFd() == fd)
         {
             this->_clients.erase(it);
-            return (0);            
+            this->_clientNumber = this->_clientNumber - 1;
+            return (this->_clientNumber);
         }
     }
-    return (1);
+    return (-1);
 }
 
 void Channel::setKey(std::string key, int flag)
@@ -243,7 +265,11 @@ int Channel::setMode(char m, int negative) {
     if (bit <= 0)
         return (0);
     if (negative  == 1)
+    {
         this->_chMode = this->_chMode ^ bit;
+        //if (m == 'i')
+        //    this->emptyInvited();
+    }
     else
         this->_chMode = this->_chMode | bit;
     return (1);
@@ -277,6 +303,8 @@ void    Channel::setTopic(std::string newTopic) {
     else
         this->_topic = newTopic;
 }
+
+void    Channel::emptyInvited() { _invitedClients.clear(); }
 
 int Channel::sendToAll(std::string text) {
     std::vector<std::pair<int, Client *> >::const_iterator it;
@@ -312,7 +340,7 @@ std::string Channel::ltop(int c)
 void Channel::setTopicSetter(std::string setter) { this->_topicSetter = setter; }
 void Channel::setTopicTime()
 {
-    std::time_t result = std::time(nullptr);
+    time_t result = time(NULL);
     std::stringstream os;
     os << result;
     this->_topicTime = os.str();
@@ -393,6 +421,16 @@ int Channel::hasMode(char m) {
 
     bit = this->ft_converter(m);
     return (this->_chMode & bit);
+}
+
+int Channel::isInvited(std::string cNick)
+{
+    for (std::vector<Client *>::iterator it = _invitedClients.begin(); it < _invitedClients.end(); it++)
+    {
+        if (!(*it)->getNickname().compare(cNick))
+            return (1);
+    }
+    return (0);
 }
 
 //* ################# PRIVATE #################

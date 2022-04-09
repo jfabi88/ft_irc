@@ -236,8 +236,8 @@ std::string makeWhoReply(Client *client)
 std::string makeNamReply(Channel *channel, std::string CNick, int flag)
 {
     std::string text;
-    int         i;
     std::string symbol;
+    int         i;
 
     symbol = "\"=\"";
     i = 1;
@@ -248,8 +248,10 @@ std::string makeNamReply(Channel *channel, std::string CNick, int flag)
     clients = channel->getClients();
     for (std::vector<std::pair<int, Client *> >::iterator it = clients.begin(); it < clients.end() ;it++)
     {
+        std::cout << "Dentro l'iteratore" << std::endl;
         if (!((*it).second->hasMode('i')) || flag == 1)
         {
+            std::cout << "Dopo l'if" << std::endl;
             if ((int)text.size() + (int)(*it).second->getNickname().size() + DELSIZE > (512 * i))
             {
                 text += DEL;

@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
                         // got error or connection closed by client
                         if (nbytes == 0) {
                             // connection closed
+                            irc.quitClient(i);
                             printf("selectserver: socket %d hung up\n", i);
                         } else {
                             perror("recv");

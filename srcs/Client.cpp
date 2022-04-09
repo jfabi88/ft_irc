@@ -18,13 +18,13 @@
 
 Client::Client() : \
     _nickname(""), _password(""), _username(""), _realname(""), _hostname(""), _subChannelsNum(0),
-    _socket(-1), _access(0), _recFlag(0), _isAway(false), _isRegistered(false) {
+    _socket(-1), _access(0), _recFlag(0), _mode(0), _isAway(false), _isRegistered(false) {
     //std::cout << "Client constructor called" << std::endl;
 }
 
 Client::Client(const Client &copy) : \
     _nickname(copy.getNickname()), _password(copy.getPassword()), _hostname(copy.getHostname()), _subChannelsNum(copy.getChannelSub()), 
-    _socket(copy.getSocketFd()), _access(copy.getAccess()), _isAway(copy.getAwayStatus()) {
+    _socket(copy.getSocketFd()), _access(copy.getAccess()), _mode(0), _isAway(copy.getAwayStatus()) {
     //std::cout << "Client copy constructor called" << std::endl;
 }
 
@@ -129,7 +129,7 @@ void Client::setPassword(std::string newPassword) { this->_password = newPasswor
 void Client::setUsername(std::string newUsername) { this->_username = newUsername; }
 void Client::setRealname(std::string newRealname) { this->_realname = newRealname; }
 void Client::setHostname(std::string newHostname) { this->_hostname = newHostname; }
-void Client::addChannel(Channel *newChannel)      { std::cout<< "AGGIUNTO IL CANALE" << std::endl; this->_subChannels.push_back(newChannel); }
+void Client::addChannel(Channel *newChannel)      { this->_subChannels.push_back(newChannel); }
 
 void Client::removeChannel(std::string channelName)
 {

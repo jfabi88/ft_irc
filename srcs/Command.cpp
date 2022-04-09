@@ -190,8 +190,7 @@ int execInvite(Message message, Client *client, Server *server)
             text = makeErrorChannelIsFull(client->getNickname(), channelName);
         else
         {
-            channel->addClient(clientTarget, 0);
-            clientTarget->addChannel(channel);
+            channel->addInvitedClient(clientTarget);
             text = ":" + cNick + " INVITE " + cTargetNick + " " + channelName + DEL;
             std::cout << "Il testo inviato é: " << text << std::endl;
             send(server->getClient(cTargetNick)->getSocketFd(), text.c_str(), text.size(), 0);
@@ -309,7 +308,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
             return (makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
         else if (newChannel->isOnChannel(client->getNickname()))
             return (makeErrorUserOnChannel(client->getNickname(), client->getNickname(), newChannel->getName()));
-        else if (newChannel->hasMode('i'))
+        else if (newChannel->hasMode('i') && !newChannel->isInvited(client->getNickname()))
             return (makeInviteOnlyChan(client->getNickname(), newChannel->getName()));
         else if (newChannel->hasMode('l') && newChannel->getNClient() >= newChannel->getLimit())
             return (makeErrorChannelIsFull(client->getNickname(), newChannel->getName()));
@@ -726,6 +725,7 @@ int execPart(Message message, Client *client, Server *server)
     parameters = message.getParameters();
     for (std::vector<std::string>::iterator it = parameters.begin(); it < parameters.end(); it++)
     {
+        std::string toSend = "";
         channelName = *it;
         channel = server->getChannel(channelName);
         if (channel == NULL)
@@ -738,7 +738,7 @@ int execPart(Message message, Client *client, Server *server)
         {
             toSend = ":" + client->getNickname() + " PART " + channelName + DEL;
             client->removeChannel(channelName);
-            if (channel->removeClient(client->getNickname()) == -1)
+            if (channel->removeClient(client->getNickname()) == 0)
                 server->removeChannel(channelName);
             else
             {
@@ -876,18 +876,17 @@ int execQuit(Message message, Client *client, Server *server)
 {
     std::string             text;
     std::vector<Channel *>  channels;
-    int                     fd;
+    //int                     fd;
 
     channels = client->getChannels();
-    fd = client->getSocketFd();
+    //fd = client->getSocketFd();
     text = ":" + client->getNickname() + " QUIT";
     if (message.getIsLastParameter())
         text += " :Quit:" + message.getLastParameter();
     text += DEL;
     for (std::vector<Channel *>::const_iterator it = channels.begin(); it < channels.end(); it++)
     {
-        std::cout << "Dentro il nostro amato quit" << std::endl;
-        if ((*it)->removeClient(client->getSocketFd()) == -1)
+        if ((*it)->removeClient(client->getSocketFd()) == 0)
             server->removeChannel((*it)->getName());
         else
             (*it)->sendToAll(text, client);

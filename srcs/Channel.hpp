@@ -64,6 +64,7 @@ class Channel
     public:
         
         typedef std::vector<std::string>                                    usr_list;
+        typedef std::vector<Client *>                                       usr_c_list;
         typedef std::pair<int, Client *>                                    usr_pair;
         typedef std::vector<std::pair<int, Client *> >                      usr_pair_list;
         typedef std::vector<std::pair<int, Client *> >::const_iterator      usr_pos;
@@ -94,6 +95,8 @@ class Channel
 
         int		addClient(Client *client, std::string password, char letter);
         int     addClient(Client *client, char letter);
+        int     addInvitedClient(Client *client);
+        int     removeInvitedClient(Client *client);
         int		removeClient(std::string CNick);
         int		removeClient(int fd);
         int     setMode(char m, int flag);
@@ -108,12 +111,14 @@ class Channel
         int     sendToAll(std::string text, Client *client);
         void    setTopicSetter(std::string setter);
         void    setTopicTime();
+        void    emptyInvited();
 
         std::string ltop(int c);
         //* ################# CHECKS #################
 
         int		isBanned(std::string CNick, std::string CUser, std::string CReal);
         int     isOnChannel(std::string nickname);
+        int     isInvited(std::string cNick);
         int     clientHasMode(std::string CNick, char c);
         int     checkBanMask(std::string banMask);
         int		hasMode(char m);
@@ -124,6 +129,7 @@ class Channel
         std::string                 _topic;
         std::string                 _password;
         usr_pair_list               _clients;
+        usr_c_list                  _invitedClients;
         int                         _chMode;
         int	                        _clientLimit;
         int	                        _clientNumber;

@@ -6,7 +6,7 @@
 /*   By: lmarzano <lmarzano@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 15:20:18 by jfabi             #+#    #+#             */
-/*   Updated: 2022/04/23 17:24:00 by lmarzano         ###   ########.fr       */
+/*   Updated: 2022/04/23 17:34:54 by lmarzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,9 @@ int execInvite(Message message, Client *client, Server *server)
         else if (channel->getClient(cTargetNick))
             text = makeErrorUserOnChannel(cNick, cTargetNick, channelName);
         else if (channel->hasMode('l') && channel->getNClient() >= channel->getLimit())
-            text = makeErrorChannelIsFull(client->getNickname(), channelName);
+            text = makeErrorUnKnownError(client->getNickname(), "INVITE", "channel is full");
+        else if (channel->hasMode('b') && channel->isBanned(cTargetNick))
+            text = makeErrorUnKnownError(client->getNickname(), " INVITE", cTargetNick + " is banned from channel");
         else
         {
             channel->addInvitedClient(clientTarget);

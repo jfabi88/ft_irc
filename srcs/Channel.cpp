@@ -277,23 +277,10 @@ int Channel::setMode(char m, int negative) {
 
 int Channel::setBanMask(std::string mask, int flag)
 {
-    size_t  n;
-
     if (flag)
         this->_banMask.clear();
     else
-    {
-        n = 0;
-        n = mask.find('!', n);
-        if (n == std::string::npos)
-            return (1);
-        n = mask.find('@',n);
-        if (n == std::string::npos)
-            return (1);
-        if (mask[n + 1] == 0)
-            return (1);
         this->_banMask.push_back(mask);
-    }
     return (0);
 }
 
@@ -353,7 +340,7 @@ void Channel::addMessage(std::string message) { this->_messages.push_back(messag
 int Channel::isBanned(std::string nickname, std::string username, std::string realname)
 {
     std::vector<std::string>::iterator it;
-    std::string bannedUser = nickname + "!" + username + '@' + realname;
+    std::string bannedUser = nickname;
 
     for (it = this->_banMask.begin(); it < this->_banMask.end() ;it++)
     {

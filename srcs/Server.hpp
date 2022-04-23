@@ -66,7 +66,7 @@ class Server
         void    removeChannel(std::string channelName);
 
         int     startCommunication(int fdNewClient, char *buffer, Client *client);
-        int     receiveCommand(int fdClient, char *buffer);
+        int     receiveCommand(int fdClient, char *buffer, Client *client);
 
         int     haveChannelCommon(Client* firstClient, Client* secondClient);
         int     hasCapability(std::string name) const;
@@ -119,7 +119,7 @@ class Server
 
         //**START COMMUNICATION**/
         void ft_parse_data(std::vector<std::string> *array, std::string *b, char *buffer);
-        std::vector<std::string> ft_take_messages(int fdNewClient, char *buffer);
+        std::vector<std::string> ft_take_messages(int fdNewClient, char *buffer, Client *client);
         int ft_exec_communication_commands(int flag, std::string text, Client *client);
 
         void ft_memset(char *buffer, int size);

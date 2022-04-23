@@ -45,6 +45,7 @@ class Client
         std::string         getRealname() const;
         std::string         getMode() const;
         std::string         getHostname() const;
+        std::string         getBuffer();
         Channel             *getChannel(int indx) const;
         Channel             *getChannel(std::string name) const;
         ch_iter             getFirstChannel() const;
@@ -75,6 +76,7 @@ class Client
         void                setSocketFd(int fd);
         void                setAccess(int flag);
         void                setRecFlag(int flag);
+        void                setBuffer(std::string str);
 
         //* ################# CHECKS #################
 
@@ -90,6 +92,7 @@ class Client
         std::string         _realname;
         std::string         _awayMessage;
         std::string         _hostname;
+        std::string         _buffer;
         ch_list             _subChannels;
         str_list            _capabilities;
         int                 _subChannelsNum;

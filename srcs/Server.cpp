@@ -387,7 +387,7 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
     flag = client->getRecFlag();
     if (flag != 3 && flag != 7)
     {
-        array = ft_take_messages(fdNewClient, buffer);
+        array = ft_take_messages(fdNewClient, buffer, client);
         for (std::vector<std::string>::iterator it = array.begin();it != array.end(); it++)
         {
             flag = this->ft_exec_communication_commands(flag, *it, client);
@@ -412,15 +412,14 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
     return (0);
 }
 
-int     Server::receiveCommand(int fdClient, char *buffer)
+int     Server::receiveCommand(int fdClient, char *buffer, Client *client)
 {
     std::vector<std::string> array;
     Message message;
-    Client  *client;
 
     std::cout << "Il messaggio ricevuto é: " << buffer << std::endl;
     client = this->getClient(fdClient);
-    array = ft_take_messages(fdClient, buffer);
+    array = ft_take_messages(fdClient, buffer, client);
     for (std::vector<std::string>::iterator it = array.begin(); it != array.end(); it ++)
     {
         message.setMessage(*it);
@@ -458,22 +457,21 @@ void Server::ft_memset(char *buffer, int size)
         buffer[i] = 0;
 }
 
-std::vector<std::string> Server::ft_take_messages(int fdClient, char *buffer)
+std::vector<std::string> Server::ft_take_messages(int fdClient, char *buffer, Client *client)
 {
     std::vector<std::string> array;
     std::string b;
 
-    b = "";
+    b = client->getBuffer();
+    std::cout << "Il buffer é: " << b << std::endl;
     if (buffer[0] == 0)
         recv(fdClient, buffer, 512, 0);   //jfabi: a che serve questa cosa?
     this->ft_parse_data(&array, &b, buffer);
     ft_memset(buffer, 512);
-    while (b != "")                        //jfabi: questo serve per il multilines, cosa che noi non dobbiamo gestire per forza
-    {
-        recv(fdClient, buffer, 512, 0);
-        this->ft_parse_data(&array, &b, buffer);
-        ft_memset(buffer, 512);  
-    }
+    if (b != "")                        //jfabi: questo serve per il multilines, cosa che noi non dobbiamo gestire per forza
+        client->setBuffer(b);
+    else
+        client->setBuffer("");
     return (array);
 }
 
@@ -495,7 +493,7 @@ void Server::ft_parse_data(std::vector<std::string> *array, std::string *b, char
         lastIndx = num + DELSIZE;
         num = tmp.find(DEL, lastIndx);
     }
-    if (lastIndx != 0 && lastIndx + 1 != tmp.size())
+    if (lastIndx + 1 != tmp.size())
         b->append(tmp.substr(lastIndx, tmp.size() - lastIndx));
 }
 

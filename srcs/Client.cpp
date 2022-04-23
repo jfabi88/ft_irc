@@ -100,7 +100,7 @@ Client::ch_iter Client::getLastChannel() const              { return (this->_sub
 std::vector<std::string> Client::getCapabilities()          { return (this->_capabilities); }
 std::string Client::getAwayMessage() const                  { return (this->_awayMessage); }
 std::string Client::getHostname() const                     { return (this->_hostname); }
-
+std::string Client::getBuffer()                             { return (this->_buffer); }
 std::string Client::getMode() const
 {
     std::string text = "";
@@ -167,6 +167,7 @@ void Client::setRegistered(bool flag) { this->_isRegistered = flag; }
 void Client::setSocketFd(int fd)      { this->_socket = fd; }
 void Client::setAccess(int flag)      { this->_access = flag; }
 void Client::setRecFlag(int flag)     {this->_recFlag = flag;}
+void Client::setBuffer(std::string str) { this->_buffer = str; }
 //* ################# CHECKS #################
 
 int Client::hasCapability(std::string name) const

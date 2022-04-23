@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     FD_ZERO(&master);    // clear the master and temp sets
     FD_ZERO(&read_fds);
 
-    if (argc != 2)
+    if (argc != 3)
         return (0);
     Server          irc(0,0, argv[1]);
     for (int m = 0; m < 512; m++)
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
-    if ((rv = getaddrinfo(NULL, PORT, &hints, &ai)) != 0) {
+    if ((rv = getaddrinfo(NULL, argv[2], &hints, &ai)) != 0) {
         fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
         exit(1);
     }
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
                     } else {
                         Client *client = irc.getClient(i);
                         if (client && client->getRegisteredStatus())
-                            irc.receiveCommand(i, buf);
+                            irc.receiveCommand(i, buf, client);
                         else if (client)
                             irc.startCommunication(i, buf, client);
                         else

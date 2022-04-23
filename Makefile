@@ -34,7 +34,7 @@ FILES =			Channel.cpp \
 				Message.cpp \
 				RepliesCreator.cpp \
 				Server.cpp  \
-				test2.cpp	\
+				main.cpp	\
 				utils.cpp
 
 #Srcs

@@ -441,6 +441,10 @@ int     Server::badChanMask(std::string channelname)
     std::string mask;
 
     mask = CHANMASK;
+    if (channelname == "")
+        return (1);
+    if (channelname[0] != '&')
+        return (1);
     for (size_t i = 0; i < mask.size(); i++)
     {
         if (channelname.find(mask[i], 1) != std::string::npos)

@@ -443,7 +443,7 @@ int     Server::badChanMask(std::string channelname)
     mask = CHANMASK;
     if (channelname == "")
         return (1);
-    if (channelname[0] != '&')
+    if (channelname[0] != '#')
         return (1);
     for (size_t i = 0; i < mask.size(); i++)
     {

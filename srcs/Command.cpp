@@ -249,7 +249,6 @@ int execKick(Message message, Client *client, Server *server)
             else
                 text = sendKick(cNick, cTargetNick, "", channel);
             channel->sendToAll(text);
-            channel->addMessage(text);
             clientTarget->removeChannel(channelName);
             channel->removeClient(cTargetNick);
             text = "";
@@ -271,16 +270,15 @@ static std::string ft_success_join(Channel *channel, Client *client)
     std::string     text;
 
     text = ":" + client->getNickname() + " JOIN " + channel->getName() + DEL;
-    channel->addMessage(text);
     channel->sendToAll(text, client);
     if (channel->getTopic() != "")
     {
         text.append(makeTopic(channel->getName(), channel->getTopic(), client->getNickname()));
         text.append(makeTopicWhoTime(client->getNickname(), channel));
     }
+    text.append(channel->getAllMessages());
     text.append(makeNamReply(channel, client->getNickname(), 0));
     text.append(makeEndOfNames(channel->getName(), client->getNickname()));
-    text.append(channel->getAllMessages());
     return (text);
 }
 
@@ -668,6 +666,7 @@ static int execNoticeChannel(Message message, Client *client, Server *server, st
     for (it = channel->getFirstClient(); it < channel->getLastClient(); it++)
     {
         text = ":" + client->getNickname() +  " NOTICE " +  target + " :" + message.getLastParameter() + DEL;
+        channel->addMessage(text);
         std::cout << "Il testo inviato é: " << text << std::endl;
         send((*it).second->getSocketFd(), text.c_str(), text.size(), 0);
     }
@@ -744,7 +743,6 @@ int execPart(Message message, Client *client, Server *server)
             else
             {
                 channel->sendToAll(toSend);
-                channel->addMessage(toSend);
             }
             send(client->getSocketFd(), toSend.c_str(), toSend.size(), 0);
         }

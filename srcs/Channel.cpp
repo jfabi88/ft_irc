@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfabi <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: lmarzano <lmarzano@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/30 10:07:44 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/30 10:08:04 by jfabi            ###   ########.fr       */
+/*   Updated: 2022/04/23 17:25:15 by lmarzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,7 +337,7 @@ void Channel::addMessage(std::string message) { this->_messages.push_back(messag
 
 //* ################# CHECKS #################
 
-int Channel::isBanned(std::string nickname, std::string username, std::string realname)
+int Channel::isBanned(std::string nickname)
 {
     std::vector<std::string>::iterator it;
     std::string bannedUser = nickname;
@@ -383,9 +383,6 @@ int Channel::clientHasMode(std::string CNick, char c)
 
 int Channel::checkBanMask(std::string banMask)
 {
-    int posE;
-    int posC;
-
     if (banMask == "")
         return (0);
     return (0);

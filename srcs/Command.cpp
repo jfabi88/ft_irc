@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfabi <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: lmarzano <lmarzano@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 15:20:18 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/28 15:20:35 by jfabi            ###   ########.fr       */
+/*   Updated: 2022/04/23 17:24:00 by lmarzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ static std::string ft_exec_join(std::string channelName, std::string key, Client
     }
     else
     {
-        if (newChannel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
+        if (newChannel->isBanned(client->getNickname()))
             return (makeErrorBannedFromChan(client->getNickname(), newChannel->getName()));
         else if (newChannel->isOnChannel(client->getNickname()))
             return (makeErrorUserOnChannel(client->getNickname(), client->getNickname(), newChannel->getName()));
@@ -657,7 +657,7 @@ static int execNoticeChannel(Message message, Client *client, Server *server, st
     channel = server->getChannel(target);
     if (channel == NULL)
         return (0);
-    else if (channel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
+    else if (channel->isBanned(client->getNickname()))
         return (0);
     else if (channel->hasMode('m') && (!channel->clientHasMode(client->getNickname(), 'v') && !channel->clientHasMode(client->getNickname(), 'v')))
         return (0);
@@ -801,7 +801,7 @@ static int execPrivmsgChannel(Message message, Client *client, Server *server, s
     channel = server->getChannel(target);
     if (channel == NULL)
         text = makeCannotSendToChan(client->getNickname(), target);
-    else if (channel->isBanned(client->getNickname(), client->getUsername(), client->getRealname()))
+    else if (channel->isBanned(client->getNickname()))
         text = makeErrorBannedFromChan(client->getNickname(), channel->getName());
     else if (channel->hasMode('m') && (!channel->clientHasMode(client->getNickname(), 'v') && !channel->clientHasMode(client->getNickname(), 'o')))
         text = makeChanNoPrivsNeeded(client->getNickname(), channel->getName());

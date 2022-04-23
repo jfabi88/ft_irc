@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfabi <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: lmarzano <lmarzano@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/30 10:02:21 by jfabi             #+#    #+#             */
-/*   Updated: 2021/12/30 10:07:22 by jfabi            ###   ########.fr       */
+/*   Updated: 2022/04/23 17:23:25 by lmarzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ class Channel
         std::string ltop(int c);
         //* ################# CHECKS #################
 
-        int		isBanned(std::string CNick, std::string CUser, std::string CReal);
+        int		isBanned(std::string CNick);
         int     isOnChannel(std::string nickname);
         int     isInvited(std::string cNick);
         int     clientHasMode(std::string CNick, char c);

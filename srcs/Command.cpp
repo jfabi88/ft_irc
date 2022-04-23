@@ -271,6 +271,7 @@ static std::string ft_success_join(Channel *channel, Client *client)
     std::string     text;
 
     text = ":" + client->getNickname() + " JOIN " + channel->getName() + DEL;
+    channel->addMessage(text);
     channel->sendToAll(text, client);
     if (channel->getTopic() != "")
     {

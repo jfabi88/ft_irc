@@ -127,7 +127,6 @@ class Channel
         std::string                 _chName;
         std::string                 _chKey;
         std::string                 _topic;
-        std::string                 _password;
         usr_pair_list               _clients;
         usr_c_list                  _invitedClients;
         int                         _chMode;

@@ -221,9 +221,9 @@ int Channel::removeClient(int fd) {
 void Channel::setKey(std::string key, int flag)
 {
     if (flag)
-        this->_password = "";
+        this->_chKey = "";
     else
-        this->_password = key;
+        this->_chKey = key;
 }
 
 void Channel::setOperator(std::string client, int flag)
@@ -388,18 +388,6 @@ int Channel::checkBanMask(std::string banMask)
 
     if (banMask == "")
         return (0);
-    if (banMask.find('!') == std::string::npos)
-        return (1);
-    posE = banMask.find('!');
-    if (banMask.find('!', posE) == std::string::npos)
-        return (1);
-    if (banMask.find('@') == std::string::npos)
-        return (1);
-    posC = banMask.find('@');
-    if (banMask.find('@', posE) == std::string::npos)
-        return (1);
-    if (posC > posE)
-        return (1);
     return (0);
 }
 

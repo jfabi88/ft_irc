@@ -744,6 +744,11 @@ int execPart(Message message, Client *client, Server *server)
                 server->removeChannel(channelName);
             else
             {
+                if (!channel->hasOps())
+                {
+                    Channel::usr_pos2   newOp = channel->getFirstClientOp();
+                    channel->setOperator(newOp->second->getNickname(), 1);
+                }
                 channel->sendToAll(toSend);
             }
             send(client->getSocketFd(), toSend.c_str(), toSend.size(), 0);
@@ -876,6 +881,7 @@ int execPrivmsg(Message message, Client *client, Server *server)
 int execQuit(Message message, Client *client, Server *server)
 {
     std::string             text;
+    std::string             textError;
     std::vector<Channel *>  channels;
     //int                     fd;
 
@@ -893,8 +899,11 @@ int execQuit(Message message, Client *client, Server *server)
             (*it)->sendToAll(text, client);
     }
     std::cout << "Il testo inviato é: " << text << std::endl;
-    send(client->getSocketFd(), text.c_str(), text.size(), 0);
+    textError = ":IRCIONE ERROR :connection closed with  a QUIT message";
+    send(client->getSocketFd(), textError.c_str() , textError.size(), 0);
     server->removeClient(client->getNickname());
+    for (std::vector<Client *>::const_iterator it = server->getClients().begin(); it < server->getClients().end();it++)
+        send((*it)->getSocketFd(), text.c_str(), text.size(), 0);
     //close (fd);
     return (0);
 }

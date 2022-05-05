@@ -264,6 +264,7 @@ void    Server::removeChannel(std::string channelName)
     {
         if (!((*it)->getName().compare(channelName)))
         {
+            delete(*it);
             this->_channels.erase(it);
             this->_chanlen -= 1;
             //delete (*it);
@@ -280,6 +281,7 @@ void    Server::removeClient(std::string clientName)
     {
         if (!((*it)->getNickname().compare(clientName)))
         {
+            delete(*it);
             this->_clients.erase(it);
             //delete (*it);
             return ;
@@ -291,6 +293,7 @@ void    Server::quitClient(int fd)
 {
     Message     message;
     std::string text;
+    std::string textError;
     std::vector<Channel *>  channels;
     Client      *client;
 
@@ -307,7 +310,11 @@ void    Server::quitClient(int fd)
         else
             (*it)->sendToAll(text, client);
     }
+    textError = ":" + client->getNickname() + " ERROR :connection closed with  a QUIT message";
+    send(fd, textError.c_str() , textError.size(), 0);
     this->removeClient(client->getNickname());
+    for (std::vector<Client *>::const_iterator it = this->getClients().begin(); it < this->getClients().end();it++)
+        send((*it)->getSocketFd(), text.c_str(), text.size(), 0);
     return ;
 }
 
@@ -402,8 +409,8 @@ int Server::startCommunication(int fdNewClient, char *buffer, Client *client)
         {
             std::string text = makePasswdMisMatch(client->getNickname());
             send(fdNewClient, text.c_str(), text.size(), 0);
+            delete client;
             this->_clients.erase(this->getItNcClients(client->getNickname()));
-            //delete client;
             return (0);
         }
         client->setRegistered(true);

@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     Server          irc(0,0, argv[1]);
     for (int m = 0; m < 512; m++)
         buf[m] = 0;
+    printf("%d\n", getpid());
     // get us a socket and bind it
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_INET;
@@ -126,6 +127,7 @@ int main(int argc, char *argv[])
                             get_in_addr((struct sockaddr*)&remoteaddr),
                             remoteIP, INET_ADDRSTRLEN);
                         Client  *client = new Client();
+                        std::cout << "Il valore é: " << client << std::endl;
                         client->setSocketFd(newfd);
                         client->setHostname(hostname);
                         irc.setClient(client);
@@ -151,7 +153,9 @@ int main(int argc, char *argv[])
                             irc.startCommunication(i, buf, client);
                         else
                         {
+                            std::cout << "------------------------------------------" << std::endl;
                             Client  *client = new Client();
+                            std::cout << "puntatore del client: " << client << std::endl;
                             client->setSocketFd(i);  
                             irc.setClient(client);
                             irc.startCommunication(i, buf, client);

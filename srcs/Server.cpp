@@ -299,7 +299,7 @@ void    Server::quitClient(int fd)
     client = this->getClient(fd);
     if (client == NULL)
         return ;
-    text = ":" + client->getNickname() + "QUIT :connection closed";
+    text = ":" + client->getNickname() + " QUIT :connection closed";
     text += DEL;
     channels = client->getChannels();
     for (std::vector<Channel *>::const_iterator it = channels.begin(); it < channels.end(); it++)

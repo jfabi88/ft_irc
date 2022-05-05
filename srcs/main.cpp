@@ -127,7 +127,6 @@ int main(int argc, char *argv[])
                             get_in_addr((struct sockaddr*)&remoteaddr),
                             remoteIP, INET_ADDRSTRLEN);
                         Client  *client = new Client();
-                        std::cout << "Il valore é: " << client << std::endl;
                         client->setSocketFd(newfd);
                         client->setHostname(hostname);
                         irc.setClient(client);
@@ -155,25 +154,10 @@ int main(int argc, char *argv[])
                         {
                             std::cout << "------------------------------------------" << std::endl;
                             Client  *client = new Client();
-                            std::cout << "puntatore del client: " << client << std::endl;
                             client->setSocketFd(i);  
                             irc.setClient(client);
                             irc.startCommunication(i, buf, client);
                         }
-                        //std::cout << "Ciao a tutti" << std::endl;
-                        //send(i, buf, nbytes, 0);
-                        // we got some data from a client
-                        //for(j = 0; j <= fdmax; j++) {
-                            // send to everyone!
-                        //    if (FD_ISSET(j, &master)) {
-                                // except the listener and ourselves
-                        //        if (j != listener && j != i) {
-                        //           if (send(j, buf, nbytes, 0) == -1) {
-                        //              perror("send");
-                        //            }
-                        //        }
-                        //    }
-                        //}
                     }
                 } // END handle data from client
             } // END got new incoming connection

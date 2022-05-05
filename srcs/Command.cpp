@@ -907,6 +907,7 @@ int execQuit(Message message, Client *client, Server *server)
     }
     std::cout << "Il testo inviato é: " << text << std::endl;
     textError = ":IRCIONE ERROR :connection closed with  a QUIT message";
+    textError += DEL;
     send(client->getSocketFd(), textError.c_str() , textError.size(), 0);// this is where the bug is!
     server->removeClient(client->getNickname());
     for (std::vector<Client *>::const_iterator it = server->getClients().begin(); it < server->getClients().end();it++)

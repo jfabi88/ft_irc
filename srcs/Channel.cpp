@@ -6,7 +6,7 @@
 /*   By: lmarzano <lmarzano@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/30 10:07:44 by jfabi             #+#    #+#             */
-/*   Updated: 2022/04/23 17:25:15 by lmarzano         ###   ########.fr       */
+/*   Updated: 2022/05/04 16:59:22 by lmarzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ std::vector<Client *> Channel::getOperator()
 }
 
 Channel::usr_pos Channel::getFirstClient() const { return (this->_clients.begin()); }
+Channel::usr_pos2 Channel::getFirstClientOp() { return (this->_clients.begin()); }//
 Channel::usr_pos Channel::getLastClient() const { return (this->_clients.end()); }
 
 Channel::usr_pair  Channel::getPairClient(std::string name) {
@@ -403,6 +404,18 @@ int Channel::isInvited(std::string cNick)
             return (1);
     }
     return (0);
+}
+
+bool    Channel::hasOps()// TODO: test this!!!
+{
+	std::vector<std::pair<int, Client *> >::iterator	it;
+	
+	for (it = _clients.begin(); it < _clients.end(); it++)
+    {
+        if ((*it).first == O)
+            return (true);
+    }
+    return (false);
 }
 
 //* ################# PRIVATE #################

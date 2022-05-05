@@ -6,7 +6,7 @@
 /*   By: lmarzano <lmarzano@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/30 10:02:21 by jfabi             #+#    #+#             */
-/*   Updated: 2022/04/23 17:23:25 by lmarzano         ###   ########.fr       */
+/*   Updated: 2022/05/04 16:59:40 by lmarzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ class Channel
         typedef std::pair<int, Client *>                                    usr_pair;
         typedef std::vector<std::pair<int, Client *> >                      usr_pair_list;
         typedef std::vector<std::pair<int, Client *> >::const_iterator      usr_pos;
+        typedef std::vector<std::pair<int, Client *> >::iterator            usr_pos2;//
 
         Channel(std::string chName, std::string key);
         ~Channel();
@@ -86,6 +87,7 @@ class Channel
         usr_pair_list           getClients();
         std::vector<Client *>   getOperator();
         usr_pos                 getFirstClient() const;
+        usr_pos2                getFirstClientOp();//
         usr_pos                 getLastClient() const;
         usr_pair                getPairClient(std::string name);
         std::string             getTopicSet() const;
@@ -122,6 +124,7 @@ class Channel
         int     clientHasMode(std::string CNick, char c);
         int     checkBanMask(std::string banMask);
         int		hasMode(char m);
+        bool    hasOps();//
 
     private:
         std::string                 _chName;

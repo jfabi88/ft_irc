@@ -283,7 +283,6 @@ void    Server::removeClient(std::string clientName)
         {
             delete(*it);
             this->_clients.erase(it);
-            //delete (*it);
             return ;
         }
     }    
@@ -310,8 +309,6 @@ void    Server::quitClient(int fd)
         else
             (*it)->sendToAll(text, client);
     }
-    textError = ":" + client->getNickname() + " ERROR :connection closed with  a QUIT message";
-    send(fd, textError.c_str() , textError.size(), 0);
     this->removeClient(client->getNickname());
     for (std::vector<Client *>::const_iterator it = this->getClients().begin(); it < this->getClients().end();it++)
         send((*it)->getSocketFd(), text.c_str(), text.size(), 0);

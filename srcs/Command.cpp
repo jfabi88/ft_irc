@@ -6,7 +6,7 @@
 /*   By: lmarzano <lmarzano@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 15:20:18 by jfabi             #+#    #+#             */
-/*   Updated: 2022/04/23 17:34:54 by lmarzano         ###   ########.fr       */
+/*   Updated: 2022/05/05 12:36:54 by lmarzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -896,11 +896,18 @@ int execQuit(Message message, Client *client, Server *server)
         if ((*it)->removeClient(client->getSocketFd()) == 0)
             server->removeChannel((*it)->getName());
         else
+		{
+			if (!(*it)->hasOps())
+                {
+                    Channel::usr_pos2   newOp = (*it)->getFirstClientOp();
+                    (*it)->setOperator(newOp->second->getNickname(), 1);
+                }
             (*it)->sendToAll(text, client);
+		}
     }
     std::cout << "Il testo inviato é: " << text << std::endl;
     textError = ":IRCIONE ERROR :connection closed with  a QUIT message";
-    send(client->getSocketFd(), textError.c_str() , textError.size(), 0);
+    send(client->getSocketFd(), textError.c_str() , textError.size(), 0);// this is where the bug is!
     server->removeClient(client->getNickname());
     for (std::vector<Client *>::const_iterator it = server->getClients().begin(); it < server->getClients().end();it++)
         send((*it)->getSocketFd(), text.c_str(), text.size(), 0);
